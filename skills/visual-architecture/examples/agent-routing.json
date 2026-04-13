@@ -1,0 +1,72 @@
+{
+  "title": "Agent Routing",
+  "show_grid": false,
+  "nodes": [
+    {
+      "id": "operator",
+      "label": "Operator Agent",
+      "kind": "agent",
+      "x": 120,
+      "y": 120,
+      "width": 140,
+      "height": 84
+    },
+    {
+      "id": "executor",
+      "label": "Execution Agent",
+      "kind": "agent",
+      "x": 360,
+      "y": 120,
+      "width": 160,
+      "height": 84
+    },
+    {
+      "id": "model",
+      "label": "LLM Runtime",
+      "kind": "llm",
+      "x": 600,
+      "y": 120,
+      "width": 140,
+      "height": 84
+    },
+    {
+      "id": "memory",
+      "label": "Workspace Memory",
+      "kind": "memory",
+      "x": 360,
+      "y": 280,
+      "width": 180,
+      "height": 96
+    }
+  ],
+  "edges": [
+    {
+      "from": "operator",
+      "to": "executor",
+      "kind": "primary-data",
+      "label": "briefs",
+      "label_offset": [0, -18]
+    },
+    {
+      "from": "executor",
+      "to": "model",
+      "kind": "primary-data",
+      "label": "runs on",
+      "label_offset": [0, -18]
+    },
+    {
+      "from": "executor",
+      "to": "memory",
+      "kind": "memory-write",
+      "label": "stores",
+      "label_offset": [18, 0]
+    },
+    {
+      "from": "memory",
+      "to": "operator",
+      "kind": "context",
+      "label": "context",
+      "label_offset": [-18, 0]
+    }
+  ]
+}
