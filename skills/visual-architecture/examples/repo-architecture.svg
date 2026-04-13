@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="759.0" height="456.0" viewBox="-17.0 92.0 759.0 456.0" role="img" aria-label="visual-architecture Repository Concept">
+  <defs>
+    <pattern id="grid" width="120" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 120 0 L 0 0 0 80" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect x="-17.0" y="92.0" width="759.0" height="456.0" fill="#f8fafc"/>
+  <g id="arrows">
+    <path d="M 210.0 160.0 L 270.0 160.0" fill="none" stroke="#2563eb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <polygon points="261.0,154.6 270.0,160.0 261.0,165.4" fill="#2563eb"/>
+    <path d="M 450.0 160.0 L 498.0 160.0" fill="none" stroke="#2563eb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <polygon points="489.0,154.6 498.0,160.0 489.0,165.4" fill="#2563eb"/>
+    <path d="M 217.0 320.0 L 258.0 320.0" fill="none" stroke="#475569" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 6"/>
+    <polygon points="249.0,314.6 258.0,320.0 249.0,325.4" fill="#475569"/>
+    <path d="M 498.0 160.0 L 480.0 160.0 L 480.0 320.0 L 462.0 320.0" fill="none" stroke="#2563eb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <polygon points="471.0,325.4 462.0,320.0 471.0,314.6" fill="#2563eb"/>
+    <path d="M 462.0 320.0 L 510.0 320.0" fill="none" stroke="#2563eb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <polygon points="501.0,314.6 510.0,320.0 501.0,325.4" fill="#2563eb"/>
+    <path d="M 600.0 348.0 L 600.0 452.0" fill="none" stroke="#475569" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 6"/>
+    <polygon points="605.4,443.0 600.0,452.0 594.6,443.0" fill="#475569"/>
+    <path d="M 360.0 348.0 L 360.0 452.0" fill="none" stroke="#16a34a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="10 8"/>
+    <polygon points="365.4,443.0 360.0,452.0 354.6,443.0" fill="#16a34a"/>
+    <path d="M 510.0 320.0 L 480.0 320.0 L 480.0 480.0 L 450.0 480.0" fill="none" stroke="#16a34a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="10 8"/>
+    <polygon points="459.0,485.4 450.0,480.0 459.0,474.6" fill="#16a34a"/>
+    <path d="M 510.0 480.0 L 450.0 480.0" fill="none" stroke="#16a34a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="10 8"/>
+    <polygon points="459.0,485.4 450.0,480.0 459.0,474.6" fill="#16a34a"/>
+  </g>
+  <g id="nodes">
+    <polygon points="52.0,132.0 188.0,132.0 210.0,160.0 188.0,188.0 52.0,188.0 30.0,160.0" fill="#f8fafc" stroke="#0f172a" stroke-width="2"/>
+    <rect x="270.0" y="132.0" width="180.0" height="56.0" rx="12" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+    <rect x="498.0" y="132.0" width="204.0" height="56.0" rx="12" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+    <rect x="258.0" y="292.0" width="204.0" height="56.0" rx="16" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+    <rect x="264.0" y="298.0" width="192.0" height="44.0" rx="12" fill="none" stroke="#0f172a" stroke-width="1.5"/>
+    <path d="M 23.0 304.0 A 97.0 12.0 0 0 1 217.0 304.0 L 217.0 336.0 A 97.0 12.0 0 0 1 23.0 336.0 Z" fill="#f8fafc" stroke="#14532d" stroke-width="2"/>
+    <ellipse cx="120.0" cy="304.0" rx="97.0" ry="12.0" fill="#f8fafc" stroke="#14532d" stroke-width="2"/>
+    <path d="M 23.0 336.0 A 97.0 12.0 0 0 0 217.0 336.0" fill="none" stroke="#14532d" stroke-width="2"/>
+    <rect x="510.0" y="292.0" width="180.0" height="56.0" rx="12" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+    <rect x="510.0" y="452.0" width="180.0" height="56.0" rx="12" fill="#ffffff" stroke="#1f2937" stroke-width="2"/>
+    <path d="M 270.0 464.0 A 90.0 12.0 0 0 1 450.0 464.0 L 450.0 496.0 A 90.0 12.0 0 0 1 270.0 496.0 Z" fill="#f8fafc" stroke="#14532d" stroke-width="2"/>
+    <ellipse cx="360.0" cy="464.0" rx="90.0" ry="12.0" fill="#f8fafc" stroke="#14532d" stroke-width="2"/>
+    <path d="M 270.0 496.0 A 90.0 12.0 0 0 0 450.0 496.0" fill="none" stroke="#14532d" stroke-width="2"/>
+  </g>
+  <g id="labels">
+    <rect x="213.0" y="130.0" width="54.0" height="24.0" rx="6" fill="#dbeafe" stroke="#ffffff" stroke-width="2"/>
+    <text x="240.0" y="146.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#1d4ed8">uses</text>
+    <rect x="441.0" y="130.0" width="66.0" height="24.0" rx="6" fill="#dbeafe" stroke="#ffffff" stroke-width="2"/>
+    <text x="474.0" y="146.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#1d4ed8">defines</text>
+    <rect x="210.5" y="290.0" width="54.0" height="24.0" rx="6" fill="#e2e8f0" stroke="#ffffff" stroke-width="2"/>
+    <text x="237.5" y="306.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#334155">feeds</text>
+    <rect x="465.0" y="228.0" width="66.0" height="24.0" rx="6" fill="#dbeafe" stroke="#ffffff" stroke-width="2"/>
+    <text x="498.0" y="244.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#1d4ed8">renders</text>
+    <rect x="456.5" y="290.0" width="59.0" height="24.0" rx="6" fill="#dbeafe" stroke="#ffffff" stroke-width="2"/>
+    <text x="486.0" y="306.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#1d4ed8">writes</text>
+    <rect x="585.0" y="388.0" width="66.0" height="24.0" rx="6" fill="#e2e8f0" stroke="#ffffff" stroke-width="2"/>
+    <text x="618.0" y="404.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#334155">exports</text>
+    <rect x="315.0" y="388.0" width="54.0" height="24.0" rx="6" fill="#dcfce7" stroke="#ffffff" stroke-width="2"/>
+    <text x="342.0" y="404.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#166534">ships</text>
+    <rect x="443.5" y="406.0" width="73.0" height="24.0" rx="6" fill="#dcfce7" stroke="#ffffff" stroke-width="2"/>
+    <text x="480.0" y="422.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#166534">includes</text>
+    <rect x="440.0" y="486.0" width="80.0" height="24.0" rx="6" fill="#dcfce7" stroke="#ffffff" stroke-width="2"/>
+    <text x="480.0" y="502.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#166534">showcases</text>
+    <text x="120.0" y="166.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#0f172a">User / Agent</text>
+    <text x="360.0" y="166.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#111827">SKILL.md</text>
+    <text x="600.0" y="166.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#111827">Structured JSON</text>
+    <text x="360.0" y="326.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#0f172a">Python Renderer</text>
+    <text x="120.0" y="326.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#14532d">Example Inputs</text>
+    <text x="600.0" y="326.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#111827">SVG Output</text>
+    <text x="600.0" y="486.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#111827">PNG Export</text>
+    <text x="360.0" y="486.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#14532d">Public Repo</text>
+  </g>
+</svg>

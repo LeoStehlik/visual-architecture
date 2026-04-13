@@ -1,0 +1,25 @@
+{
+  "title": "visual-architecture Repository Concept",
+  "show_grid": false,
+  "nodes": [
+    {"id": "author", "label": "User / Agent", "kind": "agent", "x": 120, "y": 120, "width": 140, "height": 84},
+    {"id": "skill", "label": "SKILL.md", "kind": "service", "x": 360, "y": 120, "width": 140, "height": 84},
+    {"id": "json", "label": "Structured JSON", "kind": "service", "x": 600, "y": 120, "width": 160, "height": 84},
+    {"id": "renderer", "label": "Python Renderer", "kind": "llm", "x": 360, "y": 280, "width": 170, "height": 90},
+    {"id": "examples", "label": "Example Inputs", "kind": "memory", "x": 120, "y": 280, "width": 170, "height": 96},
+    {"id": "svg", "label": "SVG Output", "kind": "service", "x": 600, "y": 280, "width": 150, "height": 84},
+    {"id": "png", "label": "PNG Export", "kind": "service", "x": 600, "y": 440, "width": 150, "height": 84},
+    {"id": "repo", "label": "Public Repo", "kind": "memory", "x": 360, "y": 440, "width": 180, "height": 96}
+  ],
+  "edges": [
+    {"from": "author", "to": "skill", "kind": "primary-data", "label": "uses", "label_offset": [0, -18]},
+    {"from": "skill", "to": "json", "kind": "primary-data", "label": "defines", "label_offset": [0, -18]},
+    {"from": "examples", "to": "renderer", "kind": "context", "label": "feeds", "label_offset": [0, -18]},
+    {"from": "json", "to": "renderer", "kind": "primary-data", "label": "renders", "label_offset": [18, 0]},
+    {"from": "renderer", "to": "svg", "kind": "primary-data", "label": "writes", "label_offset": [0, -18]},
+    {"from": "svg", "to": "png", "kind": "context", "label": "exports", "label_offset": [18, 0]},
+    {"from": "renderer", "to": "repo", "kind": "memory-write", "label": "ships", "label_offset": [-18, 0]},
+    {"from": "svg", "to": "repo", "kind": "memory-write", "label": "includes", "label_offset": [0, 18]},
+    {"from": "png", "to": "repo", "kind": "memory-write", "label": "showcases", "label_offset": [0, 18]}
+  ]
+}

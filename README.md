@@ -25,6 +25,14 @@ Most AI-generated diagrams fail in the same ways:
 - readable labels with shielding
 - deterministic output over decorative improvisation
 
+## Showcase
+
+### Agent routing
+![Agent routing](skills/visual-architecture/examples/agent-routing.png)
+
+### Repository concept
+![Repository concept](skills/visual-architecture/examples/repo-architecture.png)
+
 ## Included
 
 - `skills/visual-architecture/SKILL.md`
@@ -32,6 +40,9 @@ Most AI-generated diagrams fail in the same ways:
 - `skills/visual-architecture/examples/agent-routing.json`
 - `skills/visual-architecture/examples/agent-routing.svg`
 - `skills/visual-architecture/examples/agent-routing.png`
+- `skills/visual-architecture/examples/repo-architecture.json`
+- `skills/visual-architecture/examples/repo-architecture.svg`
+- `skills/visual-architecture/examples/repo-architecture.png`
 
 ## Semantic vocabulary
 
