@@ -1,5 +1,7 @@
 # visual-architecture
 
+[![Validate](https://github.com/LeoStehlik/visual-architecture/actions/workflows/validate.yml/badge.svg)](https://github.com/LeoStehlik/visual-architecture/actions/workflows/validate.yml)
+
 Generate clean, deterministic SVG architecture diagrams from structured JSON.
 
 This skill gives agents a safer path for diagrams: describe the system as nodes and edges, then render through a small Python engine instead of hand-writing SVG geometry.
@@ -62,6 +64,23 @@ Render it:
 python3 scripts/render_architecture.py examples/service-map.json examples/service-map.svg
 ```
 
+## Proof Artifact
+
+The repo includes [`examples/service-map.json`](examples/service-map.json) and its deterministic SVG output [`examples/service-map.svg`](examples/service-map.svg).
+
+Validate it locally:
+
+```bash
+make validate
+```
+
+The GitHub Actions workflow runs the same checks on every push:
+
+- `SKILL.md` declares `name: visual-architecture`
+- README includes the ClawHub install command
+- the example JSON parses cleanly
+- the renderer regenerates the committed SVG byte-for-byte
+
 ## Diagram Model
 
 Node kinds:
@@ -89,12 +108,15 @@ visual-architecture/
 │   └── service-map.svg
 ├── scripts/
 │   └── render_architecture.py
+├── .github/workflows/
+│   └── validate.yml
+├── Makefile
 └── README.md
 ```
 
 ## Status
 
-Public skill bundle, published on ClawHub as `visual-architecture@0.1.0`.
+Usable public skill bundle, published on ClawHub as `visual-architecture@0.1.0`.
 
 ## License
 
