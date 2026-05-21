@@ -1,73 +1,101 @@
 # visual-architecture
 
-Clean, deterministic SVG architecture diagrams for agent systems, memory systems, and technical workflows.
+Generate clean, deterministic SVG architecture diagrams from structured JSON.
 
-This repo contains a small OpenClaw-style skill plus a standard-library Python renderer that turns structured JSON into polished SVG diagrams.
+This skill gives agents a safer path for diagrams: describe the system as nodes and edges, then render through a small Python engine instead of hand-writing SVG geometry.
 
-## What it is
+## Install
 
-Most AI-generated diagrams fail in the same ways:
-- messy spacing
-- arrows crossing through components
-- inconsistent visual language
-- labels floating into lines
-- glossy UI slop instead of diagram discipline
+### OpenClaw / ClawHub
 
-`visual-architecture` solves that by separating:
-- **structure**: JSON describing nodes, edges, labels, and meaning
-- **rendering**: deterministic layout and SVG generation
+```bash
+openclaw skills install visual-architecture
+```
 
-## Principles
+### Manual
 
-- orthogonal arrow routing
-- consistent semantic shapes
-- restrained styling
-- readable labels with shielding
-- deterministic output over decorative improvisation
+```bash
+git clone https://github.com/LeoStehlik/visual-architecture.git ~/.openclaw/workspace/skills/visual-architecture
+```
 
-## Showcase
+For Claude Code, Codex, or other agent harnesses, copy this folder into the harness skill directory and load `SKILL.md`.
 
-### Agent routing
-![Agent routing](skills/visual-architecture/examples/agent-routing.png)
+## Use
 
-### Repository concept
-![Repository concept](skills/visual-architecture/examples/repo-architecture.png)
+Create an input file:
 
-## Included
+```json
+{
+  "title": "Service Map",
+  "nodes": [
+    {
+      "id": "web",
+      "label": "Web App",
+      "subtitle": "User interface",
+      "kind": "service",
+      "x": 120,
+      "y": 160
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "subtitle": "Business logic",
+      "kind": "service",
+      "x": 360,
+      "y": 160
+    }
+  ],
+  "edges": [
+    {
+      "from": "web",
+      "to": "api",
+      "kind": "primary-data",
+      "label": "HTTP"
+    }
+  ]
+}
+```
 
-- `skills/visual-architecture/SKILL.md`
-- `skills/visual-architecture/scripts/render_architecture.py`
-- `skills/visual-architecture/examples/agent-routing.json`
-- `skills/visual-architecture/examples/agent-routing.svg`
-- `skills/visual-architecture/examples/agent-routing.png`
-- `skills/visual-architecture/examples/repo-architecture.json`
-- `skills/visual-architecture/examples/repo-architecture.svg`
-- `skills/visual-architecture/examples/repo-architecture.png`
+Render it:
 
-## Semantic vocabulary
+```bash
+python3 scripts/render_architecture.py examples/service-map.json examples/service-map.svg
+```
 
-### Node kinds
-- `agent` → hexagon
-- `llm` → double-border rounded rect
-- `memory` → cylinder
-- `service` → rounded rect
+## Diagram Model
 
-### Edge kinds
-- `primary-data` → blue solid
-- `memory-write` → green dashed
-- `context` → neutral gray
+Node kinds:
 
-## Why this exists
+- `service` - rounded rectangle
+- `llm` - double-border rounded rectangle
+- `agent` - hexagon
+- `memory` - cylinder
 
-Diagram generation gets much better when the model stops trying to freestyle geometry.
+Edge kinds:
 
-This repo gives the model a tighter path:
-1. describe the system as structured JSON
-2. render through fixed diagram rules
-3. iterate on meaning, not SVG syntax
+- `primary-data` - blue solid arrow
+- `memory-write` - green dashed arrow
+- `control` - slate dashed arrow
+
+The renderer keeps diagrams restrained: orthogonal routing, consistent shapes, readable labels, and no decorative effects.
+
+## Repository
+
+```text
+visual-architecture/
+├── SKILL.md
+├── examples/
+│   ├── service-map.json
+│   └── service-map.svg
+├── scripts/
+│   └── render_architecture.py
+└── README.md
+```
 
 ## Status
 
-This is the public-safe version of an internal workflow tool.
+Public skill bundle, published on ClawHub as `visual-architecture@0.1.0`.
 
-It is intended as a practical base for internal architecture diagrams, agent maps, memory diagrams, and routing visualisations.
+## License
+
+MIT. See [LICENSE](LICENSE).

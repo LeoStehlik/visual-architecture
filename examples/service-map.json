@@ -1,0 +1,75 @@
+{
+  "title": "Service Map",
+  "nodes": [
+    {
+      "id": "web",
+      "label": "Web App",
+      "subtitle": "User interface",
+      "kind": "service",
+      "x": 120,
+      "y": 160
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "subtitle": "Business logic",
+      "kind": "service",
+      "x": 360,
+      "y": 160
+    },
+    {
+      "id": "worker",
+      "label": "Worker",
+      "subtitle": "Async jobs",
+      "kind": "agent",
+      "x": 600,
+      "y": 160
+    },
+    {
+      "id": "db",
+      "label": "Database",
+      "subtitle": "Persistent state",
+      "kind": "memory",
+      "x": 360,
+      "y": 320
+    },
+    {
+      "id": "llm",
+      "label": "LLM Provider",
+      "subtitle": "Inference",
+      "kind": "llm",
+      "x": 600,
+      "y": 320
+    }
+  ],
+  "edges": [
+    {
+      "from": "web",
+      "to": "api",
+      "kind": "primary-data",
+      "label": "HTTP"
+    },
+    {
+      "from": "api",
+      "to": "worker",
+      "kind": "control",
+      "label": "enqueue"
+    },
+    {
+      "from": "api",
+      "to": "db",
+      "kind": "memory-write",
+      "label": "read/write",
+      "source_side": "bottom",
+      "target_side": "top"
+    },
+    {
+      "from": "worker",
+      "to": "llm",
+      "kind": "primary-data",
+      "label": "prompt",
+      "source_side": "bottom",
+      "target_side": "top"
+    }
+  ]
+}
