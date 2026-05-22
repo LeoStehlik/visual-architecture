@@ -116,7 +116,7 @@ visual-architecture/
 
 ## Status
 
-Usable public skill bundle, published on ClawHub as `visual-architecture@0.1.0`.
+Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.0`.
 
 ## License
 

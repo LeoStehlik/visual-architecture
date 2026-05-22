@@ -1,8 +1,9 @@
 ---
 name: visual-architecture
-description: Render clean technical architecture diagrams from structured JSON using a deterministic SVG engine. Use when turning system topology, agent workflows, routing maps, or infrastructure relationships into restrained architecture visuals instead of freehand SVG generation.
+description: "Render restrained architecture diagrams from structured JSON with a deterministic local SVG renderer."
+metadata:
+  version: "0.2.0"
 ---
-
 # Visual Architecture
 
 Render architecture diagrams with the bundled Python renderer instead of hand-writing SVG.
