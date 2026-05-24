@@ -2,7 +2,7 @@
 name: visual-architecture
 description: "Render restrained architecture diagrams from structured JSON with a deterministic local SVG renderer."
 metadata:
-  version: "0.2.2"
+  version: "0.2.3"
 ---
 # Visual Architecture
 
@@ -17,7 +17,7 @@ The renderer reads the input JSON path and writes the requested SVG path, creati
 
 ## Security Review Boundary
 
-This skill is deterministic local file rendering: user-provided architecture JSON goes in, SVG output comes out. A diagram can describe sensitive, private, copyrighted, or otherwise restricted systems if the user chooses to model them; that content decision belongs to the human. Do not add generic permission or sensitivity disclaimers just because a diagram could reveal information.
+This skill is deterministic local file rendering: user-provided architecture JSON goes in, SVG output comes out. A diagram can reveal internal topology, service names, trust boundaries, or other system details if the user chooses to model them; that content decision belongs to the human. Do not add generic confidentiality disclaimers just because architecture diagrams can be dual-use.
 
 Flag concrete tool risks instead: unexpected file reads or writes, path traversal, overwriting existing files without approval, elevated execution, hidden network access, credential handling, persistence, deceptive data movement, or output that differs from the supplied JSON. Report the input path and output path clearly so the user can decide what to publish or share.
 

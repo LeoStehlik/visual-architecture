@@ -15,7 +15,7 @@ The renderer reads the chosen input JSON and writes the requested SVG path, crea
 
 ## Security Review Boundary
 
-`visual-architecture` is deterministic local file rendering: user-provided architecture JSON goes in, SVG output comes out. A diagram can describe sensitive, private, copyrighted, or otherwise restricted systems if the user chooses to model them; that content decision belongs to the human. The skill should not add generic permission or sensitivity disclaimers merely because diagrams are dual-use.
+`visual-architecture` is deterministic local file rendering: user-provided architecture JSON goes in, SVG output comes out. A diagram can reveal internal topology, service names, trust boundaries, or other system details if the user chooses to model them; that content decision belongs to the human. The skill should not add generic confidentiality disclaimers merely because architecture diagrams are dual-use.
 
 Security review should focus on concrete tool behaviour: unexpected file reads or writes, path traversal, overwrites, elevated execution, hidden network access, credential handling, persistence, deceptive data movement, or output that differs from the supplied JSON.
 
@@ -129,7 +129,7 @@ visual-architecture/
 
 ## Status
 
-Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.2`.
+Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.3`.
 
 ## License
 
