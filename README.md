@@ -11,7 +11,13 @@ This skill gives agents a safer path for diagrams: describe the system as nodes 
 
 Use `visual-architecture` for explicit architecture diagrams, system maps, service relationship visuals, or structured JSON-to-SVG rendering. It is not a general-purpose illustration or file-writing skill.
 
-The renderer reads the chosen input JSON and writes the requested SVG path, creating parent directories if needed. Prefer project-local or temporary output paths, avoid overwriting existing files without approval, and review generated SVG/PNG files before publishing.
+The renderer reads the chosen input JSON and writes the requested SVG path, creating parent directories if needed. Prefer project-local or temporary output paths and avoid overwriting existing files without approval. Report the input and output paths clearly so the user can decide what to publish or share.
+
+## Security Review Boundary
+
+`visual-architecture` is deterministic local file rendering: user-provided architecture JSON goes in, SVG output comes out. A diagram can describe sensitive, private, copyrighted, or otherwise restricted systems if the user chooses to model them; that content decision belongs to the human. The skill should not add generic permission or sensitivity disclaimers merely because diagrams are dual-use.
+
+Security review should focus on concrete tool behaviour: unexpected file reads or writes, path traversal, overwrites, elevated execution, hidden network access, credential handling, persistence, deceptive data movement, or output that differs from the supplied JSON.
 
 ## Install
 
@@ -123,7 +129,7 @@ visual-architecture/
 
 ## Status
 
-Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.1`.
+Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.2`.
 
 ## License
 
