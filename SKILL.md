@@ -2,24 +2,11 @@
 name: visual-architecture
 description: "Render restrained architecture diagrams from structured JSON with a deterministic local SVG renderer."
 metadata:
-  version: "0.2.4"
+  version: "0.2.5"
 ---
 # Visual Architecture
 
 Render architecture diagrams with the bundled Python renderer instead of hand-writing SVG.
-
-
-## Activation and File Boundary
-
-Use this skill when the user explicitly asks for an architecture diagram, system map, service relationship visual, or structured JSON-to-SVG rendering. Do not activate it for general documentation or non-architecture artwork.
-
-The renderer reads the input JSON path and writes the requested SVG path, creating parent directories if needed. It accepts only paths inside the current project directory or the system temp directory, and it refuses to overwrite an existing output file unless `--force` is passed. Use project-local or temporary output paths. The renderer must not be used with elevated privileges or as a generic file-writing tool.
-
-## Security Review Boundary
-
-This skill is deterministic local file rendering: user-provided architecture JSON goes in, SVG output comes out. A diagram can reveal internal topology, service names, trust boundaries, or other system details if the user chooses to model them; that content decision belongs to the human. Do not add generic confidentiality disclaimers just because architecture diagrams can be dual-use.
-
-Flag concrete tool risks instead: unexpected file reads or writes, path traversal, elevated execution, hidden network access, credential handling, persistence, deceptive data movement, or output that differs from the supplied JSON. Report the input path and output path clearly so the user can decide what to publish or share.
 
 ## Workflow
 
@@ -32,8 +19,6 @@ Flag concrete tool risks instead: unexpected file reads or writes, path traversa
 ```bash
 python3 skills/visual-architecture/scripts/render_architecture.py input.json output.svg
 ```
-
-The renderer refuses to overwrite existing output by default. If you have reviewed the target path and intentionally want to replace it, pass `--force`.
 
 4. If `rsvg-convert` is available and you need a bitmap preview, run:
 
