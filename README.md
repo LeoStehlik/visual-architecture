@@ -11,13 +11,13 @@ This skill gives agents a safer path for diagrams: describe the system as nodes 
 
 Use `visual-architecture` for explicit architecture diagrams, system maps, service relationship visuals, or structured JSON-to-SVG rendering. It is not a general-purpose illustration or file-writing skill.
 
-The renderer reads the chosen input JSON and writes the requested SVG path, creating parent directories if needed. Prefer project-local or temporary output paths and avoid overwriting existing files without approval. Report the input and output paths clearly so the user can decide what to publish or share.
+The renderer reads the chosen input JSON and writes the requested SVG path, creating parent directories if needed. It accepts only paths inside the current project directory or the system temp directory, and it refuses to overwrite an existing output file unless `--force` is passed. Report the input and output paths clearly so the user can decide what to publish or share.
 
 ## Security Review Boundary
 
 `visual-architecture` is deterministic local file rendering: user-provided architecture JSON goes in, SVG output comes out. A diagram can reveal internal topology, service names, trust boundaries, or other system details if the user chooses to model them; that content decision belongs to the human. The skill should not add generic confidentiality disclaimers merely because architecture diagrams are dual-use.
 
-Security review should focus on concrete tool behaviour: unexpected file reads or writes, path traversal, overwrites, elevated execution, hidden network access, credential handling, persistence, deceptive data movement, or output that differs from the supplied JSON.
+Security review should focus on concrete tool behaviour: unexpected file reads or writes, path traversal, elevated execution, hidden network access, credential handling, persistence, deceptive data movement, or output that differs from the supplied JSON.
 
 ## Install
 
@@ -77,6 +77,8 @@ Render it:
 python3 scripts/render_architecture.py examples/service-map.json examples/service-map.svg
 ```
 
+Existing outputs are protected by default. Use `--force` only when you intentionally want to replace the target SVG.
+
 ## Proof Artifact
 
 The repo includes [`examples/service-map.json`](examples/service-map.json) and its deterministic SVG output [`examples/service-map.svg`](examples/service-map.svg).
@@ -129,7 +131,7 @@ visual-architecture/
 
 ## Status
 
-Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.3`.
+Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.4`.
 
 ## License
 

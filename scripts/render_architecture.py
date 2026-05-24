@@ -2,6 +2,7 @@
 import argparse
 import json
 import math
+import tempfile
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -28,8 +29,42 @@ def snap(value, grid):
     return round(value / grid) * grid
 
 
+def allowed_roots():
+    roots = [Path.cwd(), Path(tempfile.gettempdir()), Path("/tmp"), Path("/var/tmp")]
+    return list(dict.fromkeys(root.resolve() for root in roots if root.exists()))
+
+
+def is_within(path, root):
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
+def resolve_allowed_path(raw_path, *, must_exist):
+    candidate = Path(raw_path).expanduser()
+    if not candidate.is_absolute():
+        candidate = Path.cwd() / candidate
+    try:
+        resolved = candidate.resolve(strict=must_exist)
+    except FileNotFoundError as exc:
+        raise SystemExit(f"Input file does not exist: {raw_path}") from exc
+
+    roots = allowed_roots()
+    if not any(is_within(resolved, root) for root in roots):
+        root_list = ", ".join(str(root) for root in roots)
+        raise SystemExit(
+            f"Refusing path outside the current project or temp directory: {raw_path} "
+            f"(allowed roots: {root_list})"
+        )
+    return resolved
+
+
 def load(path):
-    with open(path, "r", encoding="utf-8") as f:
+    if not path.is_file():
+        raise SystemExit(f"Input path is not a file: {path}")
+    with path.open("r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -287,13 +322,20 @@ def indent(text, spaces):
 
 def main():
     parser = argparse.ArgumentParser(description="Render architecture JSON to SVG")
-    parser.add_argument("input", help="Path to architecture JSON")
-    parser.add_argument("output", help="Path to output SVG")
+    parser.add_argument("input", help="Path to architecture JSON inside the current project or temp directory")
+    parser.add_argument("output", help="Path to output SVG inside the current project or temp directory")
+    parser.add_argument("--force", action="store_true", help="Overwrite the output SVG if it already exists")
     args = parser.parse_args()
 
-    data = load(args.input)
+    input_path = resolve_allowed_path(args.input, must_exist=True)
+    output_path = resolve_allowed_path(args.output, must_exist=False)
+    if output_path.exists() and not args.force:
+        raise SystemExit(f"Refusing to overwrite existing output without --force: {output_path}")
+    if output_path.exists() and output_path.is_dir():
+        raise SystemExit(f"Output path is a directory: {output_path}")
+
+    data = load(input_path)
     svg = render(data)
-    output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(svg, encoding="utf-8")
 
