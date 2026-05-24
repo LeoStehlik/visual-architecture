@@ -6,6 +6,13 @@ Generate clean, deterministic SVG architecture diagrams from structured JSON.
 
 This skill gives agents a safer path for diagrams: describe the system as nodes and edges, then render through a small Python engine instead of hand-writing SVG geometry.
 
+
+## Activation and File Boundary
+
+Use `visual-architecture` for explicit architecture diagrams, system maps, service relationship visuals, or structured JSON-to-SVG rendering. It is not a general-purpose illustration or file-writing skill.
+
+The renderer reads the chosen input JSON and writes the requested SVG path, creating parent directories if needed. Prefer project-local or temporary output paths, avoid overwriting existing files without approval, and review generated SVG/PNG files before publishing.
+
 ## Install
 
 ### OpenClaw / ClawHub
@@ -116,7 +123,7 @@ visual-architecture/
 
 ## Status
 
-Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.0`.
+Usable public skill bundle, published on ClawHub as `visual-architecture@0.2.1`.
 
 ## License
 

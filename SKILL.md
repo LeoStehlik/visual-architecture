@@ -2,11 +2,18 @@
 name: visual-architecture
 description: "Render restrained architecture diagrams from structured JSON with a deterministic local SVG renderer."
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
 ---
 # Visual Architecture
 
 Render architecture diagrams with the bundled Python renderer instead of hand-writing SVG.
+
+
+## Activation and File Boundary
+
+Use this skill when the user explicitly asks for an architecture diagram, system map, service relationship visual, or structured JSON-to-SVG rendering. Do not activate it for general documentation or non-architecture artwork.
+
+The renderer reads the input JSON path and writes the requested SVG path, creating parent directories if needed. Use project-local or temporary output paths, avoid overwriting existing files without approval, and review generated SVG/PNG files before publishing them. The renderer must not be used with elevated privileges or as a generic file-writing tool.
 
 ## Workflow
 
