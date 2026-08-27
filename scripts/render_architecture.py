@@ -41,7 +41,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 

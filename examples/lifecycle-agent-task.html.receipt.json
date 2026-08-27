@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T22:02:00.153063+00:00",
+  "generatedAt": "2026-08-27T22:07:53.960477+00:00",
   "input": {
     "bytes": 1538,
     "path": "examples/lifecycle-agent-task.json",
@@ -35,5 +35,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
