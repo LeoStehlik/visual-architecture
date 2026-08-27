@@ -1,0 +1,36 @@
+{
+  "artifactKind": "svg",
+  "generatedAt": "2026-08-27T21:16:56.452308+00:00",
+  "input": {
+    "bytes": 1719,
+    "path": "examples/service-map.json",
+    "sha256": "561e30d1576141616c4ff944471fa3fa4425f2a6699cb6d993249ad8cebb948d"
+  },
+  "output": {
+    "bytes": 6534,
+    "path": "examples/service-map.svg",
+    "sha256": "bc4054a429b214f34f3e8b957395b889135c0a6579462b1103c9bba0461b6b3c"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 5,
+      "nodeKinds": [
+        "agent",
+        "llm",
+        "memory",
+        "service"
+      ],
+      "nodes": 5
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "0.3.0"
+}

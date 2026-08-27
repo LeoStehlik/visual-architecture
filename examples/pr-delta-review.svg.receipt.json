@@ -1,0 +1,35 @@
+{
+  "artifactKind": "svg",
+  "generatedAt": "2026-08-27T21:16:56.208083+00:00",
+  "input": {
+    "bytes": 2279,
+    "path": "examples/pr-delta-review.json",
+    "sha256": "3dc9ab6250bbd78cf3a9514b673ffb03b3ff826739649f0da4ed8386a52f9d61"
+  },
+  "output": {
+    "bytes": 8018,
+    "path": "examples/pr-delta-review.svg",
+    "sha256": "b0d93133b3362126df070f56bee4983551eb3d7822518c6db22b84efb57a6116"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 6,
+      "nodeKinds": [
+        "agent",
+        "memory",
+        "service"
+      ],
+      "nodes": 6
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "0.3.0"
+}

@@ -1,0 +1,35 @@
+{
+  "artifactKind": "html",
+  "generatedAt": "2026-08-27T21:16:56.389125+00:00",
+  "input": {
+    "bytes": 2025,
+    "path": "examples/repo-evidence-map.json",
+    "sha256": "5ead971d35bf6e16fbe88097827b009fa825491bea60dffb1f665121618a2a8b"
+  },
+  "output": {
+    "bytes": 10402,
+    "path": "examples/repo-evidence-map.html",
+    "sha256": "dff9d1caf3cefe0b74a7f9ccec074a39557e4adb1d71144bcf77dfbff82b4128"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 6,
+      "nodeKinds": [
+        "agent",
+        "memory",
+        "service"
+      ],
+      "nodes": 6
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "0.3.0"
+}
