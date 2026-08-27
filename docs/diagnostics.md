@@ -41,3 +41,13 @@
 - `evidence.lines.type` - evidence lines are not `[start, end]` integers
 - `evidence.commit.type` - evidence commit is not a string
 - `evidence.confidence.unknown` - confidence is not `high`, `medium`, or `low`
+
+## Visual Quality Diagnostics
+
+- `quality.node.overlap` - rendered node boxes overlap or sit too close to be presentation-grade.
+- `quality.node.spacing` - node centers are too close for a clean artifact.
+- `quality.route.crossings` - unrelated edge routes cross and should be rerouted with `via` points.
+- `quality.route.complex` - an edge route has enough turns to become visually noisy.
+- `quality.density.high` - the artifact is dense enough that it should probably be split or narrated as a smaller story.
+
+Receipts expose `validation.metrics.quality.score` and `validation.metrics.quality.rating`. Treat `needs-work` and `poor` as visual defects even when the JSON shape is valid.

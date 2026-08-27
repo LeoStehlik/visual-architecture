@@ -32,7 +32,7 @@
     ],
     "removedNodes": []
   },
-  "generatedAt": "2026-08-27T22:36:12.683625+00:00",
+  "generatedAt": "2026-08-27T23:03:19.646533+00:00",
   "head": {
     "path": "examples/pr-delta-head.json",
     "sha256": "ddf71bcac221f8b319f710ad30fa5d3b091da3d274b9b05e91477cf646e99dd3"
@@ -44,9 +44,9 @@
   },
   "mode": "pr-delta",
   "output": {
-    "bytes": 10070,
+    "bytes": 11668,
     "path": "examples/pr-delta-generated.html",
-    "sha256": "6d889a84e815c3f81a4be7881812e3afe8d1464dd3afbcc7288397ae280f1692"
+    "sha256": "6d72507c48e1a322b1e0722bb03a9aa91b0dd873998d9509a686868ff5761872"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -66,10 +66,33 @@
         "service"
       ],
       "nodes": 6,
+      "quality": {
+        "checks": [
+          {
+            "code": "quality.node.spacing",
+            "level": "warn",
+            "subjects": [
+              "base",
+              "head"
+            ]
+          },
+          {
+            "code": "quality.node.spacing",
+            "level": "warn",
+            "subjects": [
+              "added",
+              "removed"
+            ]
+          }
+        ],
+        "rating": "good",
+        "routeCrossings": 0,
+        "score": 84
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.3.0"
+  "version": "1.4.0"
 }

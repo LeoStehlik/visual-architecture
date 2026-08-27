@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T22:36:10.344627+00:00",
+  "generatedAt": "2026-08-27T23:03:17.555340+00:00",
   "input": {
     "bytes": 1925,
     "path": "examples/agent-runtime.json",
@@ -8,9 +8,9 @@
   },
   "mode": "workflow",
   "output": {
-    "bytes": 9862,
+    "bytes": 10841,
     "path": "examples/agent-runtime.html",
-    "sha256": "12b5be8ac26e2e5c5741a1bbb3c3270bc5ef94b72fac61f1deab34069ed6f13b"
+    "sha256": "0d614a214b4bda1e196d2306720a089b65c1b48e8dde32125061032f0467e547"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -30,10 +30,41 @@
         "service"
       ],
       "nodes": 6,
+      "quality": {
+        "checks": [
+          {
+            "code": "quality.node.spacing",
+            "level": "warn",
+            "subjects": [
+              "brief",
+              "lessons"
+            ]
+          },
+          {
+            "code": "quality.node.spacing",
+            "level": "warn",
+            "subjects": [
+              "builder",
+              "receipt"
+            ]
+          },
+          {
+            "code": "quality.node.spacing",
+            "level": "warn",
+            "subjects": [
+              "artifact",
+              "validator"
+            ]
+          }
+        ],
+        "rating": "good",
+        "routeCrossings": 0,
+        "score": 76
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.3.0"
+  "version": "1.4.0"
 }

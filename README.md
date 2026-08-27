@@ -4,9 +4,9 @@
 
 **Deterministic, local-first architecture artifacts for agents.**
 
-visual-architecture turns small typed JSON specs into restrained SVG or self-contained HTML system maps. The v1.0 contract is simple: validate the spec, render the artifact, write a receipt with hashes, and keep source evidence and PR deltas explicit enough for an agent to prove exactly what it delivered.
+visual-architecture turns small typed JSON specs into SVG, self-contained HTML, share cards, receipts, and a generated Pages showcase. The v1.4 contract is stronger: each mode gets its own visual grammar, validation scores readability, and the gallery can show story steps, receipts, and source evidence instead of dumping visitors into raw files.
 
-It is deliberately smaller than Archify, but the useful wedge is now real: local-first diagram artifacts with proof discipline, source evidence, PR deltas, share cards, and review-ready examples.
+The wedge against Archify is local-first proof: architecture artifacts that look intentional, cite their sources, explain PR deltas, and remain reproducible from checked JSON.
 
 ![Visual Architecture artifact engine](examples/showcase-artifact-engine.svg)
 
@@ -14,7 +14,7 @@ It is deliberately smaller than Archify, but the useful wedge is now real: local
 
 Open the generated artifact site: **https://leostehlik.github.io/visual-architecture/**
 
-The gallery is the browsing surface. The README stays as the product brief; the repo keeps the JSON specs, SVG/HTML artifacts, and receipts for audit.
+The gallery is the browsing surface: artifact rail, large diagram stage, story path, receipt quality, share cards, and source evidence viewer. The README stays as the product brief; the repo keeps the JSON specs, SVG/HTML artifacts, and receipts for audit.
 
 ## Why It Exists
 
@@ -25,7 +25,7 @@ Agents are good at inventing diagrams and bad at proving what they just drew. vi
 3. Deliver SVG or HTML atomically.
 4. Emit a JSON receipt with input/output SHA-256, byte counts, metrics, warnings, and validation result.
 
-The output stays boring in the useful way: clean routes, readable labels, no hosted service, no drawing editor, no mystery auto-layout.
+The output stays local and deterministic, but no longer uses one generic box-arrow treatment for every artifact. Architecture, workflow, sequence, data-flow, lifecycle, and PR delta modes now get distinct visual scaffolding.
 
 ## Install
 
@@ -192,7 +192,7 @@ Nodes with evidence render a compact `SRC n` badge. Receipts count evidence item
 - output path, SHA-256, and byte count
 - validation status, errors, warnings, and metrics
 
-Validation currently checks the shape of the spec, supported modes and semantic kinds, unknown endpoints, evidence field shape, duplicate/shared grid positions, route crossings through unrelated nodes, and long labels that are likely to crowd the diagram. It is intentionally local and deterministic: no hosted service and no live repository scan unless the user authors evidence into the spec.
+Validation currently checks the shape of the spec, supported modes and semantic kinds, unknown endpoints, evidence field shape, duplicate/shared grid positions, route crossings through unrelated nodes, edge crossings, density, visual overlap, and long labels that are likely to crowd the diagram. Receipts include a quality score so ugly artifacts are visible as defects, not treated as successful output.
 
 Stable diagnostic codes are documented in [`docs/diagnostics.md`](docs/diagnostics.md).
 
@@ -207,13 +207,13 @@ Completed v1.0 ladder:
 - v0.7: base/head PR delta compare command with review receipt
 - v1.0: proof gallery, share-card artifacts, harness notes, GitHub release surface
 
-Harness install/use notes are in [`docs/harnesses.md`](docs/harnesses.md). ClawHub sync checks are in [`docs/clawhub-sync.md`](docs/clawhub-sync.md).
+Harness install/use notes are in [`docs/harnesses.md`](docs/harnesses.md), and short proof demos for OpenClaw, Codex, Claude Code, and OpenCode are in [`docs/harness-demos.md`](docs/harness-demos.md). ClawHub sync checks are in [`docs/clawhub-sync.md`](docs/clawhub-sync.md).
 
 Next high-value work:
 
-- richer mode-specific renderers instead of shared node/edge geometry
+- deeper automatic layout per mode, especially sequence/data-flow/lifecycle
 - stronger label clearance and route-quality diagnostics
-- real open-source repo evidence case study generated from file/line extraction
+- extractor-assisted source evidence instead of hand-authored file/line evidence
 - PNG export when a portable raster dependency is available
 
 ## Repository

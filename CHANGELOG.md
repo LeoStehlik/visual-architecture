@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.4.0
+
+- Add renderer v2 foundations: mode-specific backdrops for architecture, workflow, sequence, data-flow, lifecycle, and PR delta artifacts.
+- Add visual quality scoring to validation receipts for overlap, density, route crossings, spacing, and route complexity.
+- Add story-aware gallery data and an interactive evidence panel that loads checked spec/receipt JSON on GitHub Pages.
+- Add a real visual-architecture case-study artifact with source evidence pointing at the renderer, Makefile, README, and examples.
+- Tighten README/SKILL positioning around Archify-standard presentation, local proof, and source-backed case studies.
+
 ## v1.3.0
 
 - Redesign the generated gallery into an interactive artifact viewer.

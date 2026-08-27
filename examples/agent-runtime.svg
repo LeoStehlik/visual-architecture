@@ -5,6 +5,14 @@
     </pattern>
   </defs>
   <rect x="-11.5" y="82.0" width="741.5" height="316.0" fill="#f8fafc"/>
+  <g id="mode-backdrop">
+    <rect x="-11.5" y="120.0" width="741.5" height="80.0" fill="#eef6ff" opacity="0.58"/>
+    <text x="638.0" y="144.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="800" fill="#475569">LANE 1</text>
+    <rect x="-11.5" y="280.0" width="741.5" height="80.0" fill="#f6f8fb" opacity="0.58"/>
+    <text x="638.0" y="304.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="800" fill="#475569">LANE 2</text>
+    <rect x="-1.5" y="364.0" width="81.0" height="22" rx="6" fill="#fbbf24" opacity="0.18" stroke="#fbbf24" stroke-width="1"/>
+    <text x="11.5" y="379.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="800" fill="#fbbf24">WORKFLOW</text>
+  </g>
   <g id="arrows">
     <path d="M 210.0 160.0 L 268.5 160.0" fill="none" stroke="#475569" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 6"/>
     <polygon points="259.5,154.6 268.5,160.0 259.5,165.4" fill="#475569"/>

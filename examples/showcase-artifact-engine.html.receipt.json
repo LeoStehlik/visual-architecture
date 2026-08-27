@@ -1,16 +1,16 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T22:36:12.189955+00:00",
+  "generatedAt": "2026-08-27T23:03:19.086143+00:00",
   "input": {
-    "bytes": 1839,
+    "bytes": 2270,
     "path": "examples/showcase-artifact-engine.json",
-    "sha256": "01e2be4842f3d94dc766492ebbd7891f4aee97a7b4dc759d3ba791c3d9ba9a59"
+    "sha256": "fa7b3f4d8005206fa711bb263ba68794b43a947ae99d668e8d35d537402cff17"
   },
   "mode": "workflow",
   "output": {
-    "bytes": 10644,
+    "bytes": 11653,
     "path": "examples/showcase-artifact-engine.html",
-    "sha256": "5c8da1101ca98e9eb3a7a7c166c1ffa0f5d9dfb9b5657a0bb36dbdd38eaa2089"
+    "sha256": "7744dcbb4dc6cacd9e3cc5851145348080c1dc1ec2018889d4b20fd9f7bb7446"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -31,10 +31,16 @@
         "service"
       ],
       "nodes": 6,
+      "quality": {
+        "checks": [],
+        "rating": "excellent",
+        "routeCrossings": 0,
+        "score": 100
+      },
       "theme": "showcase"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.3.0"
+  "version": "1.4.0"
 }

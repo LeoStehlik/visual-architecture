@@ -1,16 +1,16 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T22:36:12.374739+00:00",
+  "generatedAt": "2026-08-27T23:03:19.250110+00:00",
   "input": {
-    "bytes": 2052,
+    "bytes": 2427,
     "path": "examples/showcase-pr-delta.json",
-    "sha256": "02b47c955805e8be23a73248ae0d0a1e590d9aa69cf4db4d7fff94ffc9f5f0e2"
+    "sha256": "3bb4afc4ac1fa8e27d2cb06c9fc1ff6f33e4194fffeebc23a4aeec7c3cfd5fe4"
   },
   "mode": "pr-delta",
   "output": {
-    "bytes": 11653,
+    "bytes": 13252,
     "path": "examples/showcase-pr-delta.html",
-    "sha256": "5ea3244c4cc83a61d60fb0a75a111dde17f6d4fde103bd9e00bf8b051f0d92d2"
+    "sha256": "5406bce922f9925bb1de566a70f3822749411140a88e4108ac7598c8c3b64e91"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -31,10 +31,33 @@
         "service"
       ],
       "nodes": 6,
+      "quality": {
+        "checks": [
+          {
+            "code": "quality.node.spacing",
+            "level": "warn",
+            "subjects": [
+              "base",
+              "head"
+            ]
+          },
+          {
+            "code": "quality.node.spacing",
+            "level": "warn",
+            "subjects": [
+              "routes",
+              "risk"
+            ]
+          }
+        ],
+        "rating": "good",
+        "routeCrossings": 0,
+        "score": 84
+      },
       "theme": "showcase"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.3.0"
+  "version": "1.4.0"
 }

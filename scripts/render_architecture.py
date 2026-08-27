@@ -41,9 +41,18 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
+
+MODE_ACCENTS = {
+    "architecture": {"label": "system map", "tone": "#38bdf8", "zones": ["Actors", "Runtime", "Proof"]},
+    "workflow": {"label": "workflow", "tone": "#fbbf24", "zones": ["Intent", "Build", "Prove"]},
+    "sequence": {"label": "sequence", "tone": "#c4b5fd", "zones": ["Participants", "Messages", "Result"]},
+    "dataflow": {"label": "data flow", "tone": "#5eead4", "zones": ["Sources", "Transforms", "Stores"]},
+    "lifecycle": {"label": "lifecycle", "tone": "#fb7185", "zones": ["Open", "Active", "Closed"]},
+    "pr-delta": {"label": "PR delta", "tone": "#f97316", "zones": ["Base", "Head", "Review"]},
+}
 
 
 def snap(value, grid):
@@ -196,6 +205,100 @@ def segment_crosses_box(a, b, box):
     return False
 
 
+
+def boxes_overlap(a, b, margin=0):
+    a_box = box_edges(a, margin=margin)
+    b_box = box_edges(b, margin=margin)
+    return not (
+        a_box["right"] <= b_box["left"]
+        or a_box["left"] >= b_box["right"]
+        or a_box["bottom"] <= b_box["top"]
+        or a_box["top"] >= b_box["bottom"]
+    )
+
+
+def orthogonal_intersection(a, b, c, d):
+    ax, ay = a
+    bx, by = b
+    cx, cy = c
+    dx, dy = d
+    if a in (c, d) or b in (c, d):
+        return False
+    if ay == by and cx == dx:
+        return min(ax, bx) < cx < max(ax, bx) and min(cy, dy) < ay < max(cy, dy)
+    if ax == bx and cy == dy:
+        return min(cx, dx) < ax < max(cx, dx) and min(ay, by) < cy < max(ay, by)
+    return False
+
+
+def quality_profile(data, placed, edges, warnings):
+    score = 100
+    checks = []
+    node_values = list(placed.values())
+
+    for index, node in enumerate(node_values):
+        for other in node_values[index + 1:]:
+            if boxes_overlap(node, other, margin=10):
+                score -= 24
+                checks.append({"code": "quality.node.overlap", "level": "fail", "subjects": [node["id"], other["id"]]})
+                warnings.append({
+                    "code": "quality.node.overlap",
+                    "subject": node["id"],
+                    "message": f"Node visually overlaps {other['id']}. Move one node at least one grid step away.",
+                    "supportedFixes": [{"field": "x/y", "message": "Move the node to an unoccupied grid position."}],
+                })
+            distance = abs(node["x"] - other["x"]) + abs(node["y"] - other["y"])
+            if distance < 180:
+                score -= 8
+                checks.append({"code": "quality.node.spacing", "level": "warn", "subjects": [node["id"], other["id"]]})
+
+    routes = []
+    for index, edge in enumerate(edges):
+        if edge.get("from") not in placed or edge.get("to") not in placed:
+            continue
+        points = orthogonal_points(placed[edge["from"]], placed[edge["to"]], edge)
+        routes.append((index, edge, points))
+        if len(points) > 6:
+            score -= 4
+            checks.append({"code": "quality.route.complex", "level": "warn", "subject": f"edges[{index}]"})
+        if edge.get("label") and len(edge["label"]) > 22:
+            score -= 3
+            checks.append({"code": "quality.label.long", "level": "warn", "subject": f"edges[{index}]"})
+
+    crossing_count = 0
+    for route_index, (_, route_edge, route_points) in enumerate(routes):
+        for _, other_edge, other_points in routes[route_index + 1:]:
+            if {route_edge.get("from"), route_edge.get("to")} & {other_edge.get("from"), other_edge.get("to")}:
+                continue
+            for a, b in zip(route_points, route_points[1:]):
+                for c, d in zip(other_points, other_points[1:]):
+                    if orthogonal_intersection(a, b, c, d):
+                        crossing_count += 1
+                        break
+
+    if crossing_count:
+        score -= min(30, crossing_count * 6)
+        checks.append({"code": "quality.route.crossings", "level": "warn", "count": crossing_count})
+        warnings.append({
+            "code": "quality.route.crossings",
+            "message": f"Detected {crossing_count} route crossing(s). Use via points or split the artifact.",
+            "supportedFixes": [{"field": "via", "message": "Route crowded edges around the conflict using grid-snapped turn points."}],
+        })
+
+    node_count = len(node_values)
+    edge_count = len(edges)
+    if node_count > 9 or edge_count > 12:
+        score -= 10
+        checks.append({"code": "quality.density.high", "level": "warn", "nodes": node_count, "edges": edge_count})
+        warnings.append({
+            "code": "quality.density.high",
+            "message": "Artifact is dense enough to risk becoming a wall of boxes. Split the story or feature one path.",
+        })
+
+    score = max(0, min(100, score))
+    rating = "excellent" if score >= 90 else "good" if score >= 76 else "needs-work" if score >= 60 else "poor"
+    return {"score": score, "rating": rating, "checks": checks, "routeCrossings": crossing_count}
+
 def validate(data):
     errors = []
     warnings = []
@@ -334,6 +437,7 @@ def validate(data):
                         "message": f"{axis}={value} will snap to {snap(value, grid)}.",
                     })
 
+    quality = {"score": 0, "rating": "unscored", "checks": [], "routeCrossings": 0}
     if not errors and nodes:
         placed = position_nodes(nodes)
         for index, edge in enumerate(edges):
@@ -353,6 +457,7 @@ def validate(data):
                             "supportedFixes": [{"field": "via", "message": "Route around the unrelated node with grid-snapped orthogonal turn points."}],
                         })
                         break
+        quality = quality_profile(data, placed, edges, warnings)
 
     return {
         "ok": not errors,
@@ -363,6 +468,7 @@ def validate(data):
             "theme": theme,
             "nodes": len(nodes),
             "edges": len(edges),
+            "quality": quality,
             "evidenceItems": sum(len(evidence_items(node)) for node in nodes if isinstance(node, dict)) + sum(len(evidence_items(edge)) for edge in edges if isinstance(edge, dict)),
             "nodeKinds": sorted({node.get("kind") for node in nodes if isinstance(node, dict) and node.get("kind")}),
             "edgeKinds": sorted({edge.get("kind") for edge in edges if isinstance(edge, dict) and edge.get("kind")}),
@@ -556,6 +662,55 @@ def render_edge(edge, nodes, theme):
     return "\n".join(edge_parts), "\n".join(label_parts)
 
 
+
+
+def render_mode_backdrop(data, nodes, min_x, min_y, width, height, theme):
+    mode = spec_mode(data)
+    accent = MODE_ACCENTS.get(mode, MODE_ACCENTS["architecture"])
+    dark = theme["name"] == "showcase"
+    panel_fill = "#07111f" if dark else "#eef6ff"
+    panel_alt = "#0b1726" if dark else "#f6f8fb"
+    stroke = "#1f3448" if dark else "#cbd5e1"
+    text = "#8fb5d9" if dark else "#475569"
+    parts = []
+
+    def label(x, y, value):
+        return f'<text x="{x:.1f}" y="{y:.1f}" font-family="{FONT_FAMILY}" font-size="11" font-weight="800" fill="{text}">{escape(value)}</text>'
+
+    if mode in ("architecture", "dataflow", "pr-delta"):
+        zones = accent["zones"]
+        zone_width = width / len(zones)
+        for index, zone in enumerate(zones):
+            x = min_x + index * zone_width
+            fill = panel_fill if index % 2 == 0 else panel_alt
+            parts.append(f'<rect x="{x:.1f}" y="{min_y:.1f}" width="{zone_width:.1f}" height="{height:.1f}" fill="{fill}" opacity="0.55"/>')
+            parts.append(f'<line x1="{x + zone_width:.1f}" y1="{min_y:.1f}" x2="{x + zone_width:.1f}" y2="{min_y + height:.1f}" stroke="{stroke}" stroke-width="1" opacity="0.7"/>')
+            parts.append(label(x + 18, min_y + 26, zone.upper()))
+    elif mode == "workflow":
+        bands = sorted({node["y"] for node in nodes.values()}) or [min_y + height / 2]
+        for index, y in enumerate(bands):
+            top = y - GRID_Y / 2
+            fill = panel_fill if index % 2 == 0 else panel_alt
+            parts.append(f'<rect x="{min_x:.1f}" y="{top:.1f}" width="{width:.1f}" height="{GRID_Y:.1f}" fill="{fill}" opacity="0.58"/>')
+            parts.append(label(min_x + width - 92, top + 24, f"LANE {index + 1}"))
+    elif mode == "sequence":
+        for node in nodes.values():
+            parts.append(f'<line x1="{node["x"]:.1f}" y1="{node["y"] + node["height"] / 2 + 18:.1f}" x2="{node["x"]:.1f}" y2="{min_y + height - 34:.1f}" stroke="{accent["tone"]}" stroke-width="2" stroke-dasharray="5 8" opacity="0.38"/>')
+            parts.append(label(node["x"] - node["width"] / 2, min_y + 26, "PARTICIPANT"))
+    elif mode == "lifecycle":
+        sorted_nodes = sorted(nodes.values(), key=lambda node: (node["x"], node["y"]))
+        if sorted_nodes:
+            path = " ".join([f"M {sorted_nodes[0]['x']:.1f} {sorted_nodes[0]['y']:.1f}"] + [f"L {node['x']:.1f} {node['y']:.1f}" for node in sorted_nodes[1:]])
+            parts.append(f'<path d="{path}" fill="none" stroke="{accent["tone"]}" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.08"/>')
+            for index, node in enumerate(sorted_nodes):
+                parts.append(f'<circle cx="{node["x"]:.1f}" cy="{node["y"]:.1f}" r="44" fill="{accent["tone"]}" opacity="0.07"/>')
+                parts.append(label(node["x"] - 20, node["y"] - 52, f"S{index + 1}"))
+
+    parts.append(f'<rect x="{min_x + 10:.1f}" y="{min_y + height - 34:.1f}" width="{text_width(accent["label"], 12) + 26:.1f}" height="22" rx="6" fill="{accent["tone"]}" opacity="0.18" stroke="{accent["tone"]}" stroke-width="1"/>')
+    parts.append(f'<text x="{min_x + 23:.1f}" y="{min_y + height - 19:.1f}" font-family="{FONT_FAMILY}" font-size="11" font-weight="800" fill="{accent["tone"]}">{escape(accent["label"].upper())}</text>')
+    return "\n".join(parts)
+
+
 def render(data):
     theme = theme_pack(data)
     nodes = position_nodes(data["nodes"])
@@ -594,6 +749,7 @@ def render(data):
             node_labels.append(label_svg)
 
     title = escape(data.get("title", "Architecture"))
+    backdrop_svg = indent(render_mode_backdrop(data, nodes, min_x, min_y, width, height, theme), 4)
     edge_shapes_svg = indent("\n".join(edge_shapes), 4)
     node_shapes_svg = indent("\n".join(node_shapes), 4)
     labels_svg = indent("\n".join(edge_labels + node_labels), 4)
@@ -610,6 +766,9 @@ def render(data):
     </pattern>
   </defs>
   <rect x="{min_x:.1f}" y="{min_y:.1f}" width="{width:.1f}" height="{height:.1f}" fill="{theme["background"]}"/>{grid_svg}
+  <g id="mode-backdrop">
+{backdrop_svg}
+  </g>
   <g id="arrows">
 {edge_shapes_svg}
   </g>
@@ -906,13 +1065,16 @@ def handle_gallery(args):
             "summary": data.get("summary", "Generated local architecture artifact."),
             "mode": spec_mode(data),
             "theme": spec_theme(data),
+            "story": data.get("story", []),
+            "evidenceCount": sum(len(evidence_items(node)) for node in data.get("nodes", []) if isinstance(node, dict)) + sum(len(evidence_items(edge)) for edge in data.get("edges", []) if isinstance(edge, dict)),
             "spec": spec_path,
             "html": Path("examples") / f"{name}.html",
             "svg": Path("examples") / f"{name}.svg",
+            "share": Path("examples") / f"{name}.share-card.svg",
             "receipt": Path("examples") / f"{name}.html.receipt.json",
         })
 
-    rows.sort(key=lambda row: (row["theme"] != "showcase", row["mode"], row["title"]))
+    rows.sort(key=lambda row: ("Case Study" not in row["title"], row["theme"] != "showcase", row["mode"], row["title"]))
     showcase = [row for row in rows if row["theme"] == "showcase"]
     featured = showcase or rows[:3]
     gallery_payload = json.dumps([
@@ -921,9 +1083,12 @@ def handle_gallery(args):
             "summary": row["summary"],
             "mode": row["mode"],
             "theme": row["theme"],
+            "story": row["story"],
+            "evidenceCount": row["evidenceCount"],
             "spec": f"{link_prefix}{row['spec']}",
             "html": f"{link_prefix}{row['html']}",
             "svg": f"{link_prefix}{row['svg']}",
+            "share": f"{link_prefix}{row['share']}",
             "receipt": f"{link_prefix}{row['receipt']}",
         }
         for row in rows
@@ -959,6 +1124,7 @@ def handle_gallery(args):
       --primary: #5eb6ff;
       --accent: #f5b84b;
       --teal: #60d8c8;
+      --risk: #fb7185;
     }}
     * {{ box-sizing: border-box; }}
     body {{
@@ -967,6 +1133,7 @@ def handle_gallery(args):
       color: var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
       line-height: 1.45;
+      overflow-x: hidden;
     }}
     a {{ color: var(--primary); font-weight: 650; text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
@@ -997,6 +1164,8 @@ def handle_gallery(args):
       display: grid;
       grid-template-columns: minmax(0, 1fr) 310px;
       gap: 14px;
+      max-width: 100%;
+      overflow: hidden;
     }}
     .rail, .stage, .details, .index {{
       background: var(--surface);
@@ -1010,12 +1179,13 @@ def handle_gallery(args):
     .artifact-list {{
       display: flex;
       gap: 8px;
+      max-width: 100%;
       overflow-x: auto;
       padding-bottom: 2px;
       scrollbar-width: thin;
     }}
     .artifact-button {{
-      flex: 0 0 220px;
+      flex: 0 0 min(220px, 72vw);
       text-align: left;
       color: var(--text);
       background: var(--surface-3);
@@ -1059,7 +1229,7 @@ def handle_gallery(args):
     .badge.accent {{ color: #1b1303; background: var(--accent); border-color: var(--accent); font-weight: 800; }}
     .stage-frame {{
       display: grid;
-      place-items: center;
+      place-items: start center;
       padding: 18px;
       min-height: 0;
       min-width: 0;
@@ -1075,8 +1245,16 @@ def handle_gallery(args):
       border-radius: 8px;
       background: #020617;
     }}
-    .details h2 {{ font-size: 26px; line-height: 1.08; margin-bottom: 10px; }}
+    .details {{ max-width: 100%; }}
+    .details h2 {{ font-size: 26px; line-height: 1.08; margin-bottom: 10px; overflow-wrap: anywhere; word-break: break-word; }}
     .details p {{ color: var(--muted); margin: 0 0 18px; }}
+    .story, .evidence-panel {{ margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; }}
+    .story ol {{ margin: 0; padding-left: 20px; color: var(--muted); }}
+    .story li {{ margin: 0 0 9px; }}
+    .story strong {{ display: block; color: var(--text); font-size: 13px; }}
+    .evidence-list {{ display: grid; gap: 8px; margin-top: 10px; }}
+    .evidence-item {{ border: 1px solid var(--border); border-radius: 8px; background: var(--surface-3); padding: 9px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }}
+    .evidence-item strong {{ color: var(--text); display: block; font-size: 13px; margin-bottom: 3px; }}
     .facts {{ display: grid; gap: 10px; margin: 18px 0; }}
     .fact {{
       display: grid;
@@ -1107,10 +1285,13 @@ def handle_gallery(args):
       main {{ padding: 14px 14px 40px; }}
       header, .studio {{ grid-template-columns: 1fr; }}
       .actions {{ justify-content: flex-start; }}
-      .rail {{ order: 1; }}
-      .stage {{ order: 2; }}
-      .details {{ order: 3; }}
-      .stage-frame {{ padding: 12px; }}
+      .stage-bar {{ display: grid; justify-content: stretch; }}
+      #stage-open {{ justify-self: start; }}
+      .rail {{ order: 1; overflow: hidden; }}
+      .stage {{ order: 2; max-width: calc(100vw - 28px); }}
+      .details {{ order: 3; max-width: calc(100vw - 28px); }}
+      .stage-frame {{ padding: 12px; overflow: hidden; }}
+      .stage-frame img {{ max-height: 360px; }}
     }}
   </style>
 </head>
@@ -1119,7 +1300,7 @@ def handle_gallery(args):
     <header>
       <div>
         <h1>visual-architecture</h1>
-        <p>Generated architecture artifacts with specs, receipts, source evidence, and PR delta surfaces. This gallery is built from the same checked JSON examples that CI validates.</p>
+        <p>Generated architecture artifacts with mode-specific visual grammar, quality receipts, source evidence, and PR delta surfaces. This gallery is built from checked JSON examples that CI validates.</p>
       </div>
       <nav class="actions" aria-label="Project links">
         <a href="{link_prefix}README.md">README</a>
@@ -1150,7 +1331,8 @@ def handle_gallery(args):
         <p id="detail-summary"></p>
         <div class="facts">
           <div class="fact"><span>Mode</span><strong id="detail-mode"></strong></div>
-          <div class="fact"><span>Theme</span><strong id="detail-theme"></strong></div>
+          <div class="fact"><span>Quality</span><strong id="detail-quality">loading</strong></div>
+          <div class="fact"><span>Evidence</span><strong id="detail-evidence-count"></strong></div>
           <div class="fact"><span>Source</span><strong id="detail-source"></strong></div>
         </div>
         <div class="links">
@@ -1158,6 +1340,15 @@ def handle_gallery(args):
           <a id="detail-svg" href="#">SVG</a>
           <a id="detail-spec" href="#">Spec</a>
           <a id="detail-receipt" href="#">Receipt</a>
+          <a id="detail-share" href="#">Share card</a>
+        </div>
+        <div class="story">
+          <h2>Story</h2>
+          <ol id="story-list"></ol>
+        </div>
+        <div class="evidence-panel">
+          <h2>Evidence</h2>
+          <div id="evidence-list" class="evidence-list"></div>
         </div>
       </aside>
     </section>
@@ -1186,15 +1377,19 @@ def handle_gallery(args):
     const detailTitle = document.getElementById("detail-title");
     const detailSummary = document.getElementById("detail-summary");
     const detailMode = document.getElementById("detail-mode");
-    const detailTheme = document.getElementById("detail-theme");
+    const detailQuality = document.getElementById("detail-quality");
+    const detailEvidenceCount = document.getElementById("detail-evidence-count");
     const detailSource = document.getElementById("detail-source");
     const detailHtml = document.getElementById("detail-html");
     const detailSvg = document.getElementById("detail-svg");
     const detailSpec = document.getElementById("detail-spec");
     const detailReceipt = document.getElementById("detail-receipt");
+    const detailShare = document.getElementById("detail-share");
+    const storyList = document.getElementById("story-list");
+    const evidenceList = document.getElementById("evidence-list");
     const buttons = [];
 
-    function selectArtifact(index) {{
+    async function selectArtifact(index) {{
       const artifact = artifacts[index];
       buttons.forEach((button, buttonIndex) => {{
         button.setAttribute("aria-pressed", buttonIndex === index ? "true" : "false");
@@ -1207,13 +1402,53 @@ def handle_gallery(args):
       featureBadge.hidden = !featuredTitles.has(artifact.title);
       detailTitle.textContent = artifact.title;
       detailSummary.textContent = artifact.summary;
-      detailMode.textContent = artifact.mode;
-      detailTheme.textContent = artifact.theme;
-      detailSource.textContent = artifact.spec.replace(/^.*examples\\//, "examples/");
+      detailMode.textContent = artifact.mode + " / " + artifact.theme;
+      detailEvidenceCount.textContent = String(artifact.evidenceCount || 0);
+      detailSource.textContent = artifact.spec.replace(/^.*examples\//, "examples/");
       detailHtml.href = artifact.html;
       detailSvg.href = artifact.svg;
       detailSpec.href = artifact.spec;
       detailReceipt.href = artifact.receipt;
+      detailShare.href = artifact.share;
+      storyList.innerHTML = "";
+      const story = artifact.story && artifact.story.length ? artifact.story : [{{title: "Spec", text: "Structured JSON defines the claim."}}, {{title: "Validate", text: "Local checks score quality and evidence."}}, {{title: "Deliver", text: "SVG, HTML, and receipt are generated together."}}];
+      story.forEach((step) => {{
+        const li = document.createElement("li");
+        li.innerHTML = "<strong></strong><span></span>";
+        li.querySelector("strong").textContent = step.title || "Step";
+        li.querySelector("span").textContent = step.text || "";
+        storyList.appendChild(li);
+      }});
+      evidenceList.innerHTML = "<div class='evidence-item'>Loading receipt and spec evidence.</div>";
+      detailQuality.textContent = "loading";
+      try {{
+        const [specResponse, receiptResponse] = await Promise.all([fetch(artifact.spec), fetch(artifact.receipt)]);
+        const [spec, receipt] = await Promise.all([specResponse.json(), receiptResponse.json()]);
+        const quality = receipt.validation && receipt.validation.metrics && receipt.validation.metrics.quality;
+        detailQuality.textContent = quality ? quality.rating + " / " + quality.score : "unscored";
+        const evidence = [];
+        (spec.nodes || []).forEach((node) => {{
+          const items = Array.isArray(node.evidence) ? node.evidence : node.evidence ? [node.evidence] : [];
+          items.forEach((item) => evidence.push({{owner: node.label || node.id, item}}));
+        }});
+        (spec.edges || []).forEach((edge) => {{
+          const items = Array.isArray(edge.evidence) ? edge.evidence : edge.evidence ? [edge.evidence] : [];
+          items.forEach((item) => evidence.push({{owner: (edge.from || "edge") + " -> " + (edge.to || "edge"), item}}));
+        }});
+        evidenceList.innerHTML = "";
+        (evidence.length ? evidence : [{{owner: "No source evidence", item: {{source: "This artifact is structural only."}}}}]).slice(0, 8).forEach((entry) => {{
+          const div = document.createElement("div");
+          div.className = "evidence-item";
+          const line = entry.item.lines ? ":" + entry.item.lines.join("-") : entry.item.line ? ":" + entry.item.line : "";
+          div.innerHTML = "<strong></strong><span></span>";
+          div.querySelector("strong").textContent = entry.owner;
+          div.querySelector("span").textContent = (entry.item.source || "unknown") + line + (entry.item.confidence ? " / " + entry.item.confidence : "");
+          evidenceList.appendChild(div);
+        }});
+      }} catch (error) {{
+        detailQuality.textContent = "unavailable";
+        evidenceList.innerHTML = "<div class='evidence-item'>Could not load local JSON receipt in this browser context.</div>";
+      }}
     }}
 
     artifacts.forEach((artifact, index) => {{
@@ -1223,7 +1458,7 @@ def handle_gallery(args):
       button.innerHTML = "<strong></strong><span></span>";
       button.querySelector("strong").textContent = artifact.title;
       button.querySelector("span").textContent = artifact.mode + " / " + artifact.theme;
-      button.addEventListener("click", () => selectArtifact(index));
+      button.addEventListener("click", () => {{ selectArtifact(index); }});
       list.appendChild(button);
       buttons.push(button);
     }});
