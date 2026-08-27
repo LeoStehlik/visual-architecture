@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T22:02:01.960319+00:00",
+  "generatedAt": "2026-08-27T22:07:55.737704+00:00",
   "input": {
     "bytes": 2510,
     "path": "examples/showcase-repo-evidence.json",
@@ -36,5 +36,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

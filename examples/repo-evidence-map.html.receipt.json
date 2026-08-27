@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T22:02:01.088179+00:00",
+  "generatedAt": "2026-08-27T22:07:54.880428+00:00",
   "input": {
     "bytes": 2760,
     "path": "examples/repo-evidence-map.json",
@@ -35,5 +35,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

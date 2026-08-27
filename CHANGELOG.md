@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1
+
+- Repair package metadata after the v1.1.0 ClawHub publish became non-inspectable.
+
 ## v1.1.0
 
 - Add a dark `showcase` render theme for README and release artifacts.

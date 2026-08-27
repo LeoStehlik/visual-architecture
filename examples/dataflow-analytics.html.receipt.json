@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T22:01:59.965375+00:00",
+  "generatedAt": "2026-08-27T22:07:53.776896+00:00",
   "input": {
     "bytes": 1420,
     "path": "examples/dataflow-analytics.json",
@@ -35,5 +35,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
