@@ -1,0 +1,74 @@
+{
+  "artifactKind": "html",
+  "base": {
+    "path": "examples/pr-delta-before.json",
+    "sha256": "2a2c996954d8a1da2aa618aa41bc64936cca5a4523874f655b210137193d937b"
+  },
+  "delta": {
+    "addedEdges": [
+      [
+        "api",
+        "fraud",
+        "control",
+        "score"
+      ],
+      [
+        "fraud",
+        "db",
+        "memory-write",
+        "approved"
+      ]
+    ],
+    "addedNodes": [
+      "fraud"
+    ],
+    "removedEdges": [
+      [
+        "api",
+        "db",
+        "memory-write",
+        "order"
+      ]
+    ],
+    "removedNodes": []
+  },
+  "generatedAt": "2026-08-27T21:33:49.454773+00:00",
+  "head": {
+    "path": "examples/pr-delta-head.json",
+    "sha256": "ddf71bcac221f8b319f710ad30fa5d3b091da3d274b9b05e91477cf646e99dd3"
+  },
+  "input": {
+    "bytes": 855,
+    "path": "examples/pr-delta-head.json",
+    "sha256": "ddf71bcac221f8b319f710ad30fa5d3b091da3d274b9b05e91477cf646e99dd3"
+  },
+  "mode": "pr-delta",
+  "output": {
+    "bytes": 10070,
+    "path": "examples/pr-delta-generated.html",
+    "sha256": "6d889a84e815c3f81a4be7881812e3afe8d1464dd3afbcc7288397ae280f1692"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 5,
+      "evidenceItems": 0,
+      "mode": "pr-delta",
+      "nodeKinds": [
+        "agent",
+        "memory",
+        "service"
+      ],
+      "nodes": 6
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "1.0.0"
+}

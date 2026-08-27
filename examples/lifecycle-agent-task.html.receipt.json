@@ -1,0 +1,38 @@
+{
+  "artifactKind": "html",
+  "generatedAt": "2026-08-27T21:33:48.050858+00:00",
+  "input": {
+    "bytes": 1538,
+    "path": "examples/lifecycle-agent-task.json",
+    "sha256": "3a41c621b51576947af834cb2addf091372980787fac139d8b08152074f5be2a"
+  },
+  "mode": "lifecycle",
+  "output": {
+    "bytes": 10460,
+    "path": "examples/lifecycle-agent-task.html",
+    "sha256": "37763460dc6e58cabad66ed9f5025f2eeff5723a00344a891c89ea23de5ac3a5"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 6,
+      "evidenceItems": 0,
+      "mode": "lifecycle",
+      "nodeKinds": [
+        "agent",
+        "memory",
+        "service"
+      ],
+      "nodes": 6
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "1.0.0"
+}

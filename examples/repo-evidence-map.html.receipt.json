@@ -1,15 +1,16 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T21:16:56.389125+00:00",
+  "generatedAt": "2026-08-27T21:33:48.965875+00:00",
   "input": {
-    "bytes": 2025,
+    "bytes": 2760,
     "path": "examples/repo-evidence-map.json",
-    "sha256": "5ead971d35bf6e16fbe88097827b009fa825491bea60dffb1f665121618a2a8b"
+    "sha256": "82d5c67123830127b2f2812aa8f10cb1f51845a7b12a8362e2173107fce77bf3"
   },
+  "mode": "architecture",
   "output": {
-    "bytes": 10402,
+    "bytes": 11428,
     "path": "examples/repo-evidence-map.html",
-    "sha256": "dff9d1caf3cefe0b74a7f9ccec074a39557e4adb1d71144bcf77dfbff82b4128"
+    "sha256": "b918cd4b9b01e6a1a9fdaca0843cc1cc625974382a69452d436f9a13d1d08750"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -21,6 +22,8 @@
         "primary-data"
       ],
       "edges": 6,
+      "evidenceItems": 3,
+      "mode": "architecture",
       "nodeKinds": [
         "agent",
         "memory",
@@ -31,5 +34,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "0.3.0"
+  "version": "1.0.0"
 }

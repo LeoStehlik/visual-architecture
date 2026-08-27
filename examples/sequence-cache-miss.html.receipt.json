@@ -1,0 +1,36 @@
+{
+  "artifactKind": "html",
+  "generatedAt": "2026-08-27T21:33:49.148896+00:00",
+  "input": {
+    "bytes": 1391,
+    "path": "examples/sequence-cache-miss.json",
+    "sha256": "7f9f6bcc66a9920d23a918a0e728d63497a83eeec680b65bc88b76bd237bac66"
+  },
+  "mode": "sequence",
+  "output": {
+    "bytes": 9150,
+    "path": "examples/sequence-cache-miss.html",
+    "sha256": "3f7079ea8739b0b2606da7a70a9c74b4df851868dec05a83d6cea63a3e86f1b1"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "primary-data"
+      ],
+      "edges": 5,
+      "evidenceItems": 0,
+      "mode": "sequence",
+      "nodeKinds": [
+        "memory",
+        "service"
+      ],
+      "nodes": 5
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "1.0.0"
+}

@@ -1,4 +1,5 @@
 {
+  "mode": "workflow",
   "title": "Agent Runtime Proof Loop",
   "summary": "A local agent turns a task brief into a checked artifact with verifier feedback and durable lessons.",
   "show_grid": false,

@@ -1,11 +1,12 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T21:16:56.145726+00:00",
+  "generatedAt": "2026-08-27T21:33:47.676000+00:00",
   "input": {
-    "bytes": 1903,
+    "bytes": 1925,
     "path": "examples/agent-runtime.json",
-    "sha256": "f23c7df110b2f7e569181c77ac8e6bf43a96325eaf3ac9893d035905f7c3c15b"
+    "sha256": "4adc883c50030740dc1416d2fe999302f42c303acc255225babf7376721450d5"
   },
+  "mode": "workflow",
   "output": {
     "bytes": 9862,
     "path": "examples/agent-runtime.html",
@@ -21,6 +22,8 @@
         "primary-data"
       ],
       "edges": 5,
+      "evidenceItems": 0,
+      "mode": "workflow",
       "nodeKinds": [
         "agent",
         "memory",
@@ -31,5 +34,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "0.3.0"
+  "version": "1.0.0"
 }

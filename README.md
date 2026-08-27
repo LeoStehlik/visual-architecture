@@ -4,9 +4,9 @@
 
 **Deterministic, local-first architecture artifacts for agents.**
 
-visual-architecture turns small typed JSON specs into restrained SVG or self-contained HTML system maps. The v0.3 contract is simple: validate the spec, render the artifact, and write a receipt with hashes so an agent can prove exactly what it delivered.
+visual-architecture turns small typed JSON specs into restrained SVG or self-contained HTML system maps. The v1.0 contract is simple: validate the spec, render the artifact, write a receipt with hashes, and keep source evidence and PR deltas explicit enough for an agent to prove exactly what it delivered.
 
-It is deliberately smaller than Archify today, but the direction is not timid: local-first diagram artifacts with proof discipline, source evidence, PR deltas, and review-ready examples.
+It is deliberately smaller than Archify, but the useful wedge is now real: local-first diagram artifacts with proof discipline, source evidence, PR deltas, share cards, and review-ready examples.
 
 ![Agent runtime proof map](examples/agent-runtime.svg)
 
@@ -15,7 +15,7 @@ It is deliberately smaller than Archify today, but the direction is not timid: l
 Agents are good at inventing diagrams and bad at proving what they just drew. visual-architecture gives them a narrow, deterministic path:
 
 1. Author a compact JSON spec.
-2. Validate supported node kinds, edge kinds, endpoints, grid placement, and obvious route hazards.
+2. Validate supported modes, node kinds, edge kinds, endpoints, evidence fields, grid placement, and obvious route hazards.
 3. Deliver SVG or HTML atomically.
 4. Emit a JSON receipt with input/output SHA-256, byte counts, metrics, warnings, and validation result.
 
@@ -57,6 +57,19 @@ Deliver a self-contained HTML artifact:
 python3 scripts/render_architecture.py deliver examples/agent-runtime.json examples/agent-runtime.html --json
 ```
 
+Compare base/head specs for a PR delta artifact:
+
+```bash
+python3 scripts/render_architecture.py compare examples/pr-delta-before.json examples/pr-delta-head.json examples/pr-delta-generated.html --spec examples/pr-delta-generated.json --json
+```
+
+Generate a static share card or proof gallery:
+
+```bash
+python3 scripts/render_architecture.py share-card examples/repo-evidence-map.json examples/repo-evidence-map.share-card.svg
+python3 scripts/render_architecture.py gallery docs/gallery.html
+```
+
 The legacy v0.2 command still works:
 
 ```bash
@@ -73,6 +86,12 @@ These are checked-in specs and generated artifacts, not mockups.
 | Agent runtime | [`agent-runtime.json`](examples/agent-runtime.json) | [`agent-runtime.svg`](examples/agent-runtime.svg) | [`agent-runtime.html`](examples/agent-runtime.html) | [`agent-runtime.html.receipt.json`](examples/agent-runtime.html.receipt.json) |
 | Repo evidence map | [`repo-evidence-map.json`](examples/repo-evidence-map.json) | [`repo-evidence-map.svg`](examples/repo-evidence-map.svg) | [`repo-evidence-map.html`](examples/repo-evidence-map.html) | [`repo-evidence-map.html.receipt.json`](examples/repo-evidence-map.html.receipt.json) |
 | PR delta review | [`pr-delta-review.json`](examples/pr-delta-review.json) | [`pr-delta-review.svg`](examples/pr-delta-review.svg) | [`pr-delta-review.html`](examples/pr-delta-review.html) | [`pr-delta-review.html.receipt.json`](examples/pr-delta-review.html.receipt.json) |
+| Sequence cache miss | [`sequence-cache-miss.json`](examples/sequence-cache-miss.json) | [`sequence-cache-miss.svg`](examples/sequence-cache-miss.svg) | [`sequence-cache-miss.html`](examples/sequence-cache-miss.html) | [`sequence-cache-miss.html.receipt.json`](examples/sequence-cache-miss.html.receipt.json) |
+| Data-flow analytics | [`dataflow-analytics.json`](examples/dataflow-analytics.json) | [`dataflow-analytics.svg`](examples/dataflow-analytics.svg) | [`dataflow-analytics.html`](examples/dataflow-analytics.html) | [`dataflow-analytics.html.receipt.json`](examples/dataflow-analytics.html.receipt.json) |
+| Lifecycle task | [`lifecycle-agent-task.json`](examples/lifecycle-agent-task.json) | [`lifecycle-agent-task.svg`](examples/lifecycle-agent-task.svg) | [`lifecycle-agent-task.html`](examples/lifecycle-agent-task.html) | [`lifecycle-agent-task.html.receipt.json`](examples/lifecycle-agent-task.html.receipt.json) |
+| Generated PR delta | [`pr-delta-generated.json`](examples/pr-delta-generated.json) | generated from before/head | [`pr-delta-generated.html`](examples/pr-delta-generated.html) | [`pr-delta-generated.html.receipt.json`](examples/pr-delta-generated.html.receipt.json) |
+
+Open the generated proof gallery at [`docs/gallery.html`](docs/gallery.html). Share-card SVGs are generated beside each example as `*.share-card.svg`.
 
 Run the same local proof gate as CI:
 
@@ -90,6 +109,7 @@ make examples
 
 ```json
 {
+  "mode": "architecture",
   "title": "Service Map",
   "summary": "One local request path with async work and model access.",
   "nodes": [
@@ -134,6 +154,29 @@ Edge kinds:
 - `memory-write` - green dashed arrow
 - `control` - slate dashed arrow
 
+Supported modes:
+
+- `architecture` - component maps, services, stores, boundaries
+- `workflow` - agent/tool/process/runbook paths
+- `sequence` - request/API/call lifecycles
+- `dataflow` - pipelines, lineage, stores, sensitive boundaries
+- `lifecycle` - states, retries, waits, terminal outcomes
+- `pr-delta` - review artifacts for base/head architecture changes
+
+Evidence fields can be added to nodes or edges:
+
+```json
+{
+  "source": "services/fraud/client.ts",
+  "line": 42,
+  "commit": "abc1234",
+  "confidence": "medium",
+  "note": "Fraud scoring client introduced by this PR."
+}
+```
+
+Nodes with evidence render a compact `SRC n` badge. Receipts count evidence items and keep PR delta facts separate from ordinary artifact validation.
+
 ## Receipt Contract
 
 `deliver` writes `<artifact>.receipt.json` by default. A receipt includes:
@@ -144,43 +187,29 @@ Edge kinds:
 - output path, SHA-256, and byte count
 - validation status, errors, warnings, and metrics
 
-Validation currently checks the shape of the spec, supported semantic kinds, unknown endpoints, duplicate/shared grid positions, route crossings through unrelated nodes, and long labels that are likely to crowd the diagram. This is not Archify-level showcase validation yet, but it moves the project from "script made a file" to "artifact passed a documented gate."
+Validation currently checks the shape of the spec, supported modes and semantic kinds, unknown endpoints, evidence field shape, duplicate/shared grid positions, route crossings through unrelated nodes, and long labels that are likely to crowd the diagram. It is intentionally local and deterministic: no hosted service and no live repository scan unless the user authors evidence into the spec.
+
+Stable diagnostic codes are documented in [`docs/diagnostics.md`](docs/diagnostics.md).
 
 ## Roadmap
 
-### v0.4 - Stronger Contract
+Completed v1.0 ladder:
 
-- JSON Schema files for the architecture IR
-- Stable diagnostic codes documented in `docs/diagnostics.md`
-- Better label clearance and route/node collision checks
-- Last-good delivery mode for watch loops
+- v0.3: public foundation, examples, HTML wrapper, release hygiene
+- v0.4: schemas, validate/deliver receipts, CI proof
+- v0.5: workflow, sequence, data-flow, and lifecycle modes
+- v0.6: source evidence fields, evidence validation, `SRC n` badges, evidence metrics
+- v0.7: base/head PR delta compare command with review receipt
+- v1.0: proof gallery, share-card artifacts, harness notes, GitHub release surface
 
-### v0.5 - More Diagram Modes
+Harness install/use notes are in [`docs/harnesses.md`](docs/harnesses.md). ClawHub sync checks are in [`docs/clawhub-sync.md`](docs/clawhub-sync.md).
 
-- Workflow maps for agent/tool/runbook paths
-- Sequence diagrams for request lifecycles
-- Data-flow maps for lineage and sensitive boundaries
-- Lifecycle/state diagrams for retries, waits, and terminal outcomes
+Next high-value work:
 
-### v0.6 - Source Evidence Mode
-
-- Optional source-pinned nodes and edges
-- File/line evidence, commit SHA, and confidence fields
-- Receipts that separate authored facts from inferred facts
-- Public examples generated from real open-source repos
-
-### v0.7 - PR Delta Mode
-
-- Base/head specs with added, removed, moved, and rerouted facts
-- Review artifacts for new trust boundary crossings and dependencies
-- GitHub PR comment shape with exact receipt links
-
-### v1.0 - Artifact Engine
-
-- Polished proof gallery
-- Share/export cards
-- Codex, Claude Code, OpenCode, and OpenClaw harness notes
-- GitHub and ClawHub release hygiene kept in sync
+- richer mode-specific renderers instead of shared node/edge geometry
+- stronger label clearance and route-quality diagnostics
+- real open-source repo evidence case study generated from file/line extraction
+- PNG export when a portable raster dependency is available
 
 ## Repository
 
@@ -191,7 +220,12 @@ visual-architecture/
 │   ├── *.json
 │   ├── *.svg
 │   ├── *.html
-│   └── *.receipt.json
+│   ├── *.receipt.json
+│   └── *.share-card.svg
+├── schemas/
+│   └── *.schema.json
+├── docs/
+│   └── gallery.html
 ├── scripts/
 │   └── render_architecture.py
 ├── .github/workflows/
@@ -202,7 +236,7 @@ visual-architecture/
 
 ## Status
 
-v0.3.0 foundation: deterministic renderer, validation command, delivery receipts, HTML wrapper, and checked proof examples.
+v1.0.0 artifact engine foundation: deterministic renderer, schemas, mode-aware validation, delivery receipts, HTML artifacts, source evidence badges, PR delta compare, share cards, gallery, and checked examples.
 
 ## License
 
