@@ -6,14 +6,16 @@
   <title>visual-architecture gallery</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface-2: #0f172a;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --muted: #8b949e;
-      --primary: #58a6ff;
-      --accent: #f78166;
+      --bg: #070a10;
+      --surface: #10151f;
+      --surface-2: #141b29;
+      --surface-3: #0b111a;
+      --border: #263241;
+      --text: #edf3fb;
+      --muted: #98a6b8;
+      --primary: #5eb6ff;
+      --accent: #f5b84b;
+      --teal: #60d8c8;
     }
     * { box-sizing: border-box; }
     body {
@@ -21,68 +23,151 @@
       background: var(--bg);
       color: var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-      line-height: 1.5;
+      line-height: 1.45;
     }
     a { color: var(--primary); font-weight: 650; text-decoration: none; }
     a:hover { text-decoration: underline; }
-    main { max-width: 1220px; margin: 0 auto; padding: 32px 20px 56px; }
+    button { font: inherit; }
+    main { max-width: 1440px; margin: 0 auto; padding: 18px 18px 48px; }
     header {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 24px;
+      gap: 18px;
       align-items: end;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 24px;
-      margin-bottom: 28px;
+      padding: 12px 0 18px;
+      margin-bottom: 18px;
     }
-    h1 { margin: 0 0 8px; font-size: clamp(30px, 5vw, 56px); line-height: 1.02; letter-spacing: 0; }
-    header p { max-width: 760px; margin: 0; color: var(--muted); font-size: 17px; }
+    h1 { margin: 0 0 7px; font-size: clamp(32px, 4.8vw, 68px); line-height: 0.98; letter-spacing: 0; }
+    header p { max-width: 780px; margin: 0; color: var(--muted); font-size: 16px; }
     .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
-    .actions a, .feature nav a {
+    .actions a, .links a {
       display: inline-flex;
       align-items: center;
       min-height: 36px;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 7px 11px;
-      background: var(--surface);
+      background: var(--surface-2);
     }
-    .features { display: grid; gap: 20px; }
-    .feature {
+    .studio {
       display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
-      gap: 20px;
-      align-items: center;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 14px;
+    }
+    .rail, .stage, .details, .index {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 16px;
     }
-    .feature img {
+    .rail, .details { padding: 14px; }
+    .rail { grid-column: 1 / -1; }
+    .studio > * { min-width: 0; }
+    .rail h2, .details h2, .index h2 { margin: 0 0 12px; font-size: 15px; letter-spacing: 0; color: #f8fbff; }
+    .artifact-list {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
+    .artifact-button {
+      flex: 0 0 220px;
+      text-align: left;
+      color: var(--text);
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .artifact-button:hover { border-color: #3d4c5f; }
+    .artifact-button[aria-pressed="true"] {
+      border-color: var(--primary);
+      background: #0d1b2a;
+    }
+    .artifact-button strong { display: block; font-size: 13px; line-height: 1.25; }
+    .artifact-button span { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .stage {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      min-width: 0;
+    }
+    .stage-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .badge {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1;
+    }
+    .badge.accent { color: #1b1303; background: var(--accent); border-color: var(--accent); font-weight: 800; }
+    .stage-frame {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      min-height: 0;
+      min-width: 0;
+      background: #070a10;
+    }
+    .stage-frame img {
       display: block;
       width: 100%;
+      max-width: 100%;
+      max-height: 610px;
       height: auto;
-      border: 1px solid var(--border);
+      object-fit: contain;
       border-radius: 8px;
       background: #020617;
     }
-    .feature h2 { margin: 0 0 8px; font-size: 24px; line-height: 1.15; letter-spacing: 0; }
-    .feature p { margin: 0 0 16px; color: var(--muted); }
-    .feature nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    .details h2 { font-size: 26px; line-height: 1.08; margin-bottom: 10px; }
+    .details p { color: var(--muted); margin: 0 0 18px; }
+    .facts { display: grid; gap: 10px; margin: 18px 0; }
+    .fact {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .fact strong { color: var(--text); font-weight: 700; }
+    .links { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
     .index { margin-top: 32px; }
-    .index h2 { margin: 0 0 12px; font-size: 22px; letter-spacing: 0; }
+    .index { padding: 16px; }
     .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-    table { width: 100%; border-collapse: collapse; min-width: 900px; background: var(--surface); }
+    table { width: 100%; border-collapse: collapse; min-width: 920px; background: var(--surface-3); }
     th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
     th { color: #f0f6fc; background: var(--surface-2); font-size: 13px; }
     td { color: var(--text); font-size: 14px; }
     td span { display: block; color: var(--muted); margin-top: 3px; max-width: 540px; }
     tr:last-child td { border-bottom: 0; }
-    footer { margin-top: 24px; color: var(--muted); font-size: 13px; }
-    @media (max-width: 780px) {
-      header, .feature { grid-template-columns: 1fr; }
+    footer { margin-top: 18px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 1100px) {
+      .studio { grid-template-columns: minmax(0, 1fr); }
+      .details { grid-column: 1 / -1; }
+    }
+    @media (max-width: 760px) {
+      main { padding: 14px 14px 40px; }
+      header, .studio { grid-template-columns: 1fr; }
       .actions { justify-content: flex-start; }
-      main { padding-inline: 14px; }
+      .rail { order: 1; }
+      .stage { order: 2; }
+      .details { order: 3; }
+      .stage-frame { padding: 12px; }
     }
   </style>
 </head>
@@ -99,43 +184,39 @@
         <a href="../docs/diagnostics.md">Diagnostics</a>
       </nav>
     </header>
-    <section class="features" aria-label="Featured artifacts">
-      <article class="feature">
-        <img src="../examples/showcase-artifact-engine.svg" alt="Architecture Artifact Engine">
-        <div>
-          <h2>Architecture Artifact Engine</h2>
-          <p>A compact agent workflow: typed spec, validation, deterministic rendering, receipt, and public proof surface.</p>
-          <nav aria-label="Architecture Artifact Engine links">
-            <a href="../examples/showcase-artifact-engine.html">Open artifact</a>
-            <a href="../examples/showcase-artifact-engine.json">Spec</a>
-            <a href="../examples/showcase-artifact-engine.html.receipt.json">Receipt</a>
-          </nav>
+    <section class="studio" aria-label="Interactive artifact viewer">
+      <aside class="rail">
+        <h2>Artifacts</h2>
+        <div id="artifact-list" class="artifact-list"></div>
+      </aside>
+      <section class="stage" aria-live="polite">
+        <div class="stage-bar">
+          <div class="badges">
+            <span id="mode-badge" class="badge">mode</span>
+            <span id="theme-badge" class="badge">theme</span>
+            <span id="feature-badge" class="badge accent">featured</span>
+          </div>
+          <a id="stage-open" href="#">Open artifact</a>
         </div>
-      </article>
-      <article class="feature">
-        <img src="../examples/showcase-pr-delta.svg" alt="PR Delta Review Surface">
-        <div>
-          <h2>PR Delta Review Surface</h2>
-          <p>Base and head architecture specs produce a compact review artifact for changed components, routes, and proof receipts.</p>
-          <nav aria-label="PR Delta Review Surface links">
-            <a href="../examples/showcase-pr-delta.html">Open artifact</a>
-            <a href="../examples/showcase-pr-delta.json">Spec</a>
-            <a href="../examples/showcase-pr-delta.html.receipt.json">Receipt</a>
-          </nav>
+        <div class="stage-frame">
+          <img id="stage-image" src="" alt="">
         </div>
-      </article>
-      <article class="feature">
-        <img src="../examples/showcase-repo-evidence.svg" alt="Source-Evidence Architecture Map">
-        <div>
-          <h2>Source-Evidence Architecture Map</h2>
-          <p>Architecture nodes and routes carry explicit source evidence so the diagram can defend its claims.</p>
-          <nav aria-label="Source-Evidence Architecture Map links">
-            <a href="../examples/showcase-repo-evidence.html">Open artifact</a>
-            <a href="../examples/showcase-repo-evidence.json">Spec</a>
-            <a href="../examples/showcase-repo-evidence.html.receipt.json">Receipt</a>
-          </nav>
+      </section>
+      <aside class="details">
+        <h2 id="detail-title">Artifact</h2>
+        <p id="detail-summary"></p>
+        <div class="facts">
+          <div class="fact"><span>Mode</span><strong id="detail-mode"></strong></div>
+          <div class="fact"><span>Theme</span><strong id="detail-theme"></strong></div>
+          <div class="fact"><span>Source</span><strong id="detail-source"></strong></div>
         </div>
-      </article>
+        <div class="links">
+          <a id="detail-html" href="#">HTML</a>
+          <a id="detail-svg" href="#">SVG</a>
+          <a id="detail-spec" href="#">Spec</a>
+          <a id="detail-receipt" href="#">Receipt</a>
+        </div>
+      </aside>
     </section>
     <section class="index" aria-label="Artifact index">
       <h2>Checked Artifacts</h2>
@@ -144,13 +225,49 @@
           <thead><tr><th>Artifact</th><th>Mode</th><th>Theme</th><th>HTML</th><th>SVG</th><th>Spec</th><th>Receipt</th></tr></thead>
           <tbody>
         <tr>
-          <td><strong>Agent Runtime Proof Loop</strong><span>A local agent turns a task brief into a checked artifact with verifier feedback and durable lessons.</span></td>
+          <td><strong>Source-Evidence Architecture Map</strong><span>Architecture nodes and routes carry explicit source evidence so the diagram can defend its claims.</span></td>
+          <td>architecture</td>
+          <td>showcase</td>
+          <td><a href="../examples/showcase-repo-evidence.html">HTML</a></td>
+          <td><a href="../examples/showcase-repo-evidence.svg">SVG</a></td>
+          <td><a href="../examples/showcase-repo-evidence.json">JSON</a></td>
+          <td><a href="../examples/showcase-repo-evidence.html.receipt.json">Receipt</a></td>
+        </tr>
+        <tr>
+          <td><strong>PR Delta Review Surface</strong><span>Base and head architecture specs produce a compact review artifact for changed components, routes, and proof receipts.</span></td>
+          <td>pr-delta</td>
+          <td>showcase</td>
+          <td><a href="../examples/showcase-pr-delta.html">HTML</a></td>
+          <td><a href="../examples/showcase-pr-delta.svg">SVG</a></td>
+          <td><a href="../examples/showcase-pr-delta.json">JSON</a></td>
+          <td><a href="../examples/showcase-pr-delta.html.receipt.json">Receipt</a></td>
+        </tr>
+        <tr>
+          <td><strong>Architecture Artifact Engine</strong><span>A compact agent workflow: typed spec, validation, deterministic rendering, receipt, and public proof surface.</span></td>
           <td>workflow</td>
+          <td>showcase</td>
+          <td><a href="../examples/showcase-artifact-engine.html">HTML</a></td>
+          <td><a href="../examples/showcase-artifact-engine.svg">SVG</a></td>
+          <td><a href="../examples/showcase-artifact-engine.json">JSON</a></td>
+          <td><a href="../examples/showcase-artifact-engine.html.receipt.json">Receipt</a></td>
+        </tr>
+        <tr>
+          <td><strong>Repo Evidence Architecture Map</strong><span>A reviewable map separates authored topology from source-pinned evidence and confidence.</span></td>
+          <td>architecture</td>
           <td>classic</td>
-          <td><a href="../examples/agent-runtime.html">HTML</a></td>
-          <td><a href="../examples/agent-runtime.svg">SVG</a></td>
-          <td><a href="../examples/agent-runtime.json">JSON</a></td>
-          <td><a href="../examples/agent-runtime.html.receipt.json">Receipt</a></td>
+          <td><a href="../examples/repo-evidence-map.html">HTML</a></td>
+          <td><a href="../examples/repo-evidence-map.svg">SVG</a></td>
+          <td><a href="../examples/repo-evidence-map.json">JSON</a></td>
+          <td><a href="../examples/repo-evidence-map.html.receipt.json">Receipt</a></td>
+        </tr>
+        <tr>
+          <td><strong>Service Map</strong><span>One local request path with async work and model access.</span></td>
+          <td>architecture</td>
+          <td>classic</td>
+          <td><a href="../examples/service-map.html">HTML</a></td>
+          <td><a href="../examples/service-map.svg">SVG</a></td>
+          <td><a href="../examples/service-map.json">JSON</a></td>
+          <td><a href="../examples/service-map.html.receipt.json">Receipt</a></td>
         </tr>
         <tr>
           <td><strong>Product Analytics Data Flow</strong><span>Events move from application capture through queue, warehouse, and downstream reporting.</span></td>
@@ -189,15 +306,6 @@
           <td><a href="../examples/pr-delta-review.html.receipt.json">Receipt</a></td>
         </tr>
         <tr>
-          <td><strong>Repo Evidence Architecture Map</strong><span>A reviewable map separates authored topology from source-pinned evidence and confidence.</span></td>
-          <td>architecture</td>
-          <td>classic</td>
-          <td><a href="../examples/repo-evidence-map.html">HTML</a></td>
-          <td><a href="../examples/repo-evidence-map.svg">SVG</a></td>
-          <td><a href="../examples/repo-evidence-map.json">JSON</a></td>
-          <td><a href="../examples/repo-evidence-map.html.receipt.json">Receipt</a></td>
-        </tr>
-        <tr>
           <td><strong>Cache Miss Request Sequence</strong><span>A single request path shows cache lookup, database fallback, and response return.</span></td>
           <td>sequence</td>
           <td>classic</td>
@@ -207,40 +315,13 @@
           <td><a href="../examples/sequence-cache-miss.html.receipt.json">Receipt</a></td>
         </tr>
         <tr>
-          <td><strong>Service Map</strong><span>One local request path with async work and model access.</span></td>
-          <td>architecture</td>
-          <td>classic</td>
-          <td><a href="../examples/service-map.html">HTML</a></td>
-          <td><a href="../examples/service-map.svg">SVG</a></td>
-          <td><a href="../examples/service-map.json">JSON</a></td>
-          <td><a href="../examples/service-map.html.receipt.json">Receipt</a></td>
-        </tr>
-        <tr>
-          <td><strong>Architecture Artifact Engine</strong><span>A compact agent workflow: typed spec, validation, deterministic rendering, receipt, and public proof surface.</span></td>
+          <td><strong>Agent Runtime Proof Loop</strong><span>A local agent turns a task brief into a checked artifact with verifier feedback and durable lessons.</span></td>
           <td>workflow</td>
-          <td>showcase</td>
-          <td><a href="../examples/showcase-artifact-engine.html">HTML</a></td>
-          <td><a href="../examples/showcase-artifact-engine.svg">SVG</a></td>
-          <td><a href="../examples/showcase-artifact-engine.json">JSON</a></td>
-          <td><a href="../examples/showcase-artifact-engine.html.receipt.json">Receipt</a></td>
-        </tr>
-        <tr>
-          <td><strong>PR Delta Review Surface</strong><span>Base and head architecture specs produce a compact review artifact for changed components, routes, and proof receipts.</span></td>
-          <td>pr-delta</td>
-          <td>showcase</td>
-          <td><a href="../examples/showcase-pr-delta.html">HTML</a></td>
-          <td><a href="../examples/showcase-pr-delta.svg">SVG</a></td>
-          <td><a href="../examples/showcase-pr-delta.json">JSON</a></td>
-          <td><a href="../examples/showcase-pr-delta.html.receipt.json">Receipt</a></td>
-        </tr>
-        <tr>
-          <td><strong>Source-Evidence Architecture Map</strong><span>Architecture nodes and routes carry explicit source evidence so the diagram can defend its claims.</span></td>
-          <td>architecture</td>
-          <td>showcase</td>
-          <td><a href="../examples/showcase-repo-evidence.html">HTML</a></td>
-          <td><a href="../examples/showcase-repo-evidence.svg">SVG</a></td>
-          <td><a href="../examples/showcase-repo-evidence.json">JSON</a></td>
-          <td><a href="../examples/showcase-repo-evidence.html.receipt.json">Receipt</a></td>
+          <td>classic</td>
+          <td><a href="../examples/agent-runtime.html">HTML</a></td>
+          <td><a href="../examples/agent-runtime.svg">SVG</a></td>
+          <td><a href="../examples/agent-runtime.json">JSON</a></td>
+          <td><a href="../examples/agent-runtime.html.receipt.json">Receipt</a></td>
         </tr>
           </tbody>
         </table>
@@ -248,5 +329,62 @@
     </section>
     <footer>Generated by visual-architecture from local specs. No hosted editor, no repo upload, no hidden layout service.</footer>
   </main>
+  <script>
+    const artifacts = [{"title": "Source-Evidence Architecture Map", "summary": "Architecture nodes and routes carry explicit source evidence so the diagram can defend its claims.", "mode": "architecture", "theme": "showcase", "spec": "../examples/showcase-repo-evidence.json", "html": "../examples/showcase-repo-evidence.html", "svg": "../examples/showcase-repo-evidence.svg", "receipt": "../examples/showcase-repo-evidence.html.receipt.json"}, {"title": "PR Delta Review Surface", "summary": "Base and head architecture specs produce a compact review artifact for changed components, routes, and proof receipts.", "mode": "pr-delta", "theme": "showcase", "spec": "../examples/showcase-pr-delta.json", "html": "../examples/showcase-pr-delta.html", "svg": "../examples/showcase-pr-delta.svg", "receipt": "../examples/showcase-pr-delta.html.receipt.json"}, {"title": "Architecture Artifact Engine", "summary": "A compact agent workflow: typed spec, validation, deterministic rendering, receipt, and public proof surface.", "mode": "workflow", "theme": "showcase", "spec": "../examples/showcase-artifact-engine.json", "html": "../examples/showcase-artifact-engine.html", "svg": "../examples/showcase-artifact-engine.svg", "receipt": "../examples/showcase-artifact-engine.html.receipt.json"}, {"title": "Repo Evidence Architecture Map", "summary": "A reviewable map separates authored topology from source-pinned evidence and confidence.", "mode": "architecture", "theme": "classic", "spec": "../examples/repo-evidence-map.json", "html": "../examples/repo-evidence-map.html", "svg": "../examples/repo-evidence-map.svg", "receipt": "../examples/repo-evidence-map.html.receipt.json"}, {"title": "Service Map", "summary": "One local request path with async work and model access.", "mode": "architecture", "theme": "classic", "spec": "../examples/service-map.json", "html": "../examples/service-map.html", "svg": "../examples/service-map.svg", "receipt": "../examples/service-map.html.receipt.json"}, {"title": "Product Analytics Data Flow", "summary": "Events move from application capture through queue, warehouse, and downstream reporting.", "mode": "dataflow", "theme": "classic", "spec": "../examples/dataflow-analytics.json", "html": "../examples/dataflow-analytics.html", "svg": "../examples/dataflow-analytics.svg", "receipt": "../examples/dataflow-analytics.html.receipt.json"}, {"title": "Agent Task Lifecycle", "summary": "A task moves through planning, execution, verification, repair, and terminal receipt states.", "mode": "lifecycle", "theme": "classic", "spec": "../examples/lifecycle-agent-task.json", "html": "../examples/lifecycle-agent-task.html", "svg": "../examples/lifecycle-agent-task.svg", "receipt": "../examples/lifecycle-agent-task.html.receipt.json"}, {"title": "PR Delta Architecture Review", "summary": "1 nodes added, 0 removed, 2 edges added, 1 removed.", "mode": "pr-delta", "theme": "classic", "spec": "../examples/pr-delta-generated.json", "html": "../examples/pr-delta-generated.html", "svg": "../examples/pr-delta-generated.svg", "receipt": "../examples/pr-delta-generated.html.receipt.json"}, {"title": "PR Delta Review Map", "summary": "A review artifact shows the base path, proposed change, and proof gate before merge.", "mode": "pr-delta", "theme": "classic", "spec": "../examples/pr-delta-review.json", "html": "../examples/pr-delta-review.html", "svg": "../examples/pr-delta-review.svg", "receipt": "../examples/pr-delta-review.html.receipt.json"}, {"title": "Cache Miss Request Sequence", "summary": "A single request path shows cache lookup, database fallback, and response return.", "mode": "sequence", "theme": "classic", "spec": "../examples/sequence-cache-miss.json", "html": "../examples/sequence-cache-miss.html", "svg": "../examples/sequence-cache-miss.svg", "receipt": "../examples/sequence-cache-miss.html.receipt.json"}, {"title": "Agent Runtime Proof Loop", "summary": "A local agent turns a task brief into a checked artifact with verifier feedback and durable lessons.", "mode": "workflow", "theme": "classic", "spec": "../examples/agent-runtime.json", "html": "../examples/agent-runtime.html", "svg": "../examples/agent-runtime.svg", "receipt": "../examples/agent-runtime.html.receipt.json"}];
+    const featuredTitles = new Set(["Architecture Artifact Engine", "PR Delta Review Surface", "Source-Evidence Architecture Map"]);
+    const list = document.getElementById("artifact-list");
+    const stageImage = document.getElementById("stage-image");
+    const stageOpen = document.getElementById("stage-open");
+    const modeBadge = document.getElementById("mode-badge");
+    const themeBadge = document.getElementById("theme-badge");
+    const featureBadge = document.getElementById("feature-badge");
+    const detailTitle = document.getElementById("detail-title");
+    const detailSummary = document.getElementById("detail-summary");
+    const detailMode = document.getElementById("detail-mode");
+    const detailTheme = document.getElementById("detail-theme");
+    const detailSource = document.getElementById("detail-source");
+    const detailHtml = document.getElementById("detail-html");
+    const detailSvg = document.getElementById("detail-svg");
+    const detailSpec = document.getElementById("detail-spec");
+    const detailReceipt = document.getElementById("detail-receipt");
+    const buttons = [];
+
+    function selectArtifact(index) {
+      const artifact = artifacts[index];
+      buttons.forEach((button, buttonIndex) => {
+        button.setAttribute("aria-pressed", buttonIndex === index ? "true" : "false");
+      });
+      stageImage.src = artifact.svg;
+      stageImage.alt = artifact.title;
+      stageOpen.href = artifact.html;
+      modeBadge.textContent = artifact.mode;
+      themeBadge.textContent = artifact.theme;
+      featureBadge.hidden = !featuredTitles.has(artifact.title);
+      detailTitle.textContent = artifact.title;
+      detailSummary.textContent = artifact.summary;
+      detailMode.textContent = artifact.mode;
+      detailTheme.textContent = artifact.theme;
+      detailSource.textContent = artifact.spec.replace(/^.*examples\//, "examples/");
+      detailHtml.href = artifact.html;
+      detailSvg.href = artifact.svg;
+      detailSpec.href = artifact.spec;
+      detailReceipt.href = artifact.receipt;
+    }
+
+    artifacts.forEach((artifact, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "artifact-button";
+      button.innerHTML = "<strong></strong><span></span>";
+      button.querySelector("strong").textContent = artifact.title;
+      button.querySelector("span").textContent = artifact.mode + " / " + artifact.theme;
+      button.addEventListener("click", () => selectArtifact(index));
+      list.appendChild(button);
+      buttons.push(button);
+    });
+
+    const firstShowcase = artifacts.findIndex((artifact) => artifact.theme === "showcase");
+    selectArtifact(firstShowcase >= 0 ? firstShowcase : 0);
+  </script>
 </body>
 </html>
