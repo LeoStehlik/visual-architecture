@@ -41,7 +41,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.5.0"
+VERSION = "1.5.1"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 
@@ -1423,9 +1423,13 @@ def handle_gallery(args):
       gap: 8px;
       max-width: 100%;
       overflow-x: auto;
-      padding-bottom: 2px;
-      scrollbar-width: thin;
+      padding-bottom: 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
     }}
+    .artifact-list::-webkit-scrollbar {{ display: none; }}
     .artifact-button {{
       flex: 0 0 min(220px, 72vw);
       text-align: left;
@@ -1435,6 +1439,7 @@ def handle_gallery(args):
       border-radius: 8px;
       padding: 10px;
       cursor: pointer;
+      scroll-snap-align: start;
     }}
     .artifact-button:hover {{ border-color: #3d4c5f; }}
     .artifact-button[aria-pressed="true"] {{

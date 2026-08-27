@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:34:01.794756+00:00",
+  "generatedAt": "2026-08-27T23:37:34.829085+00:00",
   "input": {
     "bytes": 4407,
     "path": "examples/visual-architecture-auto.json",
@@ -41,5 +41,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.0"
+  "version": "1.5.1"
 }

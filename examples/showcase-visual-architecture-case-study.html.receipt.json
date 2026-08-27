@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:34:01.633053+00:00",
+  "generatedAt": "2026-08-27T23:37:34.669336+00:00",
   "input": {
     "bytes": 3914,
     "path": "examples/showcase-visual-architecture-case-study.json",
@@ -42,5 +42,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.0"
+  "version": "1.5.1"
 }
