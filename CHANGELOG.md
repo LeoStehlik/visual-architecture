@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3.0
+
+- Redesign the generated gallery into an interactive artifact viewer.
+- Put the diagram stage, artifact rail, details panel, and source links into one generated Pages surface.
+- Keep the gallery generated from checked JSON examples rather than hand-authored showcase markup.
+
 ## v1.2.0
 
 - Add a generated GitHub Pages gallery site as the visual browsing surface.

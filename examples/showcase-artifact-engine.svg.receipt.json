@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T22:20:56.485421+00:00",
+  "generatedAt": "2026-08-27T22:36:12.128065+00:00",
   "input": {
     "bytes": 1839,
     "path": "examples/showcase-artifact-engine.json",
@@ -36,5 +36,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.2.0"
+  "version": "1.3.0"
 }

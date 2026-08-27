@@ -41,7 +41,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 
@@ -912,23 +912,23 @@ def handle_gallery(args):
             "receipt": Path("examples") / f"{name}.html.receipt.json",
         })
 
+    rows.sort(key=lambda row: (row["theme"] != "showcase", row["mode"], row["title"]))
     showcase = [row for row in rows if row["theme"] == "showcase"]
     featured = showcase or rows[:3]
-    featured_html = "\n".join(
-        f'''      <article class="feature">
-        <img src="{link_prefix}{row["svg"]}" alt="{escape(row["title"])}">
-        <div>
-          <h2>{escape(row["title"])}</h2>
-          <p>{escape(row["summary"])}</p>
-          <nav aria-label="{escape(row["title"])} links">
-            <a href="{link_prefix}{row["html"]}">Open artifact</a>
-            <a href="{link_prefix}{row["spec"]}">Spec</a>
-            <a href="{link_prefix}{row["receipt"]}">Receipt</a>
-          </nav>
-        </div>
-      </article>'''
-        for row in featured[:3]
-    )
+    gallery_payload = json.dumps([
+        {
+            "title": row["title"],
+            "summary": row["summary"],
+            "mode": row["mode"],
+            "theme": row["theme"],
+            "spec": f"{link_prefix}{row['spec']}",
+            "html": f"{link_prefix}{row['html']}",
+            "svg": f"{link_prefix}{row['svg']}",
+            "receipt": f"{link_prefix}{row['receipt']}",
+        }
+        for row in rows
+    ])
+    featured_names = {row["title"] for row in featured[:3]}
     rows_html = "\n".join(
         f'''        <tr>
           <td><strong>{escape(row["title"])}</strong><span>{escape(row["summary"])}</span></td>
@@ -949,14 +949,16 @@ def handle_gallery(args):
   <title>visual-architecture gallery</title>
   <style>
     :root {{
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface-2: #0f172a;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --muted: #8b949e;
-      --primary: #58a6ff;
-      --accent: #f78166;
+      --bg: #070a10;
+      --surface: #10151f;
+      --surface-2: #141b29;
+      --surface-3: #0b111a;
+      --border: #263241;
+      --text: #edf3fb;
+      --muted: #98a6b8;
+      --primary: #5eb6ff;
+      --accent: #f5b84b;
+      --teal: #60d8c8;
     }}
     * {{ box-sizing: border-box; }}
     body {{
@@ -964,68 +966,151 @@ def handle_gallery(args):
       background: var(--bg);
       color: var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-      line-height: 1.5;
+      line-height: 1.45;
     }}
     a {{ color: var(--primary); font-weight: 650; text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
-    main {{ max-width: 1220px; margin: 0 auto; padding: 32px 20px 56px; }}
+    button {{ font: inherit; }}
+    main {{ max-width: 1440px; margin: 0 auto; padding: 18px 18px 48px; }}
     header {{
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      gap: 24px;
+      gap: 18px;
       align-items: end;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 24px;
-      margin-bottom: 28px;
+      padding: 12px 0 18px;
+      margin-bottom: 18px;
     }}
-    h1 {{ margin: 0 0 8px; font-size: clamp(30px, 5vw, 56px); line-height: 1.02; letter-spacing: 0; }}
-    header p {{ max-width: 760px; margin: 0; color: var(--muted); font-size: 17px; }}
+    h1 {{ margin: 0 0 7px; font-size: clamp(32px, 4.8vw, 68px); line-height: 0.98; letter-spacing: 0; }}
+    header p {{ max-width: 780px; margin: 0; color: var(--muted); font-size: 16px; }}
     .actions {{ display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }}
-    .actions a, .feature nav a {{
+    .actions a, .links a {{
       display: inline-flex;
       align-items: center;
       min-height: 36px;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 7px 11px;
-      background: var(--surface);
+      background: var(--surface-2);
     }}
-    .features {{ display: grid; gap: 20px; }}
-    .feature {{
+    .studio {{
       display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
-      gap: 20px;
-      align-items: center;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 14px;
+    }}
+    .rail, .stage, .details, .index {{
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 16px;
     }}
-    .feature img {{
+    .rail, .details {{ padding: 14px; }}
+    .rail {{ grid-column: 1 / -1; }}
+    .studio > * {{ min-width: 0; }}
+    .rail h2, .details h2, .index h2 {{ margin: 0 0 12px; font-size: 15px; letter-spacing: 0; color: #f8fbff; }}
+    .artifact-list {{
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }}
+    .artifact-button {{
+      flex: 0 0 220px;
+      text-align: left;
+      color: var(--text);
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+    }}
+    .artifact-button:hover {{ border-color: #3d4c5f; }}
+    .artifact-button[aria-pressed="true"] {{
+      border-color: var(--primary);
+      background: #0d1b2a;
+    }}
+    .artifact-button strong {{ display: block; font-size: 13px; line-height: 1.25; }}
+    .artifact-button span {{ display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }}
+    .stage {{
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      min-width: 0;
+    }}
+    .stage-bar {{
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }}
+    .badges {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+    .badge {{
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1;
+    }}
+    .badge.accent {{ color: #1b1303; background: var(--accent); border-color: var(--accent); font-weight: 800; }}
+    .stage-frame {{
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      min-height: 0;
+      min-width: 0;
+      background: #070a10;
+    }}
+    .stage-frame img {{
       display: block;
       width: 100%;
+      max-width: 100%;
+      max-height: 610px;
       height: auto;
-      border: 1px solid var(--border);
+      object-fit: contain;
       border-radius: 8px;
       background: #020617;
     }}
-    .feature h2 {{ margin: 0 0 8px; font-size: 24px; line-height: 1.15; letter-spacing: 0; }}
-    .feature p {{ margin: 0 0 16px; color: var(--muted); }}
-    .feature nav {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+    .details h2 {{ font-size: 26px; line-height: 1.08; margin-bottom: 10px; }}
+    .details p {{ color: var(--muted); margin: 0 0 18px; }}
+    .facts {{ display: grid; gap: 10px; margin: 18px 0; }}
+    .fact {{
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }}
+    .fact strong {{ color: var(--text); font-weight: 700; }}
+    .links {{ display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }}
     .index {{ margin-top: 32px; }}
-    .index h2 {{ margin: 0 0 12px; font-size: 22px; letter-spacing: 0; }}
+    .index {{ padding: 16px; }}
     .table-wrap {{ overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }}
-    table {{ width: 100%; border-collapse: collapse; min-width: 900px; background: var(--surface); }}
+    table {{ width: 100%; border-collapse: collapse; min-width: 920px; background: var(--surface-3); }}
     th, td {{ padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }}
     th {{ color: #f0f6fc; background: var(--surface-2); font-size: 13px; }}
     td {{ color: var(--text); font-size: 14px; }}
     td span {{ display: block; color: var(--muted); margin-top: 3px; max-width: 540px; }}
     tr:last-child td {{ border-bottom: 0; }}
-    footer {{ margin-top: 24px; color: var(--muted); font-size: 13px; }}
-    @media (max-width: 780px) {{
-      header, .feature {{ grid-template-columns: 1fr; }}
+    footer {{ margin-top: 18px; color: var(--muted); font-size: 13px; }}
+    @media (max-width: 1100px) {{
+      .studio {{ grid-template-columns: minmax(0, 1fr); }}
+      .details {{ grid-column: 1 / -1; }}
+    }}
+    @media (max-width: 760px) {{
+      main {{ padding: 14px 14px 40px; }}
+      header, .studio {{ grid-template-columns: 1fr; }}
       .actions {{ justify-content: flex-start; }}
-      main {{ padding-inline: 14px; }}
+      .rail {{ order: 1; }}
+      .stage {{ order: 2; }}
+      .details {{ order: 3; }}
+      .stage-frame {{ padding: 12px; }}
     }}
   </style>
 </head>
@@ -1042,8 +1127,39 @@ def handle_gallery(args):
         <a href="{link_prefix}docs/diagnostics.md">Diagnostics</a>
       </nav>
     </header>
-    <section class="features" aria-label="Featured artifacts">
-{featured_html}
+    <section class="studio" aria-label="Interactive artifact viewer">
+      <aside class="rail">
+        <h2>Artifacts</h2>
+        <div id="artifact-list" class="artifact-list"></div>
+      </aside>
+      <section class="stage" aria-live="polite">
+        <div class="stage-bar">
+          <div class="badges">
+            <span id="mode-badge" class="badge">mode</span>
+            <span id="theme-badge" class="badge">theme</span>
+            <span id="feature-badge" class="badge accent">featured</span>
+          </div>
+          <a id="stage-open" href="#">Open artifact</a>
+        </div>
+        <div class="stage-frame">
+          <img id="stage-image" src="" alt="">
+        </div>
+      </section>
+      <aside class="details">
+        <h2 id="detail-title">Artifact</h2>
+        <p id="detail-summary"></p>
+        <div class="facts">
+          <div class="fact"><span>Mode</span><strong id="detail-mode"></strong></div>
+          <div class="fact"><span>Theme</span><strong id="detail-theme"></strong></div>
+          <div class="fact"><span>Source</span><strong id="detail-source"></strong></div>
+        </div>
+        <div class="links">
+          <a id="detail-html" href="#">HTML</a>
+          <a id="detail-svg" href="#">SVG</a>
+          <a id="detail-spec" href="#">Spec</a>
+          <a id="detail-receipt" href="#">Receipt</a>
+        </div>
+      </aside>
     </section>
     <section class="index" aria-label="Artifact index">
       <h2>Checked Artifacts</h2>
@@ -1058,6 +1174,63 @@ def handle_gallery(args):
     </section>
     <footer>Generated by visual-architecture from local specs. No hosted editor, no repo upload, no hidden layout service.</footer>
   </main>
+  <script>
+    const artifacts = {gallery_payload};
+    const featuredTitles = new Set({json.dumps(sorted(featured_names))});
+    const list = document.getElementById("artifact-list");
+    const stageImage = document.getElementById("stage-image");
+    const stageOpen = document.getElementById("stage-open");
+    const modeBadge = document.getElementById("mode-badge");
+    const themeBadge = document.getElementById("theme-badge");
+    const featureBadge = document.getElementById("feature-badge");
+    const detailTitle = document.getElementById("detail-title");
+    const detailSummary = document.getElementById("detail-summary");
+    const detailMode = document.getElementById("detail-mode");
+    const detailTheme = document.getElementById("detail-theme");
+    const detailSource = document.getElementById("detail-source");
+    const detailHtml = document.getElementById("detail-html");
+    const detailSvg = document.getElementById("detail-svg");
+    const detailSpec = document.getElementById("detail-spec");
+    const detailReceipt = document.getElementById("detail-receipt");
+    const buttons = [];
+
+    function selectArtifact(index) {{
+      const artifact = artifacts[index];
+      buttons.forEach((button, buttonIndex) => {{
+        button.setAttribute("aria-pressed", buttonIndex === index ? "true" : "false");
+      }});
+      stageImage.src = artifact.svg;
+      stageImage.alt = artifact.title;
+      stageOpen.href = artifact.html;
+      modeBadge.textContent = artifact.mode;
+      themeBadge.textContent = artifact.theme;
+      featureBadge.hidden = !featuredTitles.has(artifact.title);
+      detailTitle.textContent = artifact.title;
+      detailSummary.textContent = artifact.summary;
+      detailMode.textContent = artifact.mode;
+      detailTheme.textContent = artifact.theme;
+      detailSource.textContent = artifact.spec.replace(/^.*examples\\//, "examples/");
+      detailHtml.href = artifact.html;
+      detailSvg.href = artifact.svg;
+      detailSpec.href = artifact.spec;
+      detailReceipt.href = artifact.receipt;
+    }}
+
+    artifacts.forEach((artifact, index) => {{
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "artifact-button";
+      button.innerHTML = "<strong></strong><span></span>";
+      button.querySelector("strong").textContent = artifact.title;
+      button.querySelector("span").textContent = artifact.mode + " / " + artifact.theme;
+      button.addEventListener("click", () => selectArtifact(index));
+      list.appendChild(button);
+      buttons.push(button);
+    }});
+
+    const firstShowcase = artifacts.findIndex((artifact) => artifact.theme === "showcase");
+    selectArtifact(firstShowcase >= 0 ? firstShowcase : 0);
+  </script>
 </body>
 </html>
 '''
