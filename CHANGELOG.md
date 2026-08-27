@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.2
+
+- Release metadata repair so GitHub and ClawHub package versions both report the final v1 artifact-engine state cleanly.
+
 ## v1.0.0
 
 - Complete the planned product ladder from foundation renderer to artifact engine.

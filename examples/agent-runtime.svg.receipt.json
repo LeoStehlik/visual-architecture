@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T21:33:47.615376+00:00",
+  "generatedAt": "2026-08-27T21:45:16.556978+00:00",
   "input": {
     "bytes": 1925,
     "path": "examples/agent-runtime.json",
@@ -34,5 +34,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.0.0"
+  "version": "1.0.2"
 }

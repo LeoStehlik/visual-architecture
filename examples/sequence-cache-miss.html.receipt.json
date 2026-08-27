@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T21:33:49.148896+00:00",
+  "generatedAt": "2026-08-27T21:45:17.884738+00:00",
   "input": {
     "bytes": 1391,
     "path": "examples/sequence-cache-miss.json",
@@ -32,5 +32,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.0.0"
+  "version": "1.0.2"
 }

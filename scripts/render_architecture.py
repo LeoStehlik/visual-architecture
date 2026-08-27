@@ -28,7 +28,7 @@ EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.0.0"
+VERSION = "1.0.2"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 
 

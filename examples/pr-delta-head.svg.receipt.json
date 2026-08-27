@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T21:33:48.538207+00:00",
+  "generatedAt": "2026-08-27T21:45:17.384309+00:00",
   "input": {
     "bytes": 855,
     "path": "examples/pr-delta-head.json",
@@ -33,5 +33,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.0.0"
+  "version": "1.0.2"
 }
