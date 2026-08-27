@@ -1,0 +1,38 @@
+{
+  "artifactKind": "html",
+  "generatedAt": "2026-08-27T21:33:47.861361+00:00",
+  "input": {
+    "bytes": 1420,
+    "path": "examples/dataflow-analytics.json",
+    "sha256": "6e789d69c0327ae4ed09648e9ec1d801fd44025af428825702d43f841231bf29"
+  },
+  "mode": "dataflow",
+  "output": {
+    "bytes": 9829,
+    "path": "examples/dataflow-analytics.html",
+    "sha256": "8f2d3391e2be5c862f54d70b2ef3553647c8caaff7e566665ea76120fe0c4e0b"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 5,
+      "evidenceItems": 0,
+      "mode": "dataflow",
+      "nodeKinds": [
+        "agent",
+        "memory",
+        "service"
+      ],
+      "nodes": 6
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "1.0.0"
+}

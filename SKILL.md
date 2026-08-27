@@ -2,17 +2,18 @@
 name: visual-architecture
 description: "Create deterministic, local-first architecture artifacts from typed JSON: validate specs, render restrained SVG/HTML diagrams, and emit receipts agents can cite."
 metadata:
-  version: "0.3.0"
+  version: "1.0.0"
 ---
 # Visual Architecture
 
 Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG.
 
-Use this when the user needs a trustworthy system map, agent workflow, repo-evidence diagram, or PR review sketch that should stay local, deterministic, and reviewable.
+Use this when the user needs a trustworthy system map, agent workflow, sequence, data-flow, lifecycle/state diagram, repo-evidence diagram, or PR delta review sketch that should stay local, deterministic, and reviewable.
 
 ## Workflow
 
-1. Create a JSON file with `title`, `nodes`, and `edges`.
+1. Create a JSON file with `mode`, `title`, `nodes`, and `edges`.
+   - Supported modes: `architecture`, `workflow`, `sequence`, `dataflow`, `lifecycle`, `pr-delta`.
 2. Snap intended node positions to the renderer grid mentally before writing them:
    - horizontal grid: 120px
    - vertical grid: 80px
@@ -30,6 +31,12 @@ python3 skills/visual-architecture/scripts/render_architecture.py deliver input.
 
 Use `.svg` for a static docs artifact or `.html` for a self-contained presentation artifact.
 
+For PR delta review, compare two specs:
+
+```bash
+python3 skills/visual-architecture/scripts/render_architecture.py compare base.json head.json pr-delta.html --spec pr-delta.json --json
+```
+
 5. If `rsvg-convert` is available and you need a bitmap preview, run:
 
 ```bash
@@ -41,6 +48,7 @@ rsvg-convert -o output.png output.svg
 ```json
 {
   "title": "Service Map",
+  "mode": "architecture",
   "summary": "One local request path with async work and model access.",
   "nodes": [
     {
@@ -87,6 +95,7 @@ Each node requires:
 Optional:
 - `subtitle`: smaller secondary label
 - `show_grid`: set true to display the editing grid in the exported SVG
+- `evidence`: object or list with `source`, optional `line`/`lines`, `commit`, `confidence`, and `note`
 
 ## Edge Kinds
 
@@ -109,6 +118,8 @@ Optional:
 
 - Validate rejects unsupported node/edge kinds and unknown edge endpoints before rendering
 - Deliver writes the artifact atomically and emits a JSON receipt with SHA-256 hashes
+- Evidence badges render as `SRC n` on nodes with source-backed evidence
+- PR delta compare writes added/removed node and edge facts into the receipt
 - Route arrows orthogonally only
 - Render in this order: background, arrows, nodes, labels
 - Keep label shields behind arrow text for readability
@@ -124,4 +135,4 @@ Optional:
 
 ## Example
 
-Use `examples/service-map.json` as a generic starting point for web app, API, worker, database, and LLM provider diagrams. Use `examples/repo-evidence-map.json` when the user needs source-pinned architecture evidence, and `examples/pr-delta-review.json` when the user needs a review-oriented architecture change sketch.
+Use `examples/service-map.json` as a generic architecture starting point. Use `examples/agent-runtime.json`, `examples/sequence-cache-miss.json`, `examples/dataflow-analytics.json`, and `examples/lifecycle-agent-task.json` for the non-architecture modes. Use `examples/repo-evidence-map.json` for source-pinned evidence, and `examples/pr-delta-before.json` plus `examples/pr-delta-head.json` for generated PR deltas.

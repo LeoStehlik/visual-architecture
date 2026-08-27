@@ -1,4 +1,5 @@
 {
+  "mode": "pr-delta",
   "title": "PR Delta Review Map",
   "summary": "A review artifact shows the base path, proposed change, and proof gate before merge.",
   "show_grid": false,

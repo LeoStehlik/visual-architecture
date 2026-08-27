@@ -28,6 +28,8 @@ EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
+VERSION = "1.0.0"
+ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 
 
 def snap(value, grid):
@@ -37,6 +39,10 @@ def snap(value, grid):
 def load(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def spec_mode(data):
+    return data.get("mode", "architecture") if isinstance(data, dict) else "architecture"
 
 
 def sha256_text(text):
@@ -71,6 +77,46 @@ def position_nodes(nodes):
         width, height = node_box(node)
         placed[node["id"]] = {**node, "x": x, "y": y, "width": width, "height": height}
     return placed
+
+
+def evidence_items(subject):
+    evidence = subject.get("evidence", [])
+    if evidence is None:
+        return []
+    if isinstance(evidence, dict):
+        return [evidence]
+    if isinstance(evidence, list):
+        return evidence
+    return []
+
+
+def validate_evidence(subject, path, errors, warnings):
+    evidence = subject.get("evidence")
+    if evidence is None:
+        return
+    items = evidence_items(subject)
+    if not isinstance(evidence, (dict, list)):
+        errors.append({"code": "evidence.type", "subject": path, "message": "evidence must be an object or list of objects."})
+        return
+    for index, item in enumerate(items):
+        item_path = f"{path}.evidence[{index}]"
+        if not isinstance(item, dict):
+            errors.append({"code": "evidence.item.type", "subject": item_path, "message": "Evidence item must be an object."})
+            continue
+        source = item.get("source")
+        if not isinstance(source, str) or not source.strip():
+            errors.append({"code": "evidence.source.required", "subject": item_path, "message": "Evidence requires a source path or URL string."})
+        if "line" in item and not isinstance(item["line"], int):
+            errors.append({"code": "evidence.line.type", "subject": item_path, "message": "Evidence line must be an integer."})
+        if "lines" in item:
+            lines = item["lines"]
+            if not (isinstance(lines, list) and len(lines) == 2 and all(isinstance(value, int) for value in lines)):
+                errors.append({"code": "evidence.lines.type", "subject": item_path, "message": "Evidence lines must be [start, end] integers."})
+        if "commit" in item and not isinstance(item["commit"], str):
+            errors.append({"code": "evidence.commit.type", "subject": item_path, "message": "Evidence commit must be a string."})
+        confidence = item.get("confidence")
+        if confidence is not None and confidence not in ("high", "medium", "low"):
+            warnings.append({"code": "evidence.confidence.unknown", "subject": item_path, "message": "Use confidence high, medium, or low."})
 
 
 def box_edges(node, margin=0):
@@ -116,6 +162,15 @@ def validate(data):
             "metrics": {},
         }
 
+    mode = spec_mode(data)
+    if mode not in ALLOWED_MODES:
+        errors.append({
+            "code": "mode.unsupported",
+            "subject": "mode",
+            "message": f"mode must be one of {sorted(ALLOWED_MODES)}.",
+            "supportedFixes": [{"field": "mode", "values": sorted(ALLOWED_MODES)}],
+        })
+
     title = data.get("title")
     if not isinstance(title, str) or not title.strip():
         errors.append({"code": "title.required", "message": "Spec requires a non-empty string title."})
@@ -153,6 +208,7 @@ def validate(data):
                 "message": f"Node kind must be one of {sorted(ALLOWED_NODE_KINDS)}.",
                 "supportedFixes": [{"field": "kind", "values": sorted(ALLOWED_NODE_KINDS)}],
             })
+        validate_evidence(node, f"nodes[{index}]", errors, warnings)
         for axis, grid in (("x", GRID_X), ("y", GRID_Y)):
             value = node.get(axis)
             if not isinstance(value, (int, float)):
@@ -206,6 +262,7 @@ def validate(data):
                 "subject": subject,
                 "message": "Long edge labels can crowd the route; keep labels short and semantic.",
             })
+        validate_evidence(edge, f"edges[{index}]", errors, warnings)
         for point_index, point in enumerate(edge.get("via", [])):
             point_subject = f"{subject}.via[{point_index}]"
             if not isinstance(point, dict):
@@ -247,8 +304,10 @@ def validate(data):
         "errors": errors,
         "warnings": warnings,
         "metrics": {
+            "mode": mode,
             "nodes": len(nodes),
             "edges": len(edges),
+            "evidenceItems": sum(len(evidence_items(node)) for node in nodes if isinstance(node, dict)) + sum(len(evidence_items(edge)) for edge in edges if isinstance(edge, dict)),
             "nodeKinds": sorted({node.get("kind") for node in nodes if isinstance(node, dict) and node.get("kind")}),
             "edgeKinds": sorted({edge.get("kind") for edge in edges if isinstance(edge, dict) and edge.get("kind")}),
         },
@@ -394,6 +453,12 @@ def render_node(node):
     label_parts.append(f'<text x="{x:.1f}" y="{y - (4 if node.get("subtitle") else -6):.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="18" font-weight="600" fill="{style["text"]}">{escape(node["label"])}</text>')
     if node.get("subtitle"):
         label_parts.append(f'<text x="{x:.1f}" y="{y + 18:.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="13" font-weight="500" fill="#475569">{escape(node["subtitle"])}</text>')
+    evidence_count = len(evidence_items(node))
+    if evidence_count:
+        badge = f"SRC {evidence_count}"
+        badge_width = text_width(badge, 10) + 12
+        label_parts.append(f'<rect x="{left + w - badge_width - 10:.1f}" y="{top + 8:.1f}" width="{badge_width:.1f}" height="18" rx="9" fill="#ecfeff" stroke="#0891b2" stroke-width="1"/>')
+        label_parts.append(f'<text x="{left + w - badge_width / 2 - 10:.1f}" y="{top + 21:.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="10" font-weight="700" fill="#0e7490">{escape(badge)}</text>')
     return "\n".join(shape_parts), "\n".join(label_parts)
 
 
@@ -597,8 +662,9 @@ def receipt_for(spec_path, output_path, validation, artifact_kind):
     output_path = Path(output_path)
     return {
         "tool": "visual-architecture",
-        "version": "0.3.0",
+        "version": VERSION,
         "artifactKind": artifact_kind,
+        "mode": validation.get("metrics", {}).get("mode", "architecture"),
         "generatedAt": dt.datetime.now(dt.timezone.utc).isoformat(),
         "input": {
             "path": str(spec_path),
@@ -623,12 +689,153 @@ def handle_validate(args):
     validation = validate(data)
     payload = {
         "tool": "visual-architecture",
-        "version": "0.3.0",
+        "version": VERSION,
         "input": args.input,
         "validation": validation,
     }
     print_json(payload if args.json else validation)
     return 0 if validation["ok"] else 1
+
+
+def edge_key(edge):
+    return (edge.get("from"), edge.get("to"), edge.get("kind", "control"), edge.get("label", ""))
+
+
+def build_delta_spec(base_data, head_data):
+    base_nodes = {node["id"]: node for node in base_data.get("nodes", []) if isinstance(node, dict) and "id" in node}
+    head_nodes = {node["id"]: node for node in head_data.get("nodes", []) if isinstance(node, dict) and "id" in node}
+    base_edges = {edge_key(edge) for edge in base_data.get("edges", []) if isinstance(edge, dict)}
+    head_edges = {edge_key(edge) for edge in head_data.get("edges", []) if isinstance(edge, dict)}
+    added_nodes = sorted(set(head_nodes) - set(base_nodes))
+    removed_nodes = sorted(set(base_nodes) - set(head_nodes))
+    added_edges = sorted(head_edges - base_edges)
+    removed_edges = sorted(base_edges - head_edges)
+    return {
+        "mode": "pr-delta",
+        "title": "PR Delta Architecture Review",
+        "summary": f"{len(added_nodes)} nodes added, {len(removed_nodes)} removed, {len(added_edges)} edges added, {len(removed_edges)} removed.",
+        "nodes": [
+            {"id": "base", "label": "Base", "subtitle": f"{len(base_nodes)} nodes", "kind": "memory", "x": 120, "y": 160},
+            {"id": "head", "label": "Head", "subtitle": f"{len(head_nodes)} nodes", "kind": "memory", "x": 120, "y": 320},
+            {"id": "added", "label": "Added", "subtitle": ", ".join(added_nodes[:3]) or "none", "kind": "service", "x": 360, "y": 160},
+            {"id": "removed", "label": "Removed", "subtitle": ", ".join(removed_nodes[:3]) or "none", "kind": "service", "x": 360, "y": 320},
+            {"id": "routes", "label": "Route Delta", "subtitle": f"+{len(added_edges)} / -{len(removed_edges)}", "kind": "agent", "x": 600, "y": 240},
+            {"id": "review", "label": "Review Receipt", "subtitle": "PR-ready", "kind": "memory", "x": 840, "y": 240},
+        ],
+        "edges": [
+            {"from": "base", "to": "added", "kind": "control", "label": "compare", "label_offset": [0, -28]},
+            {"from": "head", "to": "removed", "kind": "control", "label": "compare", "label_offset": [0, 28]},
+            {"from": "added", "to": "routes", "kind": "primary-data", "label": "new facts"},
+            {"from": "removed", "to": "routes", "kind": "control", "label": "removed facts"},
+            {"from": "routes", "to": "review", "kind": "memory-write", "label": "receipt"},
+        ],
+        "delta": {
+            "addedNodes": added_nodes,
+            "removedNodes": removed_nodes,
+            "addedEdges": [list(edge) for edge in added_edges],
+            "removedEdges": [list(edge) for edge in removed_edges],
+        },
+    }
+
+
+def handle_compare(args):
+    base_data = load(args.base)
+    head_data = load(args.head)
+    base_validation = validate(base_data)
+    head_validation = validate(head_data)
+    if not base_validation["ok"] or not head_validation["ok"]:
+        print_json({"ok": False, "base": base_validation, "head": head_validation})
+        return 1
+    delta_spec = build_delta_spec(base_data, head_data)
+    if args.spec:
+        write_atomic(args.spec, json.dumps(delta_spec, indent=2, sort_keys=True) + "\n")
+    validation = validate(delta_spec)
+    svg = render(delta_spec)
+    output_path = Path(args.output)
+    artifact_kind = "html" if output_path.suffix.lower() == ".html" else "svg"
+    artifact = render_html(delta_spec, svg, args.spec or args.head) if artifact_kind == "html" else svg
+    write_atomic(output_path, artifact)
+    receipt_path = Path(args.receipt) if args.receipt else output_path.with_suffix(output_path.suffix + ".receipt.json")
+    receipt = {
+        **receipt_for(args.head, output_path, validation, artifact_kind),
+        "base": {"path": args.base, "sha256": file_sha256(args.base)},
+        "head": {"path": args.head, "sha256": file_sha256(args.head)},
+        "delta": delta_spec["delta"],
+    }
+    write_atomic(receipt_path, json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+    print_json(receipt if args.json else {"ok": True, "output": str(output_path), "receipt": str(receipt_path)})
+    return 0
+
+
+def render_share_card(data, source_path):
+    title = escape(data.get("title", "visual-architecture"))
+    summary = data.get("summary", "Deterministic local-first architecture artifact.")
+    mode = escape(spec_mode(data))
+    source = escape(Path(source_path).name)
+    words = str(summary).split()
+    lines = []
+    current = []
+    for word in words:
+        candidate = " ".join(current + [word])
+        if len(candidate) > 64 and current:
+            lines.append(" ".join(current))
+            current = [word]
+        else:
+            current.append(word)
+    if current:
+        lines.append(" ".join(current))
+    summary_svg = "\n".join(
+        f'  <tspan x="90" dy="{0 if index == 0 else 42}">{escape(line)}</tspan>'
+        for index, line in enumerate(lines[:3])
+    )
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="{title}">
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <rect x="54" y="54" width="1092" height="522" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="90" y="132" font-family="{FONT_FAMILY}" font-size="26" font-weight="800" fill="#2563eb">visual-architecture / {mode}</text>
+  <text x="90" y="238" font-family="{FONT_FAMILY}" font-size="58" font-weight="800" fill="#0f172a">{title}</text>
+  <text x="90" y="310" font-family="{FONT_FAMILY}" font-size="30" font-weight="500" fill="#334155">
+{summary_svg}
+  </text>
+  <rect x="90" y="482" width="330" height="52" rx="8" fill="#dbeafe"/>
+  <text x="114" y="516" font-family="{FONT_FAMILY}" font-size="22" font-weight="700" fill="#1d4ed8">source: {source}</text>
+  <text x="820" y="516" font-family="{FONT_FAMILY}" font-size="22" font-weight="700" fill="#475569">validated local artifact</text>
+</svg>
+'''
+
+
+def handle_share_card(args):
+    data = load(args.input)
+    validation = validate(data)
+    if not validation["ok"]:
+        print_json({"ok": False, "validation": validation})
+        return 1
+    write_atomic(args.output, render_share_card(data, args.input))
+    print_json({"ok": True, "output": args.output, "sha256": file_sha256(args.output)})
+    return 0
+
+
+def handle_gallery(args):
+    rows = []
+    for spec_path in sorted(Path("examples").glob("*.json")):
+        if spec_path.name.endswith(".receipt.json") or spec_path.name.endswith("-before.json") or spec_path.name.endswith("-head.json"):
+            continue
+        data = load(spec_path)
+        name = spec_path.stem
+        rows.append((data.get("title", name), spec_mode(data), spec_path, Path("examples") / f"{name}.html", Path("examples") / f"{name}.svg"))
+    cards = "\n".join(
+        f'<article><h2>{escape(title)}</h2><p>{escape(mode)}</p><a href="../{html}">HTML</a> · <a href="../{svg}">SVG</a> · <a href="../{spec}">Spec</a></article>'
+        for title, mode, spec, html, svg in rows
+    )
+    html = f'''<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>visual-architecture proof gallery</title>
+<style>body{{margin:0;font-family:Inter,system-ui,sans-serif;background:#0f172a;color:#f8fafc}}main{{max-width:1120px;margin:0 auto;padding:40px 24px}}h1{{font-size:42px;margin:0 0 12px}}p{{color:#cbd5e1}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:28px}}article{{background:#f8fafc;color:#0f172a;border-radius:8px;padding:18px;border:1px solid #cbd5e1}}a{{color:#1d4ed8;font-weight:700}}</style></head>
+<body><main><h1>visual-architecture proof gallery</h1><p>Checked specs, generated artifacts, and receipts from the local deterministic renderer.</p><section class="grid">{cards}</section></main></body>
+</html>
+'''
+    write_atomic(args.output, html)
+    print_json({"ok": True, "output": args.output, "artifacts": len(rows)})
+    return 0
 
 
 def handle_render(args):
@@ -687,6 +894,24 @@ def main():
     deliver_parser.add_argument("--receipt", help="Path to output receipt JSON")
     deliver_parser.add_argument("--json", action="store_true", help="Print the full delivery receipt")
     deliver_parser.set_defaults(func=handle_deliver)
+
+    compare_parser = subparsers.add_parser("compare", help="Compare base/head specs and deliver a PR delta artifact")
+    compare_parser.add_argument("base", help="Base architecture JSON")
+    compare_parser.add_argument("head", help="Head architecture JSON")
+    compare_parser.add_argument("output", help="Path to output SVG or HTML")
+    compare_parser.add_argument("--spec", help="Optional path to write generated delta spec JSON")
+    compare_parser.add_argument("--receipt", help="Path to output receipt JSON")
+    compare_parser.add_argument("--json", action="store_true", help="Print the full delta receipt")
+    compare_parser.set_defaults(func=handle_compare)
+
+    card_parser = subparsers.add_parser("share-card", help="Generate a static 1200x630 SVG share card")
+    card_parser.add_argument("input", help="Path to architecture JSON")
+    card_parser.add_argument("output", help="Path to output share-card SVG")
+    card_parser.set_defaults(func=handle_share_card)
+
+    gallery_parser = subparsers.add_parser("gallery", help="Generate a static proof gallery")
+    gallery_parser.add_argument("output", help="Path to output gallery HTML")
+    gallery_parser.set_defaults(func=handle_gallery)
 
     # Backwards-compatible v0.2 CLI:
     #   render_architecture.py input.json output.svg

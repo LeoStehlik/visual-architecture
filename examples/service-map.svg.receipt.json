@@ -1,11 +1,12 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T21:16:56.452308+00:00",
+  "generatedAt": "2026-08-27T21:33:49.270824+00:00",
   "input": {
-    "bytes": 1719,
+    "bytes": 1745,
     "path": "examples/service-map.json",
-    "sha256": "561e30d1576141616c4ff944471fa3fa4425f2a6699cb6d993249ad8cebb948d"
+    "sha256": "a8626f8077b55aed2c3393d89e84201750c9b17c41b977b319e567aca2908258"
   },
+  "mode": "architecture",
   "output": {
     "bytes": 6534,
     "path": "examples/service-map.svg",
@@ -21,6 +22,8 @@
         "primary-data"
       ],
       "edges": 5,
+      "evidenceItems": 0,
+      "mode": "architecture",
       "nodeKinds": [
         "agent",
         "llm",
@@ -32,5 +35,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "0.3.0"
+  "version": "1.0.0"
 }

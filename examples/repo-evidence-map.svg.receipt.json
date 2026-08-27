@@ -1,15 +1,16 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T21:16:56.328941+00:00",
+  "generatedAt": "2026-08-27T21:33:48.905517+00:00",
   "input": {
-    "bytes": 2025,
+    "bytes": 2760,
     "path": "examples/repo-evidence-map.json",
-    "sha256": "5ead971d35bf6e16fbe88097827b009fa825491bea60dffb1f665121618a2a8b"
+    "sha256": "82d5c67123830127b2f2812aa8f10cb1f51845a7b12a8362e2173107fce77bf3"
   },
+  "mode": "architecture",
   "output": {
-    "bytes": 7774,
+    "bytes": 8764,
     "path": "examples/repo-evidence-map.svg",
-    "sha256": "e4bd67763133713dbb7c5ebc884df99c8b5aa7f9f602095323d2baac2456844c"
+    "sha256": "29c4bfbaf862a681c8501189cbfcc1e9af92b3a6eeda3336863558e2bbd2e7bd"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -21,6 +22,8 @@
         "primary-data"
       ],
       "edges": 6,
+      "evidenceItems": 3,
+      "mode": "architecture",
       "nodeKinds": [
         "agent",
         "memory",
@@ -31,5 +34,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "0.3.0"
+  "version": "1.0.0"
 }
