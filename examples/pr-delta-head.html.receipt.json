@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T21:45:17.422355+00:00",
+  "generatedAt": "2026-08-27T22:02:00.714905+00:00",
   "input": {
     "bytes": 855,
     "path": "examples/pr-delta-head.json",
@@ -28,10 +28,11 @@
         "memory",
         "service"
       ],
-      "nodes": 4
+      "nodes": 4,
+      "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.0.2"
+  "version": "1.1.0"
 }

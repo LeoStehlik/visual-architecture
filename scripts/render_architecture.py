@@ -20,16 +20,30 @@ NODE_STYLES = {
     "memory": {"fill": "#f8fafc", "stroke": "#14532d", "text": "#14532d"},
 }
 
+SHOWCASE_NODE_STYLES = {
+    "service": {"fill": "#0f172a", "stroke": "#38bdf8", "text": "#f8fafc", "muted": "#bfdbfe"},
+    "llm": {"fill": "#1e1b4b", "stroke": "#c4b5fd", "text": "#f5f3ff", "muted": "#ddd6fe"},
+    "agent": {"fill": "#111827", "stroke": "#fbbf24", "text": "#fffbeb", "muted": "#fde68a"},
+    "memory": {"fill": "#052e2b", "stroke": "#5eead4", "text": "#ecfeff", "muted": "#99f6e4"},
+}
+
 EDGE_STYLES = {
     "primary-data": {"stroke": "#2563eb", "dash": None, "label_fill": "#dbeafe", "label_text": "#1d4ed8"},
     "memory-write": {"stroke": "#16a34a", "dash": "10 8", "label_fill": "#dcfce7", "label_text": "#166534"},
     "control": {"stroke": "#475569", "dash": "6 6", "label_fill": "#e2e8f0", "label_text": "#334155"},
 }
 
+SHOWCASE_EDGE_STYLES = {
+    "primary-data": {"stroke": "#38bdf8", "dash": None, "label_fill": "#082f49", "label_text": "#e0f2fe", "label_stroke": "#164e63"},
+    "memory-write": {"stroke": "#5eead4", "dash": "10 8", "label_fill": "#042f2e", "label_text": "#ccfbf1", "label_stroke": "#0f766e"},
+    "control": {"stroke": "#fbbf24", "dash": "6 6", "label_fill": "#451a03", "label_text": "#fef3c7", "label_stroke": "#92400e"},
+}
+
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.0.2"
+VERSION = "1.1.0"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
+ALLOWED_THEMES = {"classic", "showcase"}
 
 
 def snap(value, grid):
@@ -43,6 +57,38 @@ def load(path):
 
 def spec_mode(data):
     return data.get("mode", "architecture") if isinstance(data, dict) else "architecture"
+
+
+def spec_theme(data):
+    return data.get("theme", "classic") if isinstance(data, dict) else "classic"
+
+
+def theme_pack(data):
+    if spec_theme(data) == "showcase":
+        return {
+            "name": "showcase",
+            "background": "#020617",
+            "grid": "#1e293b",
+            "halo": True,
+            "node": SHOWCASE_NODE_STYLES,
+            "edge": SHOWCASE_EDGE_STYLES,
+            "label_border": "#164e63",
+            "badge_fill": "#042f2e",
+            "badge_stroke": "#2dd4bf",
+            "badge_text": "#ccfbf1",
+        }
+    return {
+        "name": "classic",
+        "background": "#f8fafc",
+        "grid": "#e5e7eb",
+        "halo": False,
+        "node": NODE_STYLES,
+        "edge": EDGE_STYLES,
+        "label_border": "#ffffff",
+        "badge_fill": "#ecfeff",
+        "badge_stroke": "#0891b2",
+        "badge_text": "#0e7490",
+    }
 
 
 def sha256_text(text):
@@ -169,6 +215,15 @@ def validate(data):
             "subject": "mode",
             "message": f"mode must be one of {sorted(ALLOWED_MODES)}.",
             "supportedFixes": [{"field": "mode", "values": sorted(ALLOWED_MODES)}],
+        })
+
+    theme = spec_theme(data)
+    if theme not in ALLOWED_THEMES:
+        errors.append({
+            "code": "theme.unsupported",
+            "subject": "theme",
+            "message": f"theme must be one of {sorted(ALLOWED_THEMES)}.",
+            "supportedFixes": [{"field": "theme", "values": sorted(ALLOWED_THEMES)}],
         })
 
     title = data.get("title")
@@ -305,6 +360,7 @@ def validate(data):
         "warnings": warnings,
         "metrics": {
             "mode": mode,
+            "theme": theme,
             "nodes": len(nodes),
             "edges": len(edges),
             "evidenceItems": sum(len(evidence_items(node)) for node in nodes if isinstance(node, dict)) + sum(len(evidence_items(edge)) for edge in edges if isinstance(edge, dict)),
@@ -415,8 +471,9 @@ def arrow_head(a, b, size=9):
     return left, b, right
 
 
-def render_node(node):
-    style = NODE_STYLES.get(node.get("kind", "service"), NODE_STYLES["service"])
+def render_node(node, theme):
+    styles = theme["node"]
+    style = styles.get(node.get("kind", "service"), styles["service"])
     x = node["x"]
     y = node["y"]
     w = node["width"]
@@ -426,6 +483,18 @@ def render_node(node):
     shape_parts = []
     label_parts = []
     kind = node.get("kind", "service")
+
+    if theme["halo"]:
+        if kind == "agent":
+            cut = min(22, w * 0.14)
+            halo_points = [
+                (left + cut - 6, top - 6), (left + w - cut + 6, top - 6), (left + w + 8, y),
+                (left + w - cut + 6, top + h + 6), (left + cut - 6, top + h + 6), (left - 8, y)
+            ]
+            halo_points_str = " ".join(f"{px:.1f},{py:.1f}" for px, py in halo_points)
+            shape_parts.append(f'<polygon points="{halo_points_str}" fill="{style["stroke"]}" opacity="0.13"/>')
+        else:
+            shape_parts.append(f'<rect x="{left-8:.1f}" y="{top-8:.1f}" width="{w+16:.1f}" height="{h+16:.1f}" rx="18" fill="{style["stroke"]}" opacity="0.13"/>')
 
     if kind == "llm":
         shape_parts.append(f'<rect x="{left:.1f}" y="{top:.1f}" width="{w:.1f}" height="{h:.1f}" rx="16" fill="{style["fill"]}" stroke="{style["stroke"]}" stroke-width="2"/>')
@@ -452,21 +521,22 @@ def render_node(node):
 
     label_parts.append(f'<text x="{x:.1f}" y="{y - (4 if node.get("subtitle") else -6):.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="18" font-weight="600" fill="{style["text"]}">{escape(node["label"])}</text>')
     if node.get("subtitle"):
-        label_parts.append(f'<text x="{x:.1f}" y="{y + 18:.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="13" font-weight="500" fill="#475569">{escape(node["subtitle"])}</text>')
+        label_parts.append(f'<text x="{x:.1f}" y="{y + 18:.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="13" font-weight="500" fill="{style.get("muted", "#475569")}">{escape(node["subtitle"])}</text>')
     evidence_count = len(evidence_items(node))
     if evidence_count:
         badge = f"SRC {evidence_count}"
         badge_width = text_width(badge, 10) + 12
-        label_parts.append(f'<rect x="{left + w - badge_width - 10:.1f}" y="{top + 8:.1f}" width="{badge_width:.1f}" height="18" rx="9" fill="#ecfeff" stroke="#0891b2" stroke-width="1"/>')
-        label_parts.append(f'<text x="{left + w - badge_width / 2 - 10:.1f}" y="{top + 21:.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="10" font-weight="700" fill="#0e7490">{escape(badge)}</text>')
+        label_parts.append(f'<rect x="{left + w - badge_width - 10:.1f}" y="{top + 8:.1f}" width="{badge_width:.1f}" height="18" rx="9" fill="{theme["badge_fill"]}" stroke="{theme["badge_stroke"]}" stroke-width="1"/>')
+        label_parts.append(f'<text x="{left + w - badge_width / 2 - 10:.1f}" y="{top + 21:.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="10" font-weight="700" fill="{theme["badge_text"]}">{escape(badge)}</text>')
     return "\n".join(shape_parts), "\n".join(label_parts)
 
 
-def render_edge(edge, nodes):
+def render_edge(edge, nodes, theme):
     source = nodes[edge["from"]]
     target = nodes[edge["to"]]
     points = orthogonal_points(source, target, edge)
-    style = EDGE_STYLES.get(edge.get("kind", "control"), EDGE_STYLES["control"])
+    styles = theme["edge"]
+    style = styles.get(edge.get("kind", "control"), styles["control"])
     edge_parts = []
     label_parts = []
     dash = f' stroke-dasharray="{style["dash"]}"' if style["dash"] else ""
@@ -481,28 +551,36 @@ def render_edge(edge, nodes):
         label = edge["label"]
         width = text_width(label, 12) + 18
         height = 24
-        label_parts.append(f'<rect x="{lx - width/2:.1f}" y="{ly - height/2:.1f}" width="{width:.1f}" height="{height:.1f}" rx="6" fill="{style["label_fill"]}" stroke="#ffffff" stroke-width="2"/>')
+        label_parts.append(f'<rect x="{lx - width/2:.1f}" y="{ly - height/2:.1f}" width="{width:.1f}" height="{height:.1f}" rx="6" fill="{style["label_fill"]}" stroke="{style.get("label_stroke", theme["label_border"])}" stroke-width="2"/>')
         label_parts.append(f'<text x="{lx:.1f}" y="{ly + 4:.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="12" font-weight="600" fill="{style["label_text"]}">{escape(label)}</text>')
     return "\n".join(edge_parts), "\n".join(label_parts)
 
 
 def render(data):
+    theme = theme_pack(data)
     nodes = position_nodes(data["nodes"])
     xs = [n["x"] for n in nodes.values()]
     ys = [n["y"] for n in nodes.values()]
     widths = [n["width"] for n in nodes.values()]
     heights = [n["height"] for n in nodes.values()]
-    min_x = min(x - w / 2 for x, w in zip(xs, widths)) - PADDING
-    max_x = max(x + w / 2 for x, w in zip(xs, widths)) + PADDING
-    min_y = min(y - h / 2 for y, h in zip(ys, heights)) - PADDING
-    max_y = max(y + h / 2 for y, h in zip(ys, heights)) + PADDING
+    route_points = [
+        point
+        for edge in data.get("edges", [])
+        for point in orthogonal_points(nodes[edge["from"]], nodes[edge["to"]], edge)
+    ]
+    route_xs = [point[0] for point in route_points]
+    route_ys = [point[1] for point in route_points]
+    min_x = min([x - w / 2 for x, w in zip(xs, widths)] + route_xs) - PADDING
+    max_x = max([x + w / 2 for x, w in zip(xs, widths)] + route_xs) + PADDING
+    min_y = min([y - h / 2 for y, h in zip(ys, heights)] + route_ys) - PADDING
+    max_y = max([y + h / 2 for y, h in zip(ys, heights)] + route_ys) + PADDING
     width = max_x - min_x
     height = max_y - min_y
 
     edge_shapes = []
     edge_labels = []
     for edge in data.get("edges", []):
-        shape_svg, label_svg = render_edge(edge, nodes)
+        shape_svg, label_svg = render_edge(edge, nodes, theme)
         edge_shapes.append(shape_svg)
         if label_svg:
             edge_labels.append(label_svg)
@@ -510,7 +588,7 @@ def render(data):
     node_shapes = []
     node_labels = []
     for node in nodes.values():
-        shape_svg, label_svg = render_node(node)
+        shape_svg, label_svg = render_node(node, theme)
         node_shapes.append(shape_svg)
         if label_svg:
             node_labels.append(label_svg)
@@ -528,10 +606,10 @@ def render(data):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width:.1f}" height="{height:.1f}" viewBox="{min_x:.1f} {min_y:.1f} {width:.1f} {height:.1f}" role="img" aria-label="{title}">
   <defs>
     <pattern id="grid" width="{GRID_X}" height="{GRID_Y}" patternUnits="userSpaceOnUse">
-      <path d="M {GRID_X} 0 L 0 0 0 {GRID_Y}" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+      <path d="M {GRID_X} 0 L 0 0 0 {GRID_Y}" fill="none" stroke="{theme["grid"]}" stroke-width="1"/>
     </pattern>
   </defs>
-  <rect x="{min_x:.1f}" y="{min_y:.1f}" width="{width:.1f}" height="{height:.1f}" fill="#f8fafc"/>{grid_svg}
+  <rect x="{min_x:.1f}" y="{min_y:.1f}" width="{width:.1f}" height="{height:.1f}" fill="{theme["background"]}"/>{grid_svg}
   <g id="arrows">
 {edge_shapes_svg}
   </g>

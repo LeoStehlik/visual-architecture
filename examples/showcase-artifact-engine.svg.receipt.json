@@ -1,16 +1,16 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T22:02:01.401645+00:00",
+  "generatedAt": "2026-08-27T22:02:01.588178+00:00",
   "input": {
-    "bytes": 1745,
-    "path": "examples/service-map.json",
-    "sha256": "a8626f8077b55aed2c3393d89e84201750c9b17c41b977b319e567aca2908258"
+    "bytes": 1839,
+    "path": "examples/showcase-artifact-engine.json",
+    "sha256": "01e2be4842f3d94dc766492ebbd7891f4aee97a7b4dc759d3ba791c3d9ba9a59"
   },
-  "mode": "architecture",
+  "mode": "workflow",
   "output": {
-    "bytes": 6534,
-    "path": "examples/service-map.svg",
-    "sha256": "bc4054a429b214f34f3e8b957395b889135c0a6579462b1103c9bba0461b6b3c"
+    "bytes": 7974,
+    "path": "examples/showcase-artifact-engine.svg",
+    "sha256": "fa1ea07cd4a2bd9e936cf334399fb87278894ff08a00b190879ea13817376bd1"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -23,15 +23,15 @@
       ],
       "edges": 5,
       "evidenceItems": 0,
-      "mode": "architecture",
+      "mode": "workflow",
       "nodeKinds": [
         "agent",
         "llm",
         "memory",
         "service"
       ],
-      "nodes": 5,
-      "theme": "classic"
+      "nodes": 6,
+      "theme": "showcase"
     },
     "ok": true,
     "warnings": []

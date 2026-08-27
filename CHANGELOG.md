@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.0
+
+- Add a dark `showcase` render theme for README and release artifacts.
+- Add three checked showcase examples for the artifact workflow, repo evidence map, and PR delta review surface.
+- Replace the README first-screen diagram with generated showcase artifacts.
+
 ## v1.0.2
 
 - Release metadata repair so GitHub and ClawHub package versions both report the final v1 artifact-engine state cleanly.

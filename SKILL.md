@@ -2,7 +2,7 @@
 name: visual-architecture
 description: "Create deterministic, local-first architecture artifacts from typed JSON: validate specs, render restrained SVG/HTML diagrams, and emit receipts agents can cite."
 metadata:
-  version: "1.0.2"
+  version: "1.1.0"
 ---
 # Visual Architecture
 
@@ -14,6 +14,7 @@ Use this when the user needs a trustworthy system map, agent workflow, sequence,
 
 1. Create a JSON file with `mode`, `title`, `nodes`, and `edges`.
    - Supported modes: `architecture`, `workflow`, `sequence`, `dataflow`, `lifecycle`, `pr-delta`.
+   - Supported themes: `classic` for documentation, `showcase` for README/release proof images.
 2. Snap intended node positions to the renderer grid mentally before writing them:
    - horizontal grid: 120px
    - vertical grid: 80px
@@ -49,6 +50,7 @@ rsvg-convert -o output.png output.svg
 {
   "title": "Service Map",
   "mode": "architecture",
+  "theme": "classic",
   "summary": "One local request path with async work and model access.",
   "nodes": [
     {
@@ -95,6 +97,7 @@ Each node requires:
 Optional:
 - `subtitle`: smaller secondary label
 - `show_grid`: set true to display the editing grid in the exported SVG
+- `theme`: set `showcase` on the top-level spec for dark public-facing artifacts
 - `evidence`: object or list with `source`, optional `line`/`lines`, `commit`, `confidence`, and `note`
 
 ## Edge Kinds
