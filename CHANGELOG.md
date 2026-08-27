@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.5.1
+
+- Polish the generated Pages gallery artifact rail so the public showcase no longer exposes a native horizontal scrollbar.
+
 ## v1.5.0
 
 - Add `extract-repo` to create a first source-backed architecture spec from local repository structure.
