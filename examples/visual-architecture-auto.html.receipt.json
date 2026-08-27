@@ -1,16 +1,16 @@
 {
-  "artifactKind": "svg",
-  "generatedAt": "2026-08-27T23:34:01.589554+00:00",
+  "artifactKind": "html",
+  "generatedAt": "2026-08-27T23:34:01.794756+00:00",
   "input": {
-    "bytes": 3914,
-    "path": "examples/showcase-visual-architecture-case-study.json",
-    "sha256": "8c71b7ec5016ddca93fdc8e3c0c89ee3e90e2aeb3213175fbe584324bbc533e8"
+    "bytes": 4407,
+    "path": "examples/visual-architecture-auto.json",
+    "sha256": "392c6208e51d42ac5869c42d86a881f259aa2a9a93eebc301a0bdf32534dc71b"
   },
   "mode": "architecture",
   "output": {
-    "bytes": 12097,
-    "path": "examples/showcase-visual-architecture-case-study.svg",
-    "sha256": "baedf968a81fc3c4fdf4e9dc6bfb8a647abf82c458f519d79631921c95bb3510"
+    "bytes": 17317,
+    "path": "examples/visual-architecture-auto.html",
+    "sha256": "fb2b36cabcdc9feb0598e7585f3dd1028921fd9f58897fb278e30e6ca06c9525"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -26,11 +26,10 @@
       "mode": "architecture",
       "nodeKinds": [
         "agent",
-        "llm",
         "memory",
         "service"
       ],
-      "nodes": 6,
+      "nodes": 8,
       "quality": {
         "checks": [],
         "rating": "excellent",

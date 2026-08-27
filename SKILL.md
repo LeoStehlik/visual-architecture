@@ -2,29 +2,36 @@
 name: visual-architecture
 description: "Create deterministic, local-first architecture artifacts from typed JSON: validate specs, render restrained SVG/HTML diagrams, and emit receipts agents can cite."
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 # Visual Architecture
 
-Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG. v1.4 adds mode-specific visual grammar, quality scoring, story-aware galleries, and an evidence viewer for public case studies.
+Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG. v1.5 adds repo extraction, deterministic auto-layout, PR delta extraction, artifact bundles, quality fail gates, and evidence-backed gallery stories.
 
 Use this when the user needs a trustworthy system map, agent workflow, sequence, data-flow, lifecycle/state diagram, repo-evidence diagram, or PR delta review sketch that should stay local, deterministic, and reviewable.
 
 ## Workflow
 
-1. Create a JSON file with `mode`, `title`, `nodes`, and `edges`.
+1. Either extract a starter spec from a repo or create a JSON file with `mode`, `title`, `nodes`, and `edges`.
    - Supported modes: `architecture`, `workflow`, `sequence`, `dataflow`, `lifecycle`, `pr-delta`.
    - Supported themes: `classic` for documentation, `showcase` for README/release proof images.
 2. Snap intended node positions to the renderer grid mentally before writing them:
    - horizontal grid: 120px
    - vertical grid: 80px
-3. Validate first:
+3. For repo-aware drafts, extract and layout first:
+
+```bash
+python3 skills/visual-architecture/scripts/render_architecture.py extract-repo . --output repo-map.json
+python3 skills/visual-architecture/scripts/render_architecture.py layout repo-map.json repo-map.layout.json --mode architecture
+```
+
+4. Validate first:
 
 ```bash
 python3 skills/visual-architecture/scripts/render_architecture.py validate input.json --json
 ```
 
-4. Deliver the final artifact with a receipt:
+5. Deliver the final artifact with a receipt:
 
 ```bash
 python3 skills/visual-architecture/scripts/render_architecture.py deliver input.json output.html --json
@@ -38,7 +45,7 @@ For PR delta review, compare two specs:
 python3 skills/visual-architecture/scripts/render_architecture.py compare base.json head.json pr-delta.html --spec pr-delta.json --json
 ```
 
-5. If `rsvg-convert` is available and you need a bitmap preview, run:
+6. If `rsvg-convert` is available and you need a bitmap preview, run:
 
 ```bash
 rsvg-convert -o output.png output.svg
@@ -122,6 +129,8 @@ Optional:
 - Validate rejects unsupported node/edge kinds and unknown edge endpoints before rendering
 - Deliver writes the artifact atomically and emits a JSON receipt with SHA-256 hashes
 - Validation receipts include a quality score for spacing, density, route crossings, and visual overlap
+- `extract-repo`, `layout`, `extract-pr`, and `bundle` turn repo evidence into checked artifacts without hand-placing every node
+- `--min-quality` can fail delivery or bundle export when the artifact is not presentation-grade
 - The generated gallery can load spec/receipt JSON and show story steps plus source evidence
 - Evidence badges render as `SRC n` on nodes with source-backed evidence
 - PR delta compare writes added/removed node and edge facts into the receipt
