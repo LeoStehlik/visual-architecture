@@ -2,11 +2,11 @@
 name: visual-architecture
 description: "Create deterministic, local-first architecture artifacts from typed JSON: validate specs, render restrained SVG/HTML diagrams, and emit receipts agents can cite."
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 # Visual Architecture
 
-Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG.
+Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG. v1.4 adds mode-specific visual grammar, quality scoring, story-aware galleries, and an evidence viewer for public case studies.
 
 Use this when the user needs a trustworthy system map, agent workflow, sequence, data-flow, lifecycle/state diagram, repo-evidence diagram, or PR delta review sketch that should stay local, deterministic, and reviewable.
 
@@ -121,6 +121,8 @@ Optional:
 
 - Validate rejects unsupported node/edge kinds and unknown edge endpoints before rendering
 - Deliver writes the artifact atomically and emits a JSON receipt with SHA-256 hashes
+- Validation receipts include a quality score for spacing, density, route crossings, and visual overlap
+- The generated gallery can load spec/receipt JSON and show story steps plus source evidence
 - Evidence badges render as `SRC n` on nodes with source-backed evidence
 - PR delta compare writes added/removed node and edge facts into the receipt
 - Route arrows orthogonally only

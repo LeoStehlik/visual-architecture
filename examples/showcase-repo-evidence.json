@@ -114,5 +114,19 @@
       ],
       "label_segment": 1
     }
+  ],
+  "story": [
+    {
+      "title": "Author",
+      "text": "A compact JSON spec declares the artifact claim."
+    },
+    {
+      "title": "Validate",
+      "text": "Local checks verify structure, route hazards, evidence, and quality."
+    },
+    {
+      "title": "Deliver",
+      "text": "The tool writes SVG, HTML, share card, and receipt as one reviewable unit."
+    }
   ]
 }

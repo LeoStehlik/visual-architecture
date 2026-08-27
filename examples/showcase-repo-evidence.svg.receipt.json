@@ -1,16 +1,16 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T22:36:12.497676+00:00",
+  "generatedAt": "2026-08-27T23:03:19.335702+00:00",
   "input": {
-    "bytes": 2510,
+    "bytes": 2885,
     "path": "examples/showcase-repo-evidence.json",
-    "sha256": "fe28e204aa3f3eb6c18d423151b8f70d59b286473c80f1a17df69e65057a6894"
+    "sha256": "c8c582af993116134a0d193750272ce0e2fb06f6c4dd13b2681e1474fc245f6e"
   },
   "mode": "architecture",
   "output": {
-    "bytes": 9034,
+    "bytes": 10562,
     "path": "examples/showcase-repo-evidence.svg",
-    "sha256": "b97f59f5d2de7dd70f2924dd2c4835f53ff89c2ce575ce2ecdeebdffbd954cb5"
+    "sha256": "2a76f91c85482238bb9eb86c2cf5d688fa1d07cb3ad9bb7ecabbdbf91997d0a4"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -31,10 +31,16 @@
         "service"
       ],
       "nodes": 6,
+      "quality": {
+        "checks": [],
+        "rating": "excellent",
+        "routeCrossings": 0,
+        "score": 100
+      },
       "theme": "showcase"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.3.0"
+  "version": "1.4.0"
 }
