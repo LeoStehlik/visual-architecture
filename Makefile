@@ -19,6 +19,7 @@ validate:
 	done
 	python3 scripts/render_architecture.py compare examples/pr-delta-before.json examples/pr-delta-head.json /tmp/visual-architecture-validate/pr-delta-generated.html --spec /tmp/visual-architecture-validate/pr-delta-generated.json --json >/dev/null
 	python3 scripts/render_architecture.py gallery /tmp/visual-architecture-validate/gallery.html >/dev/null
+	python3 -m json.tool examples/showcase-artifact-engine.html.receipt.json >/dev/null
 	@echo VALIDATE_OK
 
 examples:
@@ -31,3 +32,4 @@ examples:
 	python3 scripts/render_architecture.py compare examples/pr-delta-before.json examples/pr-delta-head.json examples/pr-delta-generated.html --spec examples/pr-delta-generated.json --receipt examples/pr-delta-generated.html.receipt.json >/dev/null
 	python3 scripts/render_architecture.py share-card examples/pr-delta-generated.json examples/pr-delta-generated.share-card.svg >/dev/null
 	python3 scripts/render_architecture.py gallery docs/gallery.html >/dev/null
+	python3 scripts/render_architecture.py gallery index.html >/dev/null

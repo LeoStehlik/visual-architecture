@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.0
+
+- Add a generated GitHub Pages gallery site as the visual browsing surface.
+- Remove the README gallery tables that pushed visitors into raw GitHub file views.
+- Generate both root `index.html` and `docs/gallery.html` from the local examples.
+
 ## v1.1.1
 
 - Repair package metadata after the v1.1.0 ClawHub publish became non-inspectable.

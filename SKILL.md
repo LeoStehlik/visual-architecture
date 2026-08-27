@@ -2,7 +2,7 @@
 name: visual-architecture
 description: "Create deterministic, local-first architecture artifacts from typed JSON: validate specs, render restrained SVG/HTML diagrams, and emit receipts agents can cite."
 metadata:
-  version: "1.1.1"
+  version: "1.2.0"
 ---
 # Visual Architecture
 

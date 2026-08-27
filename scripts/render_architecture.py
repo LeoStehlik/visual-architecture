@@ -41,7 +41,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.1.1"
+VERSION = "1.2.0"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 
@@ -893,22 +893,172 @@ def handle_share_card(args):
 
 
 def handle_gallery(args):
+    output_path = Path(args.output)
+    link_prefix = "" if output_path.parent == Path(".") else "../"
     rows = []
     for spec_path in sorted(Path("examples").glob("*.json")):
         if spec_path.name.endswith(".receipt.json") or spec_path.name.endswith("-before.json") or spec_path.name.endswith("-head.json"):
             continue
         data = load(spec_path)
         name = spec_path.stem
-        rows.append((data.get("title", name), spec_mode(data), spec_path, Path("examples") / f"{name}.html", Path("examples") / f"{name}.svg"))
-    cards = "\n".join(
-        f'<article><h2>{escape(title)}</h2><p>{escape(mode)}</p><a href="../{html}">HTML</a> · <a href="../{svg}">SVG</a> · <a href="../{spec}">Spec</a></article>'
-        for title, mode, spec, html, svg in rows
+        rows.append({
+            "title": data.get("title", name),
+            "summary": data.get("summary", "Generated local architecture artifact."),
+            "mode": spec_mode(data),
+            "theme": spec_theme(data),
+            "spec": spec_path,
+            "html": Path("examples") / f"{name}.html",
+            "svg": Path("examples") / f"{name}.svg",
+            "receipt": Path("examples") / f"{name}.html.receipt.json",
+        })
+
+    showcase = [row for row in rows if row["theme"] == "showcase"]
+    featured = showcase or rows[:3]
+    featured_html = "\n".join(
+        f'''      <article class="feature">
+        <img src="{link_prefix}{row["svg"]}" alt="{escape(row["title"])}">
+        <div>
+          <h2>{escape(row["title"])}</h2>
+          <p>{escape(row["summary"])}</p>
+          <nav aria-label="{escape(row["title"])} links">
+            <a href="{link_prefix}{row["html"]}">Open artifact</a>
+            <a href="{link_prefix}{row["spec"]}">Spec</a>
+            <a href="{link_prefix}{row["receipt"]}">Receipt</a>
+          </nav>
+        </div>
+      </article>'''
+        for row in featured[:3]
+    )
+    rows_html = "\n".join(
+        f'''        <tr>
+          <td><strong>{escape(row["title"])}</strong><span>{escape(row["summary"])}</span></td>
+          <td>{escape(row["mode"])}</td>
+          <td>{escape(row["theme"])}</td>
+          <td><a href="{link_prefix}{row["html"]}">HTML</a></td>
+          <td><a href="{link_prefix}{row["svg"]}">SVG</a></td>
+          <td><a href="{link_prefix}{row["spec"]}">JSON</a></td>
+          <td><a href="{link_prefix}{row["receipt"]}">Receipt</a></td>
+        </tr>'''
+        for row in rows
     )
     html = f'''<!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>visual-architecture proof gallery</title>
-<style>body{{margin:0;font-family:Inter,system-ui,sans-serif;background:#0f172a;color:#f8fafc}}main{{max-width:1120px;margin:0 auto;padding:40px 24px}}h1{{font-size:42px;margin:0 0 12px}}p{{color:#cbd5e1}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:28px}}article{{background:#f8fafc;color:#0f172a;border-radius:8px;padding:18px;border:1px solid #cbd5e1}}a{{color:#1d4ed8;font-weight:700}}</style></head>
-<body><main><h1>visual-architecture proof gallery</h1><p>Checked specs, generated artifacts, and receipts from the local deterministic renderer.</p><section class="grid">{cards}</section></main></body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>visual-architecture gallery</title>
+  <style>
+    :root {{
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-2: #0f172a;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --primary: #58a6ff;
+      --accent: #f78166;
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      line-height: 1.5;
+    }}
+    a {{ color: var(--primary); font-weight: 650; text-decoration: none; }}
+    a:hover {{ text-decoration: underline; }}
+    main {{ max-width: 1220px; margin: 0 auto; padding: 32px 20px 56px; }}
+    header {{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+    }}
+    h1 {{ margin: 0 0 8px; font-size: clamp(30px, 5vw, 56px); line-height: 1.02; letter-spacing: 0; }}
+    header p {{ max-width: 760px; margin: 0; color: var(--muted); font-size: 17px; }}
+    .actions {{ display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }}
+    .actions a, .feature nav a {{
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 11px;
+      background: var(--surface);
+    }}
+    .features {{ display: grid; gap: 20px; }}
+    .feature {{
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: 20px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }}
+    .feature img {{
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #020617;
+    }}
+    .feature h2 {{ margin: 0 0 8px; font-size: 24px; line-height: 1.15; letter-spacing: 0; }}
+    .feature p {{ margin: 0 0 16px; color: var(--muted); }}
+    .feature nav {{ display: flex; flex-wrap: wrap; gap: 8px; }}
+    .index {{ margin-top: 32px; }}
+    .index h2 {{ margin: 0 0 12px; font-size: 22px; letter-spacing: 0; }}
+    .table-wrap {{ overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }}
+    table {{ width: 100%; border-collapse: collapse; min-width: 900px; background: var(--surface); }}
+    th, td {{ padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }}
+    th {{ color: #f0f6fc; background: var(--surface-2); font-size: 13px; }}
+    td {{ color: var(--text); font-size: 14px; }}
+    td span {{ display: block; color: var(--muted); margin-top: 3px; max-width: 540px; }}
+    tr:last-child td {{ border-bottom: 0; }}
+    footer {{ margin-top: 24px; color: var(--muted); font-size: 13px; }}
+    @media (max-width: 780px) {{
+      header, .feature {{ grid-template-columns: 1fr; }}
+      .actions {{ justify-content: flex-start; }}
+      main {{ padding-inline: 14px; }}
+    }}
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>visual-architecture</h1>
+        <p>Generated architecture artifacts with specs, receipts, source evidence, and PR delta surfaces. This gallery is built from the same checked JSON examples that CI validates.</p>
+      </div>
+      <nav class="actions" aria-label="Project links">
+        <a href="{link_prefix}README.md">README</a>
+        <a href="{link_prefix}examples/showcase-artifact-engine.json">Hero spec</a>
+        <a href="{link_prefix}docs/diagnostics.md">Diagnostics</a>
+      </nav>
+    </header>
+    <section class="features" aria-label="Featured artifacts">
+{featured_html}
+    </section>
+    <section class="index" aria-label="Artifact index">
+      <h2>Checked Artifacts</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Artifact</th><th>Mode</th><th>Theme</th><th>HTML</th><th>SVG</th><th>Spec</th><th>Receipt</th></tr></thead>
+          <tbody>
+{rows_html}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <footer>Generated by visual-architecture from local specs. No hosted editor, no repo upload, no hidden layout service.</footer>
+  </main>
+</body>
 </html>
 '''
     write_atomic(args.output, html)
