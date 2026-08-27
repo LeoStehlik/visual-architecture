@@ -1,0 +1,204 @@
+{
+  "edges": [
+    {
+      "from": "skill",
+      "kind": "control",
+      "label": "guides",
+      "source_side": "right",
+      "target_side": "top",
+      "to": "renderer",
+      "via": [
+        {
+          "x": 360,
+          "y": 400
+        },
+        {
+          "x": 360,
+          "y": 80
+        },
+        {
+          "x": 840,
+          "y": 80
+        }
+      ]
+    },
+    {
+      "from": "schemas",
+      "kind": "control",
+      "label": "validate",
+      "to": "renderer"
+    },
+    {
+      "from": "renderer",
+      "kind": "primary-data",
+      "label": "generate",
+      "to": "examples"
+    },
+    {
+      "from": "examples",
+      "kind": "primary-data",
+      "label": "publish",
+      "to": "gallery"
+    },
+    {
+      "from": "ci",
+      "kind": "control",
+      "label": "deploy",
+      "to": "gallery"
+    },
+    {
+      "from": "gallery",
+      "kind": "memory-write",
+      "label": "ship",
+      "source_side": "right",
+      "target_side": "right",
+      "to": "release",
+      "via": [
+        {
+          "x": 1440,
+          "y": 400
+        },
+        {
+          "x": 1440,
+          "y": 880
+        }
+      ]
+    }
+  ],
+  "mode": "architecture",
+  "nodes": [
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "source": "SKILL.md"
+      },
+      "group": "source",
+      "id": "repo",
+      "kind": "memory",
+      "label": "visual-architecture",
+      "subtitle": "local checkout",
+      "x": 120,
+      "y": 160
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 2,
+        "source": "SKILL.md"
+      },
+      "group": "source",
+      "id": "skill",
+      "kind": "service",
+      "label": "Skill Contract",
+      "subtitle": "agent instructions",
+      "x": 120,
+      "y": 400
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 415,
+        "source": "scripts/render_architecture.py"
+      },
+      "group": "runtime",
+      "id": "renderer",
+      "kind": "agent",
+      "label": "Renderer CLI",
+      "subtitle": "validate, layout, deliver",
+      "x": 840,
+      "y": 160
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "source": "schemas/common.schema.json"
+      },
+      "group": "contract",
+      "id": "schemas",
+      "kind": "memory",
+      "label": "Schemas",
+      "subtitle": "typed JSON shapes",
+      "x": 480,
+      "y": 160
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "source": "examples/showcase-visual-architecture-case-study.json"
+      },
+      "group": "proof",
+      "id": "examples",
+      "kind": "memory",
+      "label": "Checked Examples",
+      "subtitle": "specs and artifacts",
+      "x": 1200,
+      "y": 160
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "source": "index.html"
+      },
+      "group": "proof",
+      "id": "gallery",
+      "kind": "service",
+      "label": "Gallery Site",
+      "subtitle": "Pages evidence viewer",
+      "x": 1200,
+      "y": 400
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "source": ".github/workflows/validate.yml"
+      },
+      "group": "proof",
+      "id": "ci",
+      "kind": "agent",
+      "label": "GitHub Actions",
+      "subtitle": "validate and Pages",
+      "x": 1200,
+      "y": 640
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 3,
+        "source": "CHANGELOG.md"
+      },
+      "group": "proof",
+      "id": "release",
+      "kind": "service",
+      "label": "Release Surface",
+      "subtitle": "README and changelog",
+      "x": 1200,
+      "y": 880
+    }
+  ],
+  "story": [
+    {
+      "text": "Scan repository structure for scripts, schemas, examples, docs, CI, and release files.",
+      "title": "Extract"
+    },
+    {
+      "text": "Attach file and line evidence to every generated architecture claim.",
+      "title": "Cite"
+    },
+    {
+      "text": "Apply architecture layout so the first draft is readable without hand-placed coordinates.",
+      "title": "Layout"
+    },
+    {
+      "text": "Generate SVG, HTML, share card, and receipt for the public gallery.",
+      "title": "Deliver"
+    }
+  ],
+  "summary": "Generated from local repository files with source evidence attached to each extracted node.",
+  "theme": "showcase",
+  "title": "Generated Repo Evidence Map"
+}

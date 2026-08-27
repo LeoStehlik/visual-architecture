@@ -41,7 +41,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 
@@ -298,6 +298,248 @@ def quality_profile(data, placed, edges, warnings):
     score = max(0, min(100, score))
     rating = "excellent" if score >= 90 else "good" if score >= 76 else "needs-work" if score >= 60 else "poor"
     return {"score": score, "rating": rating, "checks": checks, "routeCrossings": crossing_count}
+
+
+QUALITY_ORDER = {"poor": 0, "needs-work": 1, "good": 2, "excellent": 3}
+
+
+def quality_meets(validation, minimum):
+    if not minimum:
+        return True
+    quality = validation.get("metrics", {}).get("quality", {})
+    rating = quality.get("rating", "poor")
+    return QUALITY_ORDER.get(rating, -1) >= QUALITY_ORDER.get(minimum, 999)
+
+
+def first_existing(root, candidates):
+    for candidate in candidates:
+        if (root / candidate).exists():
+            return candidate
+    return candidates[0]
+
+
+def find_line(root, rel_path, needle):
+    path = root / rel_path
+    if not path.exists():
+        return 1
+    for index, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), start=1):
+        if needle in line:
+            return index
+    return 1
+
+
+def evidence(root, rel_path, needle=None, confidence="high", note=None):
+    item = {"source": rel_path, "line": find_line(root, rel_path, needle) if needle else 1, "confidence": confidence}
+    if note:
+        item["note"] = note
+    return item
+
+
+def layout_spec(data, mode=None, theme=None):
+    data = json.loads(json.dumps(data))
+    mode = mode or spec_mode(data)
+    if theme:
+        data["theme"] = theme
+    data["mode"] = mode
+    nodes = data.get("nodes", [])
+
+    if mode == "workflow":
+        rows = {}
+        for node in nodes:
+            lane = node.get("lane") or node.get("phase") or node.get("group") or "flow"
+            rows.setdefault(lane, []).append(node)
+        for row_index, lane_nodes in enumerate(rows.values()):
+            for col_index, node in enumerate(lane_nodes):
+                node["x"] = 120 + col_index * 300
+                node["y"] = 160 + row_index * 160
+    elif mode == "sequence":
+        for index, node in enumerate(nodes):
+            node["x"] = 120 + index * 240
+            node["y"] = 160
+        order = {node.get("id"): index for index, node in enumerate(nodes)}
+        for edge in data.get("edges", []):
+            source_index = order.get(edge.get("from"), 0)
+            target_index = order.get(edge.get("to"), source_index + 1)
+            edge.setdefault("source_side", "bottom")
+            edge.setdefault("target_side", "bottom")
+            edge.setdefault("via", [
+                {"x": 120 + source_index * 240, "y": 260 + abs(source_index - target_index) * 40},
+                {"x": 120 + target_index * 240, "y": 260 + abs(source_index - target_index) * 40},
+            ])
+    elif mode == "lifecycle":
+        for index, node in enumerate(nodes):
+            node["x"] = 120 + index * 240
+            node["y"] = 160 + (80 if index % 2 else 0)
+    elif mode == "pr-delta":
+        columns = {"base": 120, "head": 120, "changed": 480, "added": 480, "removed": 480, "risk": 840, "review": 840, "receipt": 1200}
+        y_slots = {
+            "base": [160],
+            "head": [400],
+            "changed": [160, 400, 640],
+            "added": [160, 400, 640],
+            "removed": [160, 400, 640],
+            "risk": [400],
+            "review": [400],
+            "receipt": [400],
+        }
+        seen = {}
+        for index, node in enumerate(nodes):
+            key = node.get("group") or node.get("id", "")
+            node["x"] = columns.get(key, 120 + min(index, 3) * 360)
+            slot_index = seen.get(key, 0)
+            slots = y_slots.get(key, [160, 400, 640])
+            node["y"] = slots[min(slot_index, len(slots) - 1)]
+            seen[key] = slot_index + 1
+    else:
+        groups = {}
+        for node in nodes:
+            group = node.get("group") or node.get("zone") or node.get("kind", "runtime")
+            groups.setdefault(group, []).append(node)
+        preferred = {"source": 0, "contract": 1, "runtime": 2, "proof": 3}
+        ordered_groups = sorted(groups.items(), key=lambda item: (preferred.get(item[0], 99), item[0]))
+        for col_index, (_, group_nodes) in enumerate(ordered_groups):
+            for row_index, node in enumerate(group_nodes):
+                node["x"] = 120 + col_index * 360
+                node["y"] = 160 + row_index * 240
+
+    return data
+
+
+def repo_file_facts(root):
+    root = Path(root)
+    files = {str(path.relative_to(root)) for path in root.rglob("*") if path.is_file() and ".git" not in path.parts}
+    return files
+
+
+def extract_repo_spec(root_path, title=None, theme="showcase"):
+    root = Path(root_path).resolve()
+    files = repo_file_facts(root)
+    nodes = []
+    edges = []
+
+    def has_any(prefixes):
+        return any(any(file == prefix or file.startswith(prefix + "/") for file in files) for prefix in prefixes)
+
+    skill_file = first_existing(root, ["SKILL.md", "README.md"])
+    nodes.append({"id": "repo", "label": root.name, "subtitle": "local checkout", "kind": "memory", "group": "source", "evidence": evidence(root, skill_file)})
+    nodes.append({"id": "skill", "label": "Skill Contract", "subtitle": "agent instructions", "kind": "service", "group": "source", "evidence": evidence(root, skill_file, "name:")})
+
+    if "scripts/render_architecture.py" in files:
+        nodes.append({"id": "renderer", "label": "Renderer CLI", "subtitle": "validate, layout, deliver", "kind": "agent", "group": "runtime", "evidence": evidence(root, "scripts/render_architecture.py", "def main")})
+        edges.append({"from": "skill", "to": "renderer", "kind": "control", "label": "guides", "source_side": "right", "target_side": "top", "via": [{"x": 360, "y": 400}, {"x": 360, "y": 80}, {"x": 840, "y": 80}]})
+    if has_any(["schemas"]):
+        nodes.append({"id": "schemas", "label": "Schemas", "subtitle": "typed JSON shapes", "kind": "memory", "group": "contract", "evidence": evidence(root, first_existing(root, ["schemas/common.schema.json", "schemas/architecture.schema.json"]) )})
+        edges.append({"from": "schemas", "to": "renderer", "kind": "control", "label": "validate"})
+    if has_any(["examples"]):
+        nodes.append({"id": "examples", "label": "Checked Examples", "subtitle": "specs and artifacts", "kind": "memory", "group": "proof", "evidence": evidence(root, first_existing(root, ["examples/showcase-visual-architecture-case-study.json", "examples/service-map.json"]) )})
+        edges.append({"from": "renderer", "to": "examples", "kind": "primary-data", "label": "generate"})
+    if "index.html" in files or has_any(["docs"]):
+        nodes.append({"id": "gallery", "label": "Gallery Site", "subtitle": "Pages evidence viewer", "kind": "service", "group": "proof", "evidence": evidence(root, first_existing(root, ["index.html", "docs/gallery.html"]) )})
+        edges.append({"from": "examples", "to": "gallery", "kind": "primary-data", "label": "publish"})
+    if has_any([".github/workflows"]):
+        workflow = first_existing(root, [".github/workflows/validate.yml", ".github/workflows/pages.yml"])
+        nodes.append({"id": "ci", "label": "GitHub Actions", "subtitle": "validate and Pages", "kind": "agent", "group": "proof", "evidence": evidence(root, workflow)})
+        edges.append({"from": "ci", "to": "gallery", "kind": "control", "label": "deploy"})
+    if "CHANGELOG.md" in files:
+        nodes.append({"id": "release", "label": "Release Surface", "subtitle": "README and changelog", "kind": "service", "group": "proof", "evidence": evidence(root, "CHANGELOG.md", "v1.")})
+        edges.append({"from": "gallery", "to": "release", "kind": "memory-write", "label": "ship", "source_side": "right", "target_side": "right", "via": [{"x": 1440, "y": 400}, {"x": 1440, "y": 880}]})
+
+    spec = {
+        "mode": "architecture",
+        "theme": theme,
+        "title": title or f"{root.name} Repo Evidence Map",
+        "summary": "Generated from local repository files with source evidence attached to each extracted node.",
+        "story": [
+            {"title": "Extract", "text": "Scan repository structure for scripts, schemas, examples, docs, CI, and release files."},
+            {"title": "Cite", "text": "Attach file and line evidence to every generated architecture claim."},
+            {"title": "Layout", "text": "Apply architecture layout so the first draft is readable without hand-placed coordinates."},
+            {"title": "Deliver", "text": "Generate SVG, HTML, share card, and receipt for the public gallery."},
+        ],
+        "nodes": nodes,
+        "edges": edges,
+    }
+    return layout_spec(spec, "architecture", theme=theme)
+
+
+def changed_files(base, head):
+    import subprocess
+    if head == "WORKTREE":
+        command = ["git", "diff", "--name-status", base]
+    else:
+        command = ["git", "diff", "--name-status", f"{base}..{head}"]
+    result = subprocess.run(command, text=True, capture_output=True, check=False)
+    if result.returncode != 0:
+        return []
+    changes = []
+    for line in result.stdout.splitlines():
+        parts = line.split("\t")
+        if len(parts) >= 2:
+            changes.append((parts[0], parts[-1]))
+    return changes
+
+
+def extract_pr_spec(base, head, root_path=".", theme="showcase"):
+    root = Path(root_path).resolve()
+    changes = changed_files(base, head)
+    buckets = {"source": [], "docs": [], "examples": [], "ci": [], "schemas": [], "other": []}
+    for status, file in changes:
+        if file.startswith("scripts/"):
+            buckets["source"].append((status, file))
+        elif file.startswith("docs/") or file in ("README.md", "CHANGELOG.md", "SKILL.md"):
+            buckets["docs"].append((status, file))
+        elif file.startswith("examples/") or file in ("index.html",):
+            buckets["examples"].append((status, file))
+        elif file.startswith(".github/"):
+            buckets["ci"].append((status, file))
+        elif file.startswith("schemas/"):
+            buckets["schemas"].append((status, file))
+        else:
+            buckets["other"].append((status, file))
+
+    def subtitle(items):
+        if not items:
+            return "no changes"
+        first = f"{items[0][0]} {Path(items[0][1]).name}"
+        if len(items) == 1:
+            return first
+        return f"{len(items)} files, first: {first}"
+
+    nodes = [
+        {"id": "base", "label": "Base", "subtitle": base, "kind": "memory", "group": "base"},
+        {"id": "head", "label": "Head", "subtitle": head, "kind": "memory", "group": "head"},
+        {"id": "source", "label": "Source Changes", "subtitle": subtitle(buckets["source"]), "kind": "agent", "group": "changed"},
+        {"id": "examples", "label": "Artifact Changes", "subtitle": subtitle(buckets["examples"]), "kind": "service", "group": "changed"},
+        {"id": "docs", "label": "Docs/Positioning", "subtitle": subtitle(buckets["docs"]), "kind": "service", "group": "changed"},
+        {"id": "review", "label": "Review Focus", "subtitle": f"{len(changes)} changed files", "kind": "llm", "group": "risk"},
+        {"id": "receipt", "label": "Delta Receipt", "subtitle": "generated facts", "kind": "memory", "group": "receipt"},
+    ]
+    for node in nodes:
+        if node["id"] in buckets and buckets[node["id"]]:
+            node["evidence"] = evidence(root, buckets[node["id"]][0][1])
+    edges = [
+        {"from": "base", "to": "source", "kind": "control", "label": "compare"},
+        {"from": "head", "to": "examples", "kind": "control", "label": "compare"},
+        {"from": "source", "to": "review", "kind": "primary-data", "label": "runtime"},
+        {"from": "examples", "to": "review", "kind": "primary-data", "label": "artifacts"},
+        {"from": "docs", "to": "review", "kind": "control", "label": "position"},
+        {"from": "review", "to": "receipt", "kind": "memory-write", "label": "facts"},
+    ]
+    spec = {
+        "mode": "pr-delta",
+        "theme": theme,
+        "title": "Generated PR Delta Review",
+        "summary": f"Generated from git diff {base}..{head}: {len(changes)} changed files grouped into review surfaces.",
+        "story": [
+            {"title": "Diff", "text": f"Read changed files from {base}..{head}."},
+            {"title": "Group", "text": "Separate source, examples, docs, schemas, and CI changes."},
+            {"title": "Review", "text": "Turn changed files into a PR-ready architecture review surface."},
+        ],
+        "nodes": nodes,
+        "edges": edges,
+        "delta": {"base": base, "head": head, "changedFiles": [{"status": status, "path": file} for status, file in changes]},
+    }
+    return layout_spec(spec, "pr-delta", theme=theme)
+
 
 def validate(data):
     errors = []
@@ -1167,7 +1409,7 @@ def handle_gallery(args):
       max-width: 100%;
       overflow: hidden;
     }}
-    .rail, .stage, .details, .index {{
+    .rail, .stage, .details, .index, .journey {{
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -1267,6 +1509,11 @@ def handle_gallery(args):
     }}
     .fact strong {{ color: var(--text); font-weight: 700; }}
     .links {{ display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }}
+    .journey {{ margin-bottom: 14px; padding: 16px; }}
+    .journey-grid {{ display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }}
+    .journey-step {{ border: 1px solid var(--border); border-radius: 8px; padding: 11px; background: var(--surface-3); }}
+    .journey-step strong {{ display: block; margin-bottom: 5px; }}
+    .journey-step span {{ color: var(--muted); font-size: 13px; }}
     .index {{ margin-top: 32px; }}
     .index {{ padding: 16px; }}
     .table-wrap {{ overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }}
@@ -1287,6 +1534,7 @@ def handle_gallery(args):
       .actions {{ justify-content: flex-start; }}
       .stage-bar {{ display: grid; justify-content: stretch; }}
       #stage-open {{ justify-self: start; }}
+      .journey-grid {{ grid-template-columns: 1fr; }}
       .rail {{ order: 1; overflow: hidden; }}
       .stage {{ order: 2; max-width: calc(100vw - 28px); }}
       .details {{ order: 3; max-width: calc(100vw - 28px); }}
@@ -1308,6 +1556,16 @@ def handle_gallery(args):
         <a href="{link_prefix}docs/diagnostics.md">Diagnostics</a>
       </nav>
     </header>
+    <section class="journey" aria-label="Generated artifact workflow">
+      <h2>Repo to artifact</h2>
+      <div class="journey-grid">
+        <div class="journey-step"><strong>Extract</strong><span>Read repo files and attach source evidence.</span></div>
+        <div class="journey-step"><strong>Layout</strong><span>Apply deterministic mode-aware placement.</span></div>
+        <div class="journey-step"><strong>Validate</strong><span>Score quality, routes, density, and evidence.</span></div>
+        <div class="journey-step"><strong>Bundle</strong><span>Write HTML, SVG, share card, receipt, and manifest.</span></div>
+        <div class="journey-step"><strong>Review</strong><span>Open the gallery and inspect claims with receipts.</span></div>
+      </div>
+    </section>
     <section class="studio" aria-label="Interactive artifact viewer">
       <aside class="rail">
         <h2>Artifacts</h2>
@@ -1474,6 +1732,66 @@ def handle_gallery(args):
     return 0
 
 
+
+
+def handle_layout(args):
+    data = load(args.input)
+    laid_out = layout_spec(data, args.mode or spec_mode(data), theme=args.theme)
+    validation = validate(laid_out)
+    write_atomic(args.output, json.dumps(laid_out, indent=2, sort_keys=True) + "\n")
+    print_json({"ok": validation["ok"], "output": args.output, "validation": validation})
+    return 0 if validation["ok"] else 1
+
+
+def handle_extract_repo(args):
+    spec = extract_repo_spec(args.root, title=args.title, theme=args.theme)
+    validation = validate(spec)
+    write_atomic(args.output, json.dumps(spec, indent=2, sort_keys=True) + "\n")
+    print_json({"ok": validation["ok"], "output": args.output, "validation": validation})
+    return 0 if validation["ok"] else 1
+
+
+def handle_extract_pr(args):
+    spec = extract_pr_spec(args.base, args.head, root_path=args.root, theme=args.theme)
+    validation = validate(spec)
+    write_atomic(args.output, json.dumps(spec, indent=2, sort_keys=True) + "\n")
+    print_json({"ok": validation["ok"], "output": args.output, "changedFiles": len(spec.get("delta", {}).get("changedFiles", [])), "validation": validation})
+    return 0 if validation["ok"] else 1
+
+
+def handle_bundle(args):
+    data = load(args.input)
+    validation = validate(data)
+    min_quality = getattr(args, "min_quality", None)
+    if not validation["ok"] or (min_quality and not quality_meets(validation, min_quality)):
+        print_json({"ok": False, "reason": "validation" if not validation["ok"] else "quality.threshold", "validation": validation})
+        return 1
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    stem = Path(args.input).stem
+    svg_path = output_dir / f"{stem}.svg"
+    html_path = output_dir / f"{stem}.html"
+    card_path = output_dir / f"{stem}.share-card.svg"
+    manifest_path = output_dir / f"{stem}.bundle.json"
+    svg = render(data)
+    write_atomic(svg_path, svg)
+    write_atomic(html_path, render_html(data, svg, args.input))
+    write_atomic(card_path, render_share_card(data, args.input))
+    receipt = receipt_for(args.input, html_path, validation, "html")
+    receipt_path = output_dir / f"{stem}.html.receipt.json"
+    write_atomic(receipt_path, json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+    manifest = {
+        "tool": "visual-architecture",
+        "version": VERSION,
+        "input": args.input,
+        "artifacts": {"svg": str(svg_path), "html": str(html_path), "shareCard": str(card_path), "receipt": str(receipt_path)},
+        "quality": validation.get("metrics", {}).get("quality", {}),
+    }
+    write_atomic(manifest_path, json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    print_json({"ok": True, "manifest": str(manifest_path), "quality": manifest["quality"]})
+    return 0
+
+
 def handle_render(args):
     data = load(args.input)
     validation = validate(data)
@@ -1490,6 +1808,10 @@ def handle_deliver(args):
     validation = validate(data)
     if not validation["ok"]:
         print_json({"ok": False, "validation": validation})
+        return 1
+    min_quality = getattr(args, "min_quality", None)
+    if min_quality and not quality_meets(validation, min_quality):
+        print_json({"ok": False, "reason": "quality.threshold", "minimum": min_quality, "validation": validation})
         return 1
 
     svg = render(data)
@@ -1528,6 +1850,7 @@ def main():
     deliver_parser.add_argument("input", help="Path to architecture JSON")
     deliver_parser.add_argument("output", help="Path to output SVG or HTML")
     deliver_parser.add_argument("--receipt", help="Path to output receipt JSON")
+    deliver_parser.add_argument("--min-quality", choices=sorted(QUALITY_ORDER), help="Fail delivery unless the quality rating meets this threshold")
     deliver_parser.add_argument("--json", action="store_true", help="Print the full delivery receipt")
     deliver_parser.set_defaults(func=handle_deliver)
 
@@ -1548,6 +1871,34 @@ def main():
     gallery_parser = subparsers.add_parser("gallery", help="Generate a static proof gallery")
     gallery_parser.add_argument("output", help="Path to output gallery HTML")
     gallery_parser.set_defaults(func=handle_gallery)
+
+    layout_parser = subparsers.add_parser("layout", help="Apply deterministic mode-aware layout to a spec")
+    layout_parser.add_argument("input", help="Path to input JSON")
+    layout_parser.add_argument("output", help="Path to output JSON")
+    layout_parser.add_argument("--mode", choices=sorted(ALLOWED_MODES), help="Override the spec mode before layout")
+    layout_parser.add_argument("--theme", choices=sorted(ALLOWED_THEMES), help="Override the output theme")
+    layout_parser.set_defaults(func=handle_layout)
+
+    extract_repo_parser = subparsers.add_parser("extract-repo", help="Extract a first architecture spec from a local repo")
+    extract_repo_parser.add_argument("root", help="Repository root to scan")
+    extract_repo_parser.add_argument("--output", required=True, help="Path to output spec JSON")
+    extract_repo_parser.add_argument("--title", help="Override generated artifact title")
+    extract_repo_parser.add_argument("--theme", choices=sorted(ALLOWED_THEMES), default="showcase", help="Output theme")
+    extract_repo_parser.set_defaults(func=handle_extract_repo)
+
+    extract_pr_parser = subparsers.add_parser("extract-pr", help="Extract a PR delta spec from git changed files")
+    extract_pr_parser.add_argument("--base", default="origin/master", help="Base git ref")
+    extract_pr_parser.add_argument("--head", default="HEAD", help="Head git ref")
+    extract_pr_parser.add_argument("--root", default=".", help="Repository root")
+    extract_pr_parser.add_argument("--output", required=True, help="Path to output PR delta spec JSON")
+    extract_pr_parser.add_argument("--theme", choices=sorted(ALLOWED_THEMES), default="showcase", help="Output theme")
+    extract_pr_parser.set_defaults(func=handle_extract_pr)
+
+    bundle_parser = subparsers.add_parser("bundle", help="Generate HTML, SVG, share card, receipt, and manifest together")
+    bundle_parser.add_argument("input", help="Path to input JSON")
+    bundle_parser.add_argument("output_dir", help="Directory for exported artifact bundle")
+    bundle_parser.add_argument("--min-quality", choices=sorted(QUALITY_ORDER), help="Fail bundle unless the quality rating meets this threshold")
+    bundle_parser.set_defaults(func=handle_bundle)
 
     # Backwards-compatible v0.2 CLI:
     #   render_architecture.py input.json output.svg

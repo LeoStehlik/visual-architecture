@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:03:19.397539+00:00",
+  "generatedAt": "2026-08-27T23:34:01.472551+00:00",
   "input": {
     "bytes": 2885,
     "path": "examples/showcase-repo-evidence.json",
@@ -42,5 +42,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.4.0"
+  "version": "1.5.0"
 }

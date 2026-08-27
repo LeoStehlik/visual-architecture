@@ -19,6 +19,10 @@ validate:
 	done
 	python3 scripts/render_architecture.py compare examples/pr-delta-before.json examples/pr-delta-head.json /tmp/visual-architecture-validate/pr-delta-generated.html --spec /tmp/visual-architecture-validate/pr-delta-generated.json --json >/dev/null
 	python3 scripts/render_architecture.py gallery /tmp/visual-architecture-validate/gallery.html >/dev/null
+	python3 scripts/render_architecture.py layout examples/visual-architecture-auto.json /tmp/visual-architecture-validate/layout.json --mode architecture --theme showcase >/dev/null
+	python3 scripts/render_architecture.py extract-repo . --output /tmp/visual-architecture-validate/extracted-repo.json --title "Validation Repo Evidence Map" >/dev/null
+	python3 scripts/render_architecture.py extract-pr --base origin/master --head HEAD --output /tmp/visual-architecture-validate/extracted-pr.json >/dev/null
+	python3 scripts/render_architecture.py bundle examples/visual-architecture-auto.json /tmp/visual-architecture-validate/bundle --min-quality good >/dev/null
 	python3 -m json.tool examples/showcase-artifact-engine.html.receipt.json >/dev/null
 	@echo VALIDATE_OK
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.5.0
+
+- Add `extract-repo` to create a first source-backed architecture spec from local repository structure.
+- Add `layout` for deterministic mode-aware node placement without hand-authored coordinates.
+- Add `extract-pr` to group changed files into a generated PR delta review spec.
+- Add `bundle` to export HTML, SVG, share card, receipt, and bundle manifest together.
+- Add `--min-quality` gates for `deliver` and `bundle`.
+- Add generated repo evidence and PR delta examples to the public gallery.
+
 ## v1.4.0
 
 - Add renderer v2 foundations: mode-specific backdrops for architecture, workflow, sequence, data-flow, lifecycle, and PR delta artifacts.

@@ -1,16 +1,16 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T23:34:01.589554+00:00",
+  "generatedAt": "2026-08-27T23:33:59.986268+00:00",
   "input": {
-    "bytes": 3914,
-    "path": "examples/showcase-visual-architecture-case-study.json",
-    "sha256": "8c71b7ec5016ddca93fdc8e3c0c89ee3e90e2aeb3213175fbe584324bbc533e8"
+    "bytes": 7739,
+    "path": "examples/pr-delta-extracted.json",
+    "sha256": "f275821c220975a3bef3daec6c37401a337f39b03acc634905a50491dfabf1f8"
   },
-  "mode": "architecture",
+  "mode": "pr-delta",
   "output": {
-    "bytes": 12097,
-    "path": "examples/showcase-visual-architecture-case-study.svg",
-    "sha256": "baedf968a81fc3c4fdf4e9dc6bfb8a647abf82c458f519d79631921c95bb3510"
+    "bytes": 12076,
+    "path": "examples/pr-delta-extracted.svg",
+    "sha256": "e4482dc7aa0cd7d949b3f2a12f4cbb011406a645cda07833c0d0258d70508fff"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -22,15 +22,15 @@
         "primary-data"
       ],
       "edges": 6,
-      "evidenceItems": 8,
-      "mode": "architecture",
+      "evidenceItems": 3,
+      "mode": "pr-delta",
       "nodeKinds": [
         "agent",
         "llm",
         "memory",
         "service"
       ],
-      "nodes": 6,
+      "nodes": 7,
       "quality": {
         "checks": [],
         "rating": "excellent",

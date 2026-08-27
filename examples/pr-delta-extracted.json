@@ -1,0 +1,336 @@
+{
+  "delta": {
+    "base": "origin/master",
+    "changedFiles": [
+      {
+        "path": "CHANGELOG.md",
+        "status": "M"
+      },
+      {
+        "path": "Makefile",
+        "status": "M"
+      },
+      {
+        "path": "README.md",
+        "status": "M"
+      },
+      {
+        "path": "SKILL.md",
+        "status": "M"
+      },
+      {
+        "path": "docs/gallery.html",
+        "status": "M"
+      },
+      {
+        "path": "docs/repo-aware-generation.md",
+        "status": "A"
+      },
+      {
+        "path": "examples/agent-runtime.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/agent-runtime.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/dataflow-analytics.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/dataflow-analytics.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/lifecycle-agent-task.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/lifecycle-agent-task.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/pr-delta-before.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/pr-delta-before.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/pr-delta-extracted.html",
+        "status": "A"
+      },
+      {
+        "path": "examples/pr-delta-extracted.html.receipt.json",
+        "status": "A"
+      },
+      {
+        "path": "examples/pr-delta-extracted.json",
+        "status": "A"
+      },
+      {
+        "path": "examples/pr-delta-extracted.share-card.svg",
+        "status": "A"
+      },
+      {
+        "path": "examples/pr-delta-extracted.svg",
+        "status": "A"
+      },
+      {
+        "path": "examples/pr-delta-extracted.svg.receipt.json",
+        "status": "A"
+      },
+      {
+        "path": "examples/pr-delta-generated.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/pr-delta-generated.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/pr-delta-head.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/pr-delta-head.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/pr-delta-review.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/pr-delta-review.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/repo-evidence-map.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/repo-evidence-map.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/sequence-cache-miss.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/sequence-cache-miss.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/service-map.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/service-map.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/showcase-artifact-engine.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/showcase-artifact-engine.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/showcase-pr-delta.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/showcase-pr-delta.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/showcase-repo-evidence.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/showcase-repo-evidence.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/showcase-visual-architecture-case-study.html.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/showcase-visual-architecture-case-study.svg.receipt.json",
+        "status": "M"
+      },
+      {
+        "path": "examples/visual-architecture-auto.html",
+        "status": "A"
+      },
+      {
+        "path": "examples/visual-architecture-auto.html.receipt.json",
+        "status": "A"
+      },
+      {
+        "path": "examples/visual-architecture-auto.json",
+        "status": "A"
+      },
+      {
+        "path": "examples/visual-architecture-auto.share-card.svg",
+        "status": "A"
+      },
+      {
+        "path": "examples/visual-architecture-auto.svg",
+        "status": "A"
+      },
+      {
+        "path": "examples/visual-architecture-auto.svg.receipt.json",
+        "status": "A"
+      },
+      {
+        "path": "index.html",
+        "status": "M"
+      },
+      {
+        "path": "scripts/render_architecture.py",
+        "status": "M"
+      }
+    ],
+    "head": "HEAD"
+  },
+  "edges": [
+    {
+      "from": "base",
+      "kind": "control",
+      "label": "compare",
+      "to": "source"
+    },
+    {
+      "from": "head",
+      "kind": "control",
+      "label": "compare",
+      "to": "examples"
+    },
+    {
+      "from": "source",
+      "kind": "primary-data",
+      "label": "runtime",
+      "to": "review"
+    },
+    {
+      "from": "examples",
+      "kind": "primary-data",
+      "label": "artifacts",
+      "to": "review"
+    },
+    {
+      "from": "docs",
+      "kind": "control",
+      "label": "position",
+      "to": "review"
+    },
+    {
+      "from": "review",
+      "kind": "memory-write",
+      "label": "facts",
+      "to": "receipt"
+    }
+  ],
+  "mode": "pr-delta",
+  "nodes": [
+    {
+      "group": "base",
+      "id": "base",
+      "kind": "memory",
+      "label": "Base",
+      "subtitle": "origin/master",
+      "x": 120,
+      "y": 160
+    },
+    {
+      "group": "head",
+      "id": "head",
+      "kind": "memory",
+      "label": "Head",
+      "subtitle": "HEAD",
+      "x": 120,
+      "y": 400
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "source": "scripts/render_architecture.py"
+      },
+      "group": "changed",
+      "id": "source",
+      "kind": "agent",
+      "label": "Source Changes",
+      "subtitle": "M render_architecture.py",
+      "x": 480,
+      "y": 160
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "source": "examples/agent-runtime.html.receipt.json"
+      },
+      "group": "changed",
+      "id": "examples",
+      "kind": "service",
+      "label": "Artifact Changes",
+      "subtitle": "41 files, first: M agent-runtime.html.receipt.json",
+      "x": 480,
+      "y": 400
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "source": "CHANGELOG.md"
+      },
+      "group": "changed",
+      "id": "docs",
+      "kind": "service",
+      "label": "Docs/Positioning",
+      "subtitle": "5 files, first: M CHANGELOG.md",
+      "x": 480,
+      "y": 640
+    },
+    {
+      "group": "risk",
+      "id": "review",
+      "kind": "llm",
+      "label": "Review Focus",
+      "subtitle": "48 changed files",
+      "x": 840,
+      "y": 400
+    },
+    {
+      "group": "receipt",
+      "id": "receipt",
+      "kind": "memory",
+      "label": "Delta Receipt",
+      "subtitle": "generated facts",
+      "x": 1200,
+      "y": 400
+    }
+  ],
+  "story": [
+    {
+      "text": "Read changed files from origin/master..HEAD.",
+      "title": "Diff"
+    },
+    {
+      "text": "Separate source, examples, docs, schemas, and CI changes.",
+      "title": "Group"
+    },
+    {
+      "text": "Turn changed files into a PR-ready architecture review surface.",
+      "title": "Review"
+    }
+  ],
+  "summary": "Generated from git diff origin/master..HEAD: 48 changed files grouped into review surfaces.",
+  "theme": "showcase",
+  "title": "Generated PR Delta Review"
+}

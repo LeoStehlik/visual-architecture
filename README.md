@@ -4,9 +4,9 @@
 
 **Deterministic, local-first architecture artifacts for agents.**
 
-visual-architecture turns small typed JSON specs into SVG, self-contained HTML, share cards, receipts, and a generated Pages showcase. The v1.4 contract is stronger: each mode gets its own visual grammar, validation scores readability, and the gallery can show story steps, receipts, and source evidence instead of dumping visitors into raw files.
+visual-architecture turns local repo evidence or typed JSON specs into SVG, self-contained HTML, share cards, receipts, and a generated Pages showcase. The v1.5 contract is stronger: agents can extract a first source-backed spec from a repository, lay it out deterministically, validate quality, and publish a reviewable artifact bundle.
 
-The wedge against Archify is local-first proof: architecture artifacts that look intentional, cite their sources, explain PR deltas, and remain reproducible from checked JSON.
+The wedge against Archify is local-first proof: architecture artifacts that look intentional, cite their sources, explain PR deltas, and remain reproducible from a repo scan or checked JSON.
 
 ![Visual Architecture artifact engine](examples/showcase-artifact-engine.svg)
 
@@ -69,10 +69,12 @@ Compare base/head specs for a PR delta artifact:
 python3 scripts/render_architecture.py compare examples/pr-delta-before.json examples/pr-delta-head.json examples/pr-delta-generated.html --spec examples/pr-delta-generated.json --json
 ```
 
-Generate a static share card or gallery site:
+Extract repo evidence, apply layout, generate a bundle, or build the gallery:
 
 ```bash
-python3 scripts/render_architecture.py share-card examples/repo-evidence-map.json examples/repo-evidence-map.share-card.svg
+python3 scripts/render_architecture.py extract-repo . --output examples/visual-architecture-auto.json
+python3 scripts/render_architecture.py layout examples/visual-architecture-auto.json /tmp/laid-out.json --mode architecture
+python3 scripts/render_architecture.py bundle examples/visual-architecture-auto.json /tmp/visual-architecture-bundle --min-quality good
 python3 scripts/render_architecture.py gallery index.html
 ```
 
@@ -213,7 +215,7 @@ Next high-value work:
 
 - deeper automatic layout per mode, especially sequence/data-flow/lifecycle
 - stronger label clearance and route-quality diagnostics
-- extractor-assisted source evidence instead of hand-authored file/line evidence
+- richer language-aware extraction for imports/routes/configuration boundaries
 - PNG export when a portable raster dependency is available
 
 ## Repository
