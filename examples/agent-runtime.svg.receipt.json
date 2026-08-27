@@ -1,0 +1,35 @@
+{
+  "artifactKind": "svg",
+  "generatedAt": "2026-08-27T21:16:56.086229+00:00",
+  "input": {
+    "bytes": 1903,
+    "path": "examples/agent-runtime.json",
+    "sha256": "f23c7df110b2f7e569181c77ac8e6bf43a96325eaf3ac9893d035905f7c3c15b"
+  },
+  "output": {
+    "bytes": 7262,
+    "path": "examples/agent-runtime.svg",
+    "sha256": "925f49425e9e0954be71cfa29f80e7fec3b4e1c70e6b571a97720cb56f649238"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 5,
+      "nodeKinds": [
+        "agent",
+        "memory",
+        "service"
+      ],
+      "nodes": 6
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "0.3.0"
+}

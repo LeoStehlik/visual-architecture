@@ -1,0 +1,36 @@
+{
+  "artifactKind": "html",
+  "generatedAt": "2026-08-27T21:16:56.511403+00:00",
+  "input": {
+    "bytes": 1719,
+    "path": "examples/service-map.json",
+    "sha256": "561e30d1576141616c4ff944471fa3fa4425f2a6699cb6d993249ad8cebb948d"
+  },
+  "output": {
+    "bytes": 9038,
+    "path": "examples/service-map.html",
+    "sha256": "f7f9c0c19bd0426805c5ed96abfa7ec972840208551bd056e8f2d80a8c6a2140"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 5,
+      "nodeKinds": [
+        "agent",
+        "llm",
+        "memory",
+        "service"
+      ],
+      "nodes": 5
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "0.3.0"
+}

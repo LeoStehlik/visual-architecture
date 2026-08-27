@@ -1,0 +1,35 @@
+{
+  "artifactKind": "html",
+  "generatedAt": "2026-08-27T21:16:56.267136+00:00",
+  "input": {
+    "bytes": 2279,
+    "path": "examples/pr-delta-review.json",
+    "sha256": "3dc9ab6250bbd78cf3a9514b673ffb03b3ff826739649f0da4ed8386a52f9d61"
+  },
+  "output": {
+    "bytes": 10618,
+    "path": "examples/pr-delta-review.html",
+    "sha256": "d918ef83bb02073cfbdc92925e0b5209d1ad6af11b4ed002c2bc9ae7e9d4dd11"
+  },
+  "tool": "visual-architecture",
+  "validation": {
+    "errors": [],
+    "metrics": {
+      "edgeKinds": [
+        "control",
+        "memory-write",
+        "primary-data"
+      ],
+      "edges": 6,
+      "nodeKinds": [
+        "agent",
+        "memory",
+        "service"
+      ],
+      "nodes": 6
+    },
+    "ok": true,
+    "warnings": []
+  },
+  "version": "0.3.0"
+}
