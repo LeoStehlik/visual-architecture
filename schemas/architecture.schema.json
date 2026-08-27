@@ -6,6 +6,7 @@
   "required": ["title", "nodes"],
   "properties": {
     "mode": { "const": "architecture" },
+    "theme": { "enum": ["classic", "showcase"] },
     "title": { "type": "string" },
     "summary": { "type": "string" },
     "show_grid": { "type": "boolean" },

@@ -1,16 +1,16 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T22:02:00.901842+00:00",
+  "generatedAt": "2026-08-27T22:02:01.835867+00:00",
   "input": {
-    "bytes": 2301,
-    "path": "examples/pr-delta-review.json",
-    "sha256": "cc407d18793e860c9d7be79c32e17988ad65e74976709a8e96a7dee8bc4e4bb2"
+    "bytes": 2052,
+    "path": "examples/showcase-pr-delta.json",
+    "sha256": "02b47c955805e8be23a73248ae0d0a1e590d9aa69cf4db4d7fff94ffc9f5f0e2"
   },
   "mode": "pr-delta",
   "output": {
-    "bytes": 10618,
-    "path": "examples/pr-delta-review.html",
-    "sha256": "d918ef83bb02073cfbdc92925e0b5209d1ad6af11b4ed002c2bc9ae7e9d4dd11"
+    "bytes": 11653,
+    "path": "examples/showcase-pr-delta.html",
+    "sha256": "5ea3244c4cc83a61d60fb0a75a111dde17f6d4fde103bd9e00bf8b051f0d92d2"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -26,11 +26,12 @@
       "mode": "pr-delta",
       "nodeKinds": [
         "agent",
+        "llm",
         "memory",
         "service"
       ],
       "nodes": 6,
-      "theme": "classic"
+      "theme": "showcase"
     },
     "ok": true,
     "warnings": []

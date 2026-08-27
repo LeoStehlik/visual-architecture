@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T21:45:16.756014+00:00",
+  "generatedAt": "2026-08-27T22:01:59.902870+00:00",
   "input": {
     "bytes": 1420,
     "path": "examples/dataflow-analytics.json",
@@ -29,10 +29,11 @@
         "memory",
         "service"
       ],
-      "nodes": 6
+      "nodes": 6,
+      "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.0.2"
+  "version": "1.1.0"
 }

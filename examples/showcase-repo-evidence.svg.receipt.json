@@ -1,16 +1,16 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T22:02:01.401645+00:00",
+  "generatedAt": "2026-08-27T22:02:01.960319+00:00",
   "input": {
-    "bytes": 1745,
-    "path": "examples/service-map.json",
-    "sha256": "a8626f8077b55aed2c3393d89e84201750c9b17c41b977b319e567aca2908258"
+    "bytes": 2510,
+    "path": "examples/showcase-repo-evidence.json",
+    "sha256": "fe28e204aa3f3eb6c18d423151b8f70d59b286473c80f1a17df69e65057a6894"
   },
   "mode": "architecture",
   "output": {
-    "bytes": 6534,
-    "path": "examples/service-map.svg",
-    "sha256": "bc4054a429b214f34f3e8b957395b889135c0a6579462b1103c9bba0461b6b3c"
+    "bytes": 9034,
+    "path": "examples/showcase-repo-evidence.svg",
+    "sha256": "b97f59f5d2de7dd70f2924dd2c4835f53ff89c2ce575ce2ecdeebdffbd954cb5"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -22,7 +22,7 @@
         "primary-data"
       ],
       "edges": 5,
-      "evidenceItems": 0,
+      "evidenceItems": 3,
       "mode": "architecture",
       "nodeKinds": [
         "agent",
@@ -30,8 +30,8 @@
         "memory",
         "service"
       ],
-      "nodes": 5,
-      "theme": "classic"
+      "nodes": 6,
+      "theme": "showcase"
     },
     "ok": true,
     "warnings": []
