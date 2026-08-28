@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-28T00:01:35.006427+00:00",
+  "generatedAt": "2026-08-28T00:25:55.771356+00:00",
   "input": {
     "bytes": 2270,
     "path": "examples/showcase-artifact-engine.json",
@@ -49,5 +49,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.6.0"
+  "version": "1.7.0"
 }

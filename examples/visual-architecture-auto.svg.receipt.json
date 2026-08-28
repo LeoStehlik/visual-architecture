@@ -1,16 +1,16 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-28T00:01:35.688187+00:00",
+  "generatedAt": "2026-08-28T00:25:56.416398+00:00",
   "input": {
-    "bytes": 9862,
+    "bytes": 10049,
     "path": "examples/visual-architecture-auto.json",
-    "sha256": "a4efaf7b0e56416e5ffdc86841734cc04f4db64a0f384b937353c16848ab29d9"
+    "sha256": "fb45bcba4cb9f2e1c188f392dab68770b389d8213e0f4b08035ea4539140a94a"
   },
   "mode": "architecture",
   "output": {
-    "bytes": 17155,
+    "bytes": 17180,
     "path": "examples/visual-architecture-auto.svg",
-    "sha256": "c8508f9450c86fc557219f3be8c16f3f6f85083fb9d7f8035fd98ee57552e13a"
+    "sha256": "1f60400ccef8d0d89fc2992f80c827aef2f76c85435120c9acc334b905dfe188"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -48,5 +48,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.6.0"
+  "version": "1.7.0"
 }

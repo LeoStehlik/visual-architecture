@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1523.0" height="1158.0" viewBox="-43.0 40.0 1523.0 1158.0" role="img" aria-label="Generated Language-Aware Repo Map">
+<svg xmlns="http://www.w3.org/2000/svg" width="1523.0" height="1158.0" viewBox="-43.0 40.0 1523.0 1158.0" role="img" aria-label="Generated TypeScript-Aware Repo Map">
   <defs>
     <pattern id="grid" width="120" height="80" patternUnits="userSpaceOnUse">
       <path d="M 120 0 L 0 0 0 80" fill="none" stroke="#1e293b" stroke-width="1"/>
@@ -23,7 +23,7 @@
     <polygon points="125.4,353.0 120.0,362.0 114.6,353.0" fill="#fbbf24"/>
     <path d="M 217.0 400.0 L 360.0 400.0 L 360.0 80.0 L 840.0 80.0 L 840.0 122.0" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 6"/>
     <polygon points="845.4,113.0 840.0,122.0 834.6,113.0" fill="#fbbf24"/>
-    <path d="M 587.5 160.0 L 661.5 160.0" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 6"/>
+    <path d="M 227.5 640.0 L 480.0 640.0 L 480.0 160.0 L 661.5 160.0" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 6"/>
     <polygon points="652.5,154.6 661.5,160.0 652.5,165.4" fill="#fbbf24"/>
     <path d="M 1018.5 160.0 L 1092.5 160.0" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
     <polygon points="1083.5,154.6 1092.5,160.0 1083.5,165.4" fill="#38bdf8"/>
@@ -52,10 +52,10 @@
     <polygon points="683.5,122.0 996.5,122.0 1018.5,160.0 996.5,198.0 683.5,198.0 661.5,160.0" fill="#111827" stroke="#fbbf24" stroke-width="2"/>
     </g>
     <g class="node-shape" data-node-id="schemas">
-    <rect x="364.5" y="114.0" width="231.0" height="92.0" rx="18" fill="#5eead4" opacity="0.13"/>
-    <path d="M 372.5 134.0 A 107.5 12.0 0 0 1 587.5 134.0 L 587.5 186.0 A 107.5 12.0 0 0 1 372.5 186.0 Z" fill="#052e2b" stroke="#5eead4" stroke-width="2"/>
-    <ellipse cx="480.0" cy="134.0" rx="107.5" ry="12.0" fill="#052e2b" stroke="#5eead4" stroke-width="2"/>
-    <path d="M 372.5 186.0 A 107.5 12.0 0 0 0 587.5 186.0" fill="none" stroke="#5eead4" stroke-width="2"/>
+    <rect x="4.5" y="594.0" width="231.0" height="92.0" rx="18" fill="#5eead4" opacity="0.13"/>
+    <path d="M 12.5 614.0 A 107.5 12.0 0 0 1 227.5 614.0 L 227.5 666.0 A 107.5 12.0 0 0 1 12.5 666.0 Z" fill="#052e2b" stroke="#5eead4" stroke-width="2"/>
+    <ellipse cx="120.0" cy="614.0" rx="107.5" ry="12.0" fill="#052e2b" stroke="#5eead4" stroke-width="2"/>
+    <path d="M 12.5 666.0 A 107.5 12.0 0 0 0 227.5 666.0" fill="none" stroke="#5eead4" stroke-width="2"/>
     </g>
     <g class="node-shape" data-node-id="examples">
     <rect x="1084.5" y="114.0" width="231.0" height="92.0" rx="18" fill="#5eead4" opacity="0.13"/>
@@ -85,8 +85,8 @@
     <text x="120.0" y="284.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#fef3c7">declares</text>
     <rect x="570.5" y="68.0" width="59.0" height="24.0" rx="6" fill="#451a03" stroke="#92400e" stroke-width="2"/>
     <text x="600.0" y="84.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#fef3c7">guides</text>
-    <rect x="588.0" y="148.0" width="73.0" height="24.0" rx="6" fill="#451a03" stroke="#92400e" stroke-width="2"/>
-    <text x="624.5" y="164.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#fef3c7">validate</text>
+    <rect x="443.5" y="388.0" width="73.0" height="24.0" rx="6" fill="#451a03" stroke="#92400e" stroke-width="2"/>
+    <text x="480.0" y="404.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#fef3c7">validate</text>
     <rect x="1019.0" y="148.0" width="73.0" height="24.0" rx="6" fill="#082f49" stroke="#164e63" stroke-width="2"/>
     <text x="1055.5" y="164.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="600" fill="#e0f2fe">generate</text>
     <rect x="1170.5" y="268.0" width="59.0" height="24.0" rx="6" fill="#451a03" stroke="#92400e" stroke-width="2"/>
@@ -109,10 +109,10 @@
     <text x="840.0" y="178.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="500" fill="#fde68a">validate, compare, share_card, gallery +6</text>
     <rect x="960.5" y="130.0" width="48.0" height="18" rx="9" fill="#042f2e" stroke="#2dd4bf" stroke-width="1"/>
     <text x="984.5" y="143.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="700" fill="#ccfbf1">SRC 1</text>
-    <text x="480.0" y="156.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#ecfeff">Schema Contracts</text>
-    <text x="480.0" y="178.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="500" fill="#99f6e4">7 JSON schemas</text>
-    <rect x="529.5" y="130.0" width="48.0" height="18" rx="9" fill="#042f2e" stroke="#2dd4bf" stroke-width="1"/>
-    <text x="553.5" y="143.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="700" fill="#ccfbf1">SRC 1</text>
+    <text x="120.0" y="636.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#ecfeff">Schema Contracts</text>
+    <text x="120.0" y="658.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="500" fill="#99f6e4">7 JSON schemas</text>
+    <rect x="169.5" y="610.0" width="48.0" height="18" rx="9" fill="#042f2e" stroke="#2dd4bf" stroke-width="1"/>
+    <text x="193.5" y="623.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="700" fill="#ccfbf1">SRC 1</text>
     <text x="1200.0" y="156.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#ecfeff">Checked Examples</text>
     <text x="1200.0" y="178.0" text-anchor="middle" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="500" fill="#99f6e4">16 specs</text>
     <rect x="1249.5" y="130.0" width="48.0" height="18" rx="9" fill="#042f2e" stroke="#2dd4bf" stroke-width="1"/>
