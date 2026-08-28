@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:37:34.669336+00:00",
+  "generatedAt": "2026-08-28T00:01:35.564598+00:00",
   "input": {
     "bytes": 3914,
     "path": "examples/showcase-visual-architecture-case-study.json",
@@ -8,9 +8,9 @@
   },
   "mode": "architecture",
   "output": {
-    "bytes": 14978,
+    "bytes": 15405,
     "path": "examples/showcase-visual-architecture-case-study.html",
-    "sha256": "7c50c59404917abe3567eeb2632b0b3e6c7f0e6dd2b10f48cfe63e9f09fa64ec"
+    "sha256": "69a0f6642ce262aa79edb8fb85f94d0947afc860e357d3fb112f5dbcbedbfae4"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -37,10 +37,17 @@
         "routeCrossings": 0,
         "score": 100
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 7,
+        "low": 0,
+        "medium": 1,
+        "unspecified": 0
+      },
       "theme": "showcase"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

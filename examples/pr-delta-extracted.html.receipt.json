@@ -1,16 +1,16 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:37:33.073701+00:00",
+  "generatedAt": "2026-08-28T00:01:33.850064+00:00",
   "input": {
-    "bytes": 7739,
+    "bytes": 16795,
     "path": "examples/pr-delta-extracted.json",
-    "sha256": "f275821c220975a3bef3daec6c37401a337f39b03acc634905a50491dfabf1f8"
+    "sha256": "d24c1be4405edd3a76b19d944a41e695f6d1071c8caeb4ae1d4eddf172a0b156"
   },
   "mode": "pr-delta",
   "output": {
-    "bytes": 14890,
+    "bytes": 16842,
     "path": "examples/pr-delta-extracted.html",
-    "sha256": "d8ec6f8b502bb71b711c8f138d7d699d8b6c10fb29de92d37b622c768f50151c"
+    "sha256": "ca3608d258200955f6ff8fec7c0f62579b8171ef34fed41ad13dbd430173403c"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -22,7 +22,7 @@
         "primary-data"
       ],
       "edges": 6,
-      "evidenceItems": 3,
+      "evidenceItems": 13,
       "mode": "pr-delta",
       "nodeKinds": [
         "agent",
@@ -37,10 +37,17 @@
         "routeCrossings": 0,
         "score": 100
       },
+      "sourceBacked": true,
+      "sourceConfidence": {
+        "high": 6,
+        "low": 0,
+        "medium": 7,
+        "unspecified": 0
+      },
       "theme": "showcase"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

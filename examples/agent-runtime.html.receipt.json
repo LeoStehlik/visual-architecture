@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:37:32.416558+00:00",
+  "generatedAt": "2026-08-28T00:01:33.196496+00:00",
   "input": {
     "bytes": 1925,
     "path": "examples/agent-runtime.json",
@@ -8,9 +8,9 @@
   },
   "mode": "workflow",
   "output": {
-    "bytes": 10841,
+    "bytes": 11268,
     "path": "examples/agent-runtime.html",
-    "sha256": "0d614a214b4bda1e196d2306720a089b65c1b48e8dde32125061032f0467e547"
+    "sha256": "08f3319b20b6b89626c9fa4b0fe7c52278c240a125d0c50d89d055c3dee9dc3b"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -61,10 +61,17 @@
         "routeCrossings": 0,
         "score": 76
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 0,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

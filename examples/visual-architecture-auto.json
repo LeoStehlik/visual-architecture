@@ -1,12 +1,40 @@
 {
   "edges": [
     {
-      "from": "skill",
+      "evidence": {
+        "confidence": "high",
+        "line": 2,
+        "rule": "repo.has-skill-contract",
+        "source": "SKILL.md",
+        "sourceType": "markdown"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "repo.has-skill-contract"
+      },
+      "from": "repo",
+      "kind": "control",
+      "label": "declares",
+      "to": "contract"
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 569,
+        "rule": "skill-to-python-runtime",
+        "source": "scripts/render_architecture.py",
+        "sourceType": "python"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "skill-to-python-runtime"
+      },
+      "from": "contract",
       "kind": "control",
       "label": "guides",
       "source_side": "right",
       "target_side": "top",
-      "to": "renderer",
+      "to": "runtime",
       "via": [
         {
           "x": 360,
@@ -23,31 +51,115 @@
       ]
     },
     {
+      "evidence": {
+        "confidence": "high",
+        "line": 149,
+        "rule": "schema-validated-runtime",
+        "source": "scripts/render_architecture.py",
+        "sourceType": "python"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "schema-validated-runtime"
+      },
       "from": "schemas",
       "kind": "control",
       "label": "validate",
-      "to": "renderer"
+      "to": "runtime"
     },
     {
-      "from": "renderer",
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "rule": "makefile.examples-target",
+        "source": "Makefile",
+        "sourceType": "makefile"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "makefile.examples-target"
+      },
+      "from": "runtime",
       "kind": "primary-data",
       "label": "generate",
       "to": "examples"
     },
     {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "rule": "ci-validates-artifacts",
+        "source": ".github/workflows/validate.yml",
+        "sourceType": "workflow"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "ci-validates-artifacts"
+      },
+      "from": "ci",
+      "kind": "control",
+      "label": "checks",
+      "to": "examples"
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 71,
+        "rule": "examples-to-gallery",
+        "source": "index.html",
+        "sourceType": "html"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "examples-to-gallery"
+      },
       "from": "examples",
       "kind": "primary-data",
       "label": "publish",
-      "to": "gallery"
+      "source_side": "right",
+      "target_side": "right",
+      "to": "gallery",
+      "via": [
+        {
+          "x": 1440,
+          "y": 160
+        },
+        {
+          "x": 1440,
+          "y": 640
+        }
+      ]
     },
     {
-      "from": "ci",
-      "kind": "control",
-      "label": "deploy",
-      "to": "gallery"
-    },
-    {
+      "evidence": {
+        "confidence": "high",
+        "line": 1,
+        "rule": "gallery-to-docs-positioning",
+        "source": "docs/repo-aware-generation.md",
+        "sourceType": "markdown"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "gallery-to-docs-positioning"
+      },
       "from": "gallery",
+      "kind": "memory-write",
+      "label": "explain",
+      "to": "docs"
+    },
+    {
+      "evidence": {
+        "confidence": "high",
+        "line": 3,
+        "rule": "docs-to-release",
+        "source": "CHANGELOG.md",
+        "sourceType": "markdown"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "docs-to-release"
+      },
+      "from": "docs",
       "kind": "memory-write",
       "label": "ship",
       "source_side": "right",
@@ -56,7 +168,7 @@
       "via": [
         {
           "x": 1440,
-          "y": 400
+          "y": 480
         },
         {
           "x": 1440,
@@ -65,18 +177,46 @@
       ]
     }
   ],
+  "extraction": {
+    "filesScanned": 119,
+    "rules": [
+      "python.ast.cli-handlers",
+      "json-schema.directory",
+      "github-actions.workflow",
+      "examples.checked-specs",
+      "generated.gallery",
+      "release.changelog"
+    ],
+    "surfaces": {
+      "docs": 9,
+      "example": 16,
+      "makefile": 1,
+      "python": 1,
+      "schema": 7,
+      "site": 1,
+      "workflow": 2
+    },
+    "version": "1.6.0"
+  },
   "mode": "architecture",
   "nodes": [
     {
       "evidence": {
         "confidence": "high",
         "line": 1,
-        "source": "SKILL.md"
+        "rule": "repo.root",
+        "source": "SKILL.md",
+        "sourceType": "repo"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "repo.root"
       },
       "group": "source",
       "id": "repo",
       "kind": "memory",
       "label": "visual-architecture",
+      "role": "source",
       "subtitle": "local checkout",
       "x": 120,
       "y": 160
@@ -85,12 +225,19 @@
       "evidence": {
         "confidence": "high",
         "line": 2,
-        "source": "SKILL.md"
+        "rule": "skill.contract",
+        "source": "SKILL.md",
+        "sourceType": "markdown"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "skill.contract"
       },
       "group": "source",
-      "id": "skill",
+      "id": "contract",
       "kind": "service",
       "label": "Skill Contract",
+      "role": "contract",
       "subtitle": "agent instructions",
       "x": 120,
       "y": 400
@@ -98,14 +245,21 @@
     {
       "evidence": {
         "confidence": "high",
-        "line": 415,
-        "source": "scripts/render_architecture.py"
+        "line": 569,
+        "rule": "python.ast.cli-handlers",
+        "source": "scripts/render_architecture.py",
+        "sourceType": "python"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "python.ast.cli-handlers"
       },
       "group": "runtime",
-      "id": "renderer",
+      "id": "runtime",
       "kind": "agent",
       "label": "Renderer CLI",
-      "subtitle": "validate, layout, deliver",
+      "role": "runtime",
+      "subtitle": "validate, compare, share_card, gallery +6",
       "x": 840,
       "y": 160
     },
@@ -113,13 +267,20 @@
       "evidence": {
         "confidence": "high",
         "line": 1,
-        "source": "schemas/common.schema.json"
+        "rule": "json-schema.directory",
+        "source": "schemas/architecture.schema.json",
+        "sourceType": "schema"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "json-schema.directory"
       },
       "group": "contract",
       "id": "schemas",
       "kind": "memory",
-      "label": "Schemas",
-      "subtitle": "typed JSON shapes",
+      "label": "Schema Contracts",
+      "role": "contract",
+      "subtitle": "7 JSON schemas",
       "x": 480,
       "y": 160
     },
@@ -127,13 +288,20 @@
       "evidence": {
         "confidence": "high",
         "line": 1,
-        "source": "examples/showcase-visual-architecture-case-study.json"
+        "rule": "examples.checked-specs",
+        "source": "examples/showcase-artifact-engine.json",
+        "sourceType": "json"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "examples.checked-specs"
       },
       "group": "proof",
       "id": "examples",
       "kind": "memory",
       "label": "Checked Examples",
-      "subtitle": "specs and artifacts",
+      "role": "proof",
+      "subtitle": "16 specs",
       "x": 1200,
       "y": 160
     },
@@ -141,64 +309,107 @@
       "evidence": {
         "confidence": "high",
         "line": 1,
-        "source": "index.html"
+        "rule": "github-actions.workflow",
+        "source": ".github/workflows/validate.yml",
+        "sourceType": "workflow"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "github-actions.workflow"
       },
       "group": "proof",
-      "id": "gallery",
-      "kind": "service",
-      "label": "Gallery Site",
-      "subtitle": "Pages evidence viewer",
+      "id": "ci",
+      "kind": "agent",
+      "label": "GitHub Actions",
+      "role": "proof",
+      "subtitle": "Validate",
       "x": 1200,
       "y": 400
     },
     {
       "evidence": {
         "confidence": "high",
-        "line": 1,
-        "source": ".github/workflows/validate.yml"
+        "line": 215,
+        "rule": "generated.gallery",
+        "source": "index.html",
+        "sourceType": "html"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "generated.gallery"
       },
       "group": "proof",
-      "id": "ci",
-      "kind": "agent",
-      "label": "GitHub Actions",
-      "subtitle": "validate and Pages",
+      "id": "gallery",
+      "kind": "service",
+      "label": "Pages Gallery",
+      "role": "release",
+      "subtitle": "evidence drilldown",
       "x": 1200,
       "y": 640
     },
     {
       "evidence": {
         "confidence": "high",
+        "line": 1,
+        "rule": "docs.heading",
+        "source": "docs/repo-aware-generation.md",
+        "sourceType": "markdown"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "docs.heading"
+      },
+      "group": "proof",
+      "id": "docs",
+      "kind": "service",
+      "label": "Product Docs",
+      "role": "release",
+      "subtitle": "Repo-Aware Generation",
+      "x": 1200,
+      "y": 880
+    },
+    {
+      "evidence": {
+        "confidence": "high",
         "line": 3,
-        "source": "CHANGELOG.md"
+        "rule": "release.changelog",
+        "source": "CHANGELOG.md",
+        "sourceType": "markdown"
+      },
+      "extraction": {
+        "confidence": "high",
+        "rule": "release.changelog"
       },
       "group": "proof",
       "id": "release",
       "kind": "service",
       "label": "Release Surface",
-      "subtitle": "README and changelog",
+      "role": "release",
+      "subtitle": "changelog and tags",
       "x": 1200,
-      "y": 880
+      "y": 1120
     }
   ],
+  "sourceBacked": true,
   "story": [
     {
-      "text": "Scan repository structure for scripts, schemas, examples, docs, CI, and release files.",
+      "text": "Parse repo files by language and surface: Python, package metadata, workflows, schemas, examples, docs, and generated site files.",
       "title": "Extract"
     },
     {
-      "text": "Attach file and line evidence to every generated architecture claim.",
-      "title": "Cite"
+      "text": "Connect contracts, runtime, examples, CI, gallery, docs, and release surface with confidence-scored rules.",
+      "title": "Infer"
     },
     {
-      "text": "Apply architecture layout so the first draft is readable without hand-placed coordinates.",
+      "text": "Place nodes from inferred roles so source, contracts, runtime, proof, and release read left to right.",
       "title": "Layout"
     },
     {
-      "text": "Generate SVG, HTML, share card, and receipt for the public gallery.",
-      "title": "Deliver"
+      "text": "Emit source evidence, quality receipt, share card, and gallery drilldown for every extracted claim.",
+      "title": "Prove"
     }
   ],
-  "summary": "Generated from local repository files with source evidence attached to each extracted node.",
+  "summary": "Generated from language-aware repository extraction with confidence-scored source evidence on inferred architecture claims.",
   "theme": "showcase",
-  "title": "Generated Repo Evidence Map"
+  "title": "Generated Language-Aware Repo Map"
 }

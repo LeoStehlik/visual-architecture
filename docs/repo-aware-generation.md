@@ -26,3 +26,8 @@ python3 scripts/render_architecture.py bundle examples/visual-architecture-auto.
 ```
 
 A generated artifact is still a draft. The receipt quality rating, warnings, and evidence list are the review surface.
+
+
+## v1.6 Extraction Quality
+
+The v1.6 extractor is language-aware rather than only filename-aware. It classifies Python runtime files, package metadata, GitHub Actions workflows, JSON schemas, checked examples, generated gallery files, and product docs. Generated source-backed artifacts carry extraction rules, source type, confidence, and file/line evidence on every node and edge. PR delta extraction groups changed files into architecture concerns so the review artifact says what surface changed, not just which files changed.

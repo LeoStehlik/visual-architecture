@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:37:34.513683+00:00",
+  "generatedAt": "2026-08-28T00:01:35.392774+00:00",
   "input": {
     "bytes": 2885,
     "path": "examples/showcase-repo-evidence.json",
@@ -8,9 +8,9 @@
   },
   "mode": "architecture",
   "output": {
-    "bytes": 13341,
+    "bytes": 13763,
     "path": "examples/showcase-repo-evidence.html",
-    "sha256": "4ee59dc0429d44421b3270232d67c2943864bb18a88409f33bb848f747685b6b"
+    "sha256": "9f44e3f0fb918ffe6e5c41663a3fe59c1416ac50208f8b15598d14e93974df89"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -37,10 +37,17 @@
         "routeCrossings": 0,
         "score": 100
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 2,
+        "low": 0,
+        "medium": 1,
+        "unspecified": 0
+      },
       "theme": "showcase"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }
