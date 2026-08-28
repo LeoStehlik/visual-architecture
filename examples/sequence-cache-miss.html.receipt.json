@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:37:33.882851+00:00",
+  "generatedAt": "2026-08-28T00:01:34.678506+00:00",
   "input": {
     "bytes": 1391,
     "path": "examples/sequence-cache-miss.json",
@@ -8,9 +8,9 @@
   },
   "mode": "sequence",
   "output": {
-    "bytes": 11239,
+    "bytes": 11584,
     "path": "examples/sequence-cache-miss.html",
-    "sha256": "d5511d084021a87ec990a3a6d842d31f1394f47b1abf4cfa37d544399f10f045"
+    "sha256": "20cb494ea0be68fb3ff7a89840ae725eaedebbbd15e3a11cc52294ae7a25422d"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -43,10 +43,17 @@
         "routeCrossings": 0,
         "score": 92
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 0,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

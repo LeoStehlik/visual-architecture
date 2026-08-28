@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import ast
 import datetime as dt
 import hashlib
 import json
@@ -41,7 +42,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.5.1"
+VERSION = "1.6.0"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 
@@ -335,6 +336,141 @@ def evidence(root, rel_path, needle=None, confidence="high", note=None):
     return item
 
 
+def evidence_item(root, rel_path, needle=None, confidence="high", rule=None, source_type=None, note=None):
+    item = evidence(root, rel_path, needle=needle, confidence=confidence, note=note)
+    if rule:
+        item["rule"] = rule
+    if source_type:
+        item["sourceType"] = source_type
+    return item
+
+
+def read_text(root, rel_path):
+    path = root / rel_path
+    try:
+        return path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return ""
+
+
+def parse_json_file(root, rel_path):
+    try:
+        return json.loads((root / rel_path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def python_symbols(root, rel_path):
+    source = read_text(root, rel_path)
+    if not source:
+        return []
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return []
+    symbols = []
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            if node.name.startswith("_") and node.name not in {"__main__"}:
+                continue
+            symbols.append({"name": node.name, "line": getattr(node, "lineno", 1), "kind": type(node).__name__.replace("Def", "").lower()})
+    return sorted(symbols, key=lambda item: item["line"])
+
+
+def package_scripts(root, rel_path):
+    data = parse_json_file(root, rel_path)
+    if not isinstance(data, dict):
+        return []
+    scripts = data.get("scripts")
+    if not isinstance(scripts, dict):
+        return []
+    return [{"name": name, "command": command} for name, command in sorted(scripts.items()) if isinstance(command, str)]
+
+
+def workflow_names(root, rel_path):
+    text = read_text(root, rel_path)
+    names = []
+    for index, line in enumerate(text.splitlines(), start=1):
+        stripped = line.strip()
+        if stripped.startswith("name:"):
+            workflow_name = stripped.split(":", 1)[1].strip().strip("\"'")
+            names.append({"name": workflow_name, "line": index})
+        elif stripped.startswith("- run:"):
+            names.append({"name": stripped.split(":", 1)[1].strip()[:42], "line": index})
+    return names[:6]
+
+
+def docs_headings(root, rel_path):
+    headings = []
+    for index, line in enumerate(read_text(root, rel_path).splitlines(), start=1):
+        if line.startswith("#"):
+            heading = line.lstrip("#").strip()
+            if heading:
+                headings.append({"name": heading, "line": index})
+    return headings[:8]
+
+
+def classify_repo_file(path):
+    if path.startswith("scripts/") and path.endswith(".py"):
+        return "python"
+    if path.endswith((".js", ".jsx", ".ts", ".tsx")):
+        return "javascript"
+    if path in {"package.json", "pnpm-workspace.yaml", "yarn.lock", "package-lock.json"}:
+        return "package"
+    if path.startswith(".github/workflows/"):
+        return "workflow"
+    if path.startswith("schemas/") and path.endswith(".json"):
+        return "schema"
+    if path.startswith("examples/") and path.endswith(".json") and not path.endswith(".receipt.json"):
+        return "example"
+    if path.endswith((".md", ".mdx", ".rst")) or path.startswith("docs/"):
+        return "docs"
+    if path in {"Makefile", "makefile"}:
+        return "makefile"
+    if path in {"index.html"} or (path.startswith("docs/") and path.endswith(".html")):
+        return "site"
+    return "other"
+
+
+def repo_language_facts(root, files):
+    facts = {"python": [], "javascript": [], "package": [], "workflow": [], "schema": [], "example": [], "docs": [], "makefile": [], "site": []}
+    for rel in sorted(files):
+        kind = classify_repo_file(rel)
+        if kind in facts:
+            facts[kind].append(rel)
+    return facts
+
+
+def extracted_node(node_id, label, subtitle, kind, group, root, rel_path, needle=None, confidence="high", rule="repo.file", source_type=None, role=None):
+    return {
+        "id": node_id,
+        "label": label,
+        "subtitle": subtitle,
+        "kind": kind,
+        "group": group,
+        "role": role or group,
+        "extraction": {"rule": rule, "confidence": confidence},
+        "evidence": evidence_item(root, rel_path, needle=needle, confidence=confidence, rule=rule, source_type=source_type),
+    }
+
+
+def extracted_edge(source, target, kind, label, root, rel_path, needle=None, confidence="medium", rule="repo.inference", source_type=None, **extra):
+    edge = {
+        "from": source,
+        "to": target,
+        "kind": kind,
+        "label": label,
+        "extraction": {"rule": rule, "confidence": confidence},
+        "evidence": evidence_item(root, rel_path, needle=needle, confidence=confidence, rule=rule, source_type=source_type),
+    }
+    edge.update(extra)
+    return edge
+
+
+def best_file(paths, fallback):
+    return paths[0] if paths else fallback
+
+
 def layout_spec(data, mode=None, theme=None):
     data = json.loads(json.dumps(data))
     mode = mode or spec_mode(data)
@@ -414,46 +550,90 @@ def repo_file_facts(root):
 def extract_repo_spec(root_path, title=None, theme="showcase"):
     root = Path(root_path).resolve()
     files = repo_file_facts(root)
+    facts = repo_language_facts(root, files)
     nodes = []
     edges = []
 
-    def has_any(prefixes):
-        return any(any(file == prefix or file.startswith(prefix + "/") for file in files) for prefix in prefixes)
-
     skill_file = first_existing(root, ["SKILL.md", "README.md"])
-    nodes.append({"id": "repo", "label": root.name, "subtitle": "local checkout", "kind": "memory", "group": "source", "evidence": evidence(root, skill_file)})
-    nodes.append({"id": "skill", "label": "Skill Contract", "subtitle": "agent instructions", "kind": "service", "group": "source", "evidence": evidence(root, skill_file, "name:")})
+    nodes.append(extracted_node("repo", root.name, "local checkout", "memory", "source", root, skill_file, confidence="high", rule="repo.root", source_type="repo", role="source"))
+    nodes.append(extracted_node("contract", "Skill Contract", "agent instructions", "service", "source", root, skill_file, needle="name:", confidence="high", rule="skill.contract", source_type="markdown", role="contract"))
+    edges.append(extracted_edge("repo", "contract", "control", "declares", root, skill_file, needle="name:", confidence="high", rule="repo.has-skill-contract", source_type="markdown"))
 
-    if "scripts/render_architecture.py" in files:
-        nodes.append({"id": "renderer", "label": "Renderer CLI", "subtitle": "validate, layout, deliver", "kind": "agent", "group": "runtime", "evidence": evidence(root, "scripts/render_architecture.py", "def main")})
-        edges.append({"from": "skill", "to": "renderer", "kind": "control", "label": "guides", "source_side": "right", "target_side": "top", "via": [{"x": 360, "y": 400}, {"x": 360, "y": 80}, {"x": 840, "y": 80}]})
-    if has_any(["schemas"]):
-        nodes.append({"id": "schemas", "label": "Schemas", "subtitle": "typed JSON shapes", "kind": "memory", "group": "contract", "evidence": evidence(root, first_existing(root, ["schemas/common.schema.json", "schemas/architecture.schema.json"]) )})
-        edges.append({"from": "schemas", "to": "renderer", "kind": "control", "label": "validate"})
-    if has_any(["examples"]):
-        nodes.append({"id": "examples", "label": "Checked Examples", "subtitle": "specs and artifacts", "kind": "memory", "group": "proof", "evidence": evidence(root, first_existing(root, ["examples/showcase-visual-architecture-case-study.json", "examples/service-map.json"]) )})
-        edges.append({"from": "renderer", "to": "examples", "kind": "primary-data", "label": "generate"})
-    if "index.html" in files or has_any(["docs"]):
-        nodes.append({"id": "gallery", "label": "Gallery Site", "subtitle": "Pages evidence viewer", "kind": "service", "group": "proof", "evidence": evidence(root, first_existing(root, ["index.html", "docs/gallery.html"]) )})
-        edges.append({"from": "examples", "to": "gallery", "kind": "primary-data", "label": "publish"})
-    if has_any([".github/workflows"]):
-        workflow = first_existing(root, [".github/workflows/validate.yml", ".github/workflows/pages.yml"])
-        nodes.append({"id": "ci", "label": "GitHub Actions", "subtitle": "validate and Pages", "kind": "agent", "group": "proof", "evidence": evidence(root, workflow)})
-        edges.append({"from": "ci", "to": "gallery", "kind": "control", "label": "deploy"})
+    python_file = best_file([path for path in facts["python"] if path.startswith("scripts/")], best_file(facts["python"], "scripts/render_architecture.py"))
+    if python_file in files:
+        symbols = python_symbols(root, python_file)
+        command_names = [symbol["name"].replace("handle_", "") for symbol in symbols if symbol["name"].startswith("handle_")]
+        subtitle = ", ".join(command_names[:4]) if command_names else "language-aware CLI"
+        if len(command_names) > 4:
+            subtitle += f" +{len(command_names)-4}"
+        nodes.append(extracted_node("runtime", "Renderer CLI", subtitle, "agent", "runtime", root, python_file, needle="def main", confidence="high", rule="python.ast.cli-handlers", source_type="python", role="runtime"))
+        edges.append(extracted_edge("contract", "runtime", "control", "guides", root, python_file, needle="def main", confidence="high", rule="skill-to-python-runtime", source_type="python", source_side="right", target_side="top", via=[{"x": 360, "y": 400}, {"x": 360, "y": 80}, {"x": 840, "y": 80}]))
+
+    if facts["schema"]:
+        schema_file = best_file([path for path in facts["schema"] if "architecture" in path], facts["schema"][0])
+        nodes.append(extracted_node("schemas", "Schema Contracts", f"{len(facts['schema'])} JSON schemas", "memory", "contract", root, schema_file, confidence="high", rule="json-schema.directory", source_type="schema", role="contract"))
+        if python_file in files:
+            edges.append(extracted_edge("schemas", "runtime", "control", "validate", root, python_file, needle="def validate", confidence="high", rule="schema-validated-runtime", source_type="python"))
+
+    if facts["example"]:
+        example_file = best_file([path for path in facts["example"] if "showcase" in path], facts["example"][0])
+        nodes.append(extracted_node("examples", "Checked Examples", f"{len(facts['example'])} specs", "memory", "proof", root, example_file, confidence="high", rule="examples.checked-specs", source_type="json", role="proof"))
+        if python_file in files:
+            edges.append(extracted_edge("runtime", "examples", "primary-data", "generate", root, first_existing(root, ["Makefile", python_file]), needle="make examples", confidence="high", rule="makefile.examples-target", source_type="makefile"))
+
+    workflow_file = best_file([path for path in facts["workflow"] if "validate" in path], best_file(facts["workflow"], ".github/workflows/validate.yml"))
+    if workflow_file in files:
+        workflow_titles = workflow_names(root, workflow_file)
+        subtitle = workflow_titles[0]["name"] if workflow_titles else "validate and deploy"
+        nodes.append(extracted_node("ci", "GitHub Actions", subtitle, "agent", "proof", root, workflow_file, confidence="high", rule="github-actions.workflow", source_type="workflow", role="proof"))
+        target = "examples" if facts["example"] else "runtime"
+        edges.append(extracted_edge("ci", target, "control", "checks", root, workflow_file, confidence="high", rule="ci-validates-artifacts", source_type="workflow"))
+
+    if "index.html" in files or "docs/gallery.html" in files:
+        gallery_file = "index.html" if "index.html" in files else "docs/gallery.html"
+        nodes.append(extracted_node("gallery", "Pages Gallery", "evidence drilldown", "service", "proof", root, gallery_file, needle="Repo to artifact", confidence="high", rule="generated.gallery", source_type="html", role="release"))
+        if facts["example"]:
+            edges.append(extracted_edge("examples", "gallery", "primary-data", "publish", root, gallery_file, needle="artifact", confidence="high", rule="examples-to-gallery", source_type="html", source_side="right", target_side="right", via=[{"x": 1440, "y": 160}, {"x": 1440, "y": 640}]))
+
+    if facts["package"]:
+        pkg = facts["package"][0]
+        scripts = package_scripts(root, pkg)
+        subtitle = ", ".join(script["name"] for script in scripts[:3]) or "package metadata"
+        nodes.append(extracted_node("package", "Package Metadata", subtitle, "service", "contract", root, pkg, confidence="medium", rule="package.scripts", source_type="package", role="contract"))
+        if python_file in files:
+            edges.append(extracted_edge("package", "runtime", "control", "commands", root, pkg, confidence="medium", rule="package-to-runtime", source_type="package"))
+
+    docs_file = first_existing(root, ["docs/repo-aware-generation.md", "README.md", "CHANGELOG.md"])
+    if docs_file in files:
+        headings = docs_headings(root, docs_file)
+        subtitle = headings[0]["name"] if headings else "public docs"
+        nodes.append(extracted_node("docs", "Product Docs", subtitle, "service", "proof", root, docs_file, confidence="high", rule="docs.heading", source_type="markdown", role="release"))
+        if any(node["id"] == "gallery" for node in nodes):
+            edges.append(extracted_edge("gallery", "docs", "memory-write", "explain", root, docs_file, confidence="high", rule="gallery-to-docs-positioning", source_type="markdown"))
+
     if "CHANGELOG.md" in files:
-        nodes.append({"id": "release", "label": "Release Surface", "subtitle": "README and changelog", "kind": "service", "group": "proof", "evidence": evidence(root, "CHANGELOG.md", "v1.")})
-        edges.append({"from": "gallery", "to": "release", "kind": "memory-write", "label": "ship", "source_side": "right", "target_side": "right", "via": [{"x": 1440, "y": 400}, {"x": 1440, "y": 880}]})
+        nodes.append(extracted_node("release", "Release Surface", "changelog and tags", "service", "proof", root, "CHANGELOG.md", needle="v1.", confidence="high", rule="release.changelog", source_type="markdown", role="release"))
+        source = "docs" if any(node["id"] == "docs" for node in nodes) else "gallery"
+        if any(node["id"] == source for node in nodes):
+            edges.append(extracted_edge(source, "release", "memory-write", "ship", root, "CHANGELOG.md", needle="v1.", confidence="high", rule="docs-to-release", source_type="markdown", source_side="right", target_side="right", via=[{"x": 1440, "y": 480}, {"x": 1440, "y": 880}]))
 
     spec = {
         "mode": "architecture",
         "theme": theme,
-        "title": title or f"{root.name} Repo Evidence Map",
-        "summary": "Generated from local repository files with source evidence attached to each extracted node.",
+        "sourceBacked": True,
+        "title": title or f"{root.name} Language-Aware Repo Map",
+        "summary": "Generated from language-aware repository extraction with confidence-scored source evidence on inferred architecture claims.",
+        "extraction": {
+            "version": VERSION,
+            "rules": ["python.ast.cli-handlers", "json-schema.directory", "github-actions.workflow", "examples.checked-specs", "generated.gallery", "release.changelog"],
+            "filesScanned": len(files),
+            "surfaces": {name: len(paths) for name, paths in facts.items() if paths},
+        },
         "story": [
-            {"title": "Extract", "text": "Scan repository structure for scripts, schemas, examples, docs, CI, and release files."},
-            {"title": "Cite", "text": "Attach file and line evidence to every generated architecture claim."},
-            {"title": "Layout", "text": "Apply architecture layout so the first draft is readable without hand-placed coordinates."},
-            {"title": "Deliver", "text": "Generate SVG, HTML, share card, and receipt for the public gallery."},
+            {"title": "Extract", "text": "Parse repo files by language and surface: Python, package metadata, workflows, schemas, examples, docs, and generated site files."},
+            {"title": "Infer", "text": "Connect contracts, runtime, examples, CI, gallery, docs, and release surface with confidence-scored rules."},
+            {"title": "Layout", "text": "Place nodes from inferred roles so source, contracts, runtime, proof, and release read left to right."},
+            {"title": "Prove", "text": "Emit source evidence, quality receipt, share card, and gallery drilldown for every extracted claim."},
         ],
         "nodes": nodes,
         "edges": edges,
@@ -478,23 +658,26 @@ def changed_files(base, head):
     return changes
 
 
+def change_concern(path):
+    if path.startswith("scripts/") and path.endswith(".py"):
+        return "runtime"
+    if path.startswith("schemas/"):
+        return "contract"
+    if path.startswith("examples/") or path in {"index.html"} or path == "docs/gallery.html":
+        return "artifacts"
+    if path.startswith(".github/") or path == "Makefile":
+        return "proof"
+    if path in {"README.md", "CHANGELOG.md", "SKILL.md"} or path.startswith("docs/"):
+        return "positioning"
+    return "other"
+
+
 def extract_pr_spec(base, head, root_path=".", theme="showcase"):
     root = Path(root_path).resolve()
     changes = changed_files(base, head)
-    buckets = {"source": [], "docs": [], "examples": [], "ci": [], "schemas": [], "other": []}
+    buckets = {"runtime": [], "contract": [], "artifacts": [], "proof": [], "positioning": [], "other": []}
     for status, file in changes:
-        if file.startswith("scripts/"):
-            buckets["source"].append((status, file))
-        elif file.startswith("docs/") or file in ("README.md", "CHANGELOG.md", "SKILL.md"):
-            buckets["docs"].append((status, file))
-        elif file.startswith("examples/") or file in ("index.html",):
-            buckets["examples"].append((status, file))
-        elif file.startswith(".github/"):
-            buckets["ci"].append((status, file))
-        elif file.startswith("schemas/"):
-            buckets["schemas"].append((status, file))
-        else:
-            buckets["other"].append((status, file))
+        buckets[change_concern(file)].append((status, file))
 
     def subtitle(items):
         if not items:
@@ -504,39 +687,60 @@ def extract_pr_spec(base, head, root_path=".", theme="showcase"):
             return first
         return f"{len(items)} files, first: {first}"
 
+    fallback = first_existing(root, ["CHANGELOG.md", "README.md"])
     nodes = [
-        {"id": "base", "label": "Base", "subtitle": base, "kind": "memory", "group": "base"},
-        {"id": "head", "label": "Head", "subtitle": head, "kind": "memory", "group": "head"},
-        {"id": "source", "label": "Source Changes", "subtitle": subtitle(buckets["source"]), "kind": "agent", "group": "changed"},
-        {"id": "examples", "label": "Artifact Changes", "subtitle": subtitle(buckets["examples"]), "kind": "service", "group": "changed"},
-        {"id": "docs", "label": "Docs/Positioning", "subtitle": subtitle(buckets["docs"]), "kind": "service", "group": "changed"},
-        {"id": "review", "label": "Review Focus", "subtitle": f"{len(changes)} changed files", "kind": "llm", "group": "risk"},
-        {"id": "receipt", "label": "Delta Receipt", "subtitle": "generated facts", "kind": "memory", "group": "receipt"},
+        {"id": "base", "label": "Base", "subtitle": base, "kind": "memory", "group": "base", "evidence": evidence_item(root, fallback, confidence="medium", rule="git.ref.base", source_type="git")},
+        {"id": "head", "label": "Head", "subtitle": head, "kind": "memory", "group": "head", "evidence": evidence_item(root, fallback, confidence="medium", rule="git.ref.head", source_type="git")},
     ]
-    for node in nodes:
-        if node["id"] in buckets and buckets[node["id"]]:
-            node["evidence"] = evidence(root, buckets[node["id"]][0][1])
+    concern_meta = {
+        "runtime": ("Runtime Changes", "agent", "changed"),
+        "contract": ("Contract Changes", "memory", "changed"),
+        "artifacts": ("Artifact Changes", "service", "changed"),
+        "proof": ("Proof/CI Changes", "agent", "risk"),
+        "positioning": ("Docs/Positioning", "service", "changed"),
+        "other": ("Other Changes", "service", "risk"),
+    }
+    for concern, items in buckets.items():
+        if not items:
+            continue
+        label, kind, group = concern_meta[concern]
+        first_path = items[0][1]
+        confidence = "high" if concern != "other" else "low"
+        nodes.append(extracted_node(concern, label, subtitle(items), kind, group, root, first_path, confidence=confidence, rule=f"git.diff.concern.{concern}", source_type="git", role=concern))
+
+    nodes.append({"id": "review", "label": "Architecture Review", "subtitle": f"{len(changes)} files / {sum(1 for items in buckets.values() if items)} concerns", "kind": "llm", "group": "review", "evidence": evidence_item(root, fallback, confidence="medium", rule="pr.review.summary", source_type="git")})
+    nodes.append({"id": "receipt", "label": "Delta Receipt", "subtitle": "concerns and confidence", "kind": "memory", "group": "receipt", "evidence": evidence_item(root, fallback, confidence="medium", rule="pr.receipt", source_type="git")})
+
     edges = [
-        {"from": "base", "to": "source", "kind": "control", "label": "compare"},
-        {"from": "head", "to": "examples", "kind": "control", "label": "compare"},
-        {"from": "source", "to": "review", "kind": "primary-data", "label": "runtime"},
-        {"from": "examples", "to": "review", "kind": "primary-data", "label": "artifacts"},
-        {"from": "docs", "to": "review", "kind": "control", "label": "position"},
-        {"from": "review", "to": "receipt", "kind": "memory-write", "label": "facts"},
+        extracted_edge("base", "review", "control", "compare", root, fallback, confidence="medium", rule="git.diff.base", source_type="git", source_side="right", target_side="top", via=[{"x": 240, "y": 80}, {"x": 840, "y": 80}]),
+        extracted_edge("head", "review", "control", "compare", root, fallback, confidence="medium", rule="git.diff.head", source_type="git", source_side="right", target_side="bottom", via=[{"x": 240, "y": 560}, {"x": 840, "y": 560}]),
     ]
+    for concern, items in buckets.items():
+        if items:
+            confidence = "high" if concern != "other" else "low"
+            route = {"source_side": "right", "target_side": "left"}
+            if concern == "runtime":
+                route = {"source_side": "right", "target_side": "top", "via": [{"x": 600, "y": 80}, {"x": 840, "y": 80}]}
+            elif concern == "positioning":
+                route = {"source_side": "right", "target_side": "bottom", "via": [{"x": 720, "y": 720}, {"x": 840, "y": 720}]}
+            edges.append(extracted_edge(concern, "review", "primary-data" if concern in {"runtime", "artifacts", "contract"} else "control", concern, root, items[0][1], confidence=confidence, rule=f"pr.concern.{concern}", source_type="git", **route))
+    edges.append(extracted_edge("review", "receipt", "memory-write", "facts", root, fallback, confidence="medium", rule="pr.review-to-receipt", source_type="git"))
+
     spec = {
         "mode": "pr-delta",
         "theme": theme,
+        "sourceBacked": True,
         "title": "Generated PR Delta Review",
-        "summary": f"Generated from git diff {base}..{head}: {len(changes)} changed files grouped into review surfaces.",
+        "summary": f"Generated from git diff {base}..{head}: {len(changes)} files grouped into architecture concerns instead of raw filename buckets.",
+        "extraction": {"version": VERSION, "base": base, "head": head, "concerns": {key: len(value) for key, value in buckets.items() if value}},
         "story": [
             {"title": "Diff", "text": f"Read changed files from {base}..{head}."},
-            {"title": "Group", "text": "Separate source, examples, docs, schemas, and CI changes."},
-            {"title": "Review", "text": "Turn changed files into a PR-ready architecture review surface."},
+            {"title": "Classify", "text": "Map files into runtime, contract, artifact, proof, positioning, and other concerns."},
+            {"title": "Review", "text": "Show what architecture surface changed, with confidence and evidence in the receipt."},
         ],
         "nodes": nodes,
         "edges": edges,
-        "delta": {"base": base, "head": head, "changedFiles": [{"status": status, "path": file} for status, file in changes]},
+        "delta": {"base": base, "head": head, "changedFiles": [{"status": status, "path": file, "concern": change_concern(file)} for status, file in changes]},
     }
     return layout_spec(spec, "pr-delta", theme=theme)
 
@@ -680,6 +884,26 @@ def validate(data):
                     })
 
     quality = {"score": 0, "rating": "unscored", "checks": [], "routeCrossings": 0}
+    if data.get("sourceBacked"):
+        missing = []
+        low_confidence = 0
+        for index, node in enumerate(nodes):
+            if isinstance(node, dict):
+                items = evidence_items(node)
+                if not items:
+                    missing.append(f"nodes[{index}]")
+                low_confidence += sum(1 for item in items if isinstance(item, dict) and item.get("confidence") == "low")
+        for index, edge in enumerate(edges):
+            if isinstance(edge, dict):
+                items = evidence_items(edge)
+                if not items:
+                    missing.append(f"edges[{index}]")
+                low_confidence += sum(1 for item in items if isinstance(item, dict) and item.get("confidence") == "low")
+        if missing:
+            errors.append({"code": "source.evidence.required", "message": "sourceBacked artifacts require evidence on every node and edge.", "subjects": missing[:12]})
+        if low_confidence:
+            warnings.append({"code": "source.confidence.low", "message": f"{low_confidence} source evidence item(s) are low confidence; review before publishing."})
+
     if not errors and nodes:
         placed = position_nodes(nodes)
         for index, edge in enumerate(edges):
@@ -712,6 +936,8 @@ def validate(data):
             "edges": len(edges),
             "quality": quality,
             "evidenceItems": sum(len(evidence_items(node)) for node in nodes if isinstance(node, dict)) + sum(len(evidence_items(edge)) for edge in edges if isinstance(edge, dict)),
+            "sourceConfidence": {level: sum(1 for subject in list(nodes) + list(edges) if isinstance(subject, dict) for item in evidence_items(subject) if isinstance(item, dict) and item.get("confidence", "unspecified") == level) for level in ["high", "medium", "low", "unspecified"]},
+            "sourceBacked": bool(data.get("sourceBacked")),
             "nodeKinds": sorted({node.get("kind") for node in nodes if isinstance(node, dict) and node.get("kind")}),
             "edgeKinds": sorted({edge.get("kind") for edge in edges if isinstance(edge, dict) and edge.get("kind")}),
         },
@@ -876,7 +1102,8 @@ def render_node(node, theme):
         badge_width = text_width(badge, 10) + 12
         label_parts.append(f'<rect x="{left + w - badge_width - 10:.1f}" y="{top + 8:.1f}" width="{badge_width:.1f}" height="18" rx="9" fill="{theme["badge_fill"]}" stroke="{theme["badge_stroke"]}" stroke-width="1"/>')
         label_parts.append(f'<text x="{left + w - badge_width / 2 - 10:.1f}" y="{top + 21:.1f}" text-anchor="middle" font-family="{FONT_FAMILY}" font-size="10" font-weight="700" fill="{theme["badge_text"]}">{escape(badge)}</text>')
-    return "\n".join(shape_parts), "\n".join(label_parts)
+    shape_group = f'<g class="node-shape" data-node-id="{escape(str(node.get("id", "")))}">\n' + "\n".join(shape_parts) + "\n</g>"
+    return shape_group, "\n".join(label_parts)
 
 
 def render_edge(edge, nodes, theme):
@@ -1610,7 +1837,7 @@ def handle_gallery(args):
           <ol id="story-list"></ol>
         </div>
         <div class="evidence-panel">
-          <h2>Evidence</h2>
+          <h2>Evidence Drilldown</h2>
           <div id="evidence-list" class="evidence-list"></div>
         </div>
       </aside>
@@ -1705,7 +1932,9 @@ def handle_gallery(args):
           const line = entry.item.lines ? ":" + entry.item.lines.join("-") : entry.item.line ? ":" + entry.item.line : "";
           div.innerHTML = "<strong></strong><span></span>";
           div.querySelector("strong").textContent = entry.owner;
-          div.querySelector("span").textContent = (entry.item.source || "unknown") + line + (entry.item.confidence ? " / " + entry.item.confidence : "");
+          const rule = entry.item.rule ? " / " + entry.item.rule : "";
+          const sourceType = entry.item.sourceType ? " / " + entry.item.sourceType : "";
+          div.querySelector("span").textContent = (entry.item.source || "unknown") + line + sourceType + (entry.item.confidence ? " / " + entry.item.confidence : "") + rule;
           evidenceList.appendChild(div);
         }});
       }} catch (error) {{

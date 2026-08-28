@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T23:37:34.151134+00:00",
+  "generatedAt": "2026-08-28T00:01:34.957796+00:00",
   "input": {
     "bytes": 2270,
     "path": "examples/showcase-artifact-engine.json",
@@ -8,9 +8,9 @@
   },
   "mode": "workflow",
   "output": {
-    "bytes": 8935,
+    "bytes": 9286,
     "path": "examples/showcase-artifact-engine.svg",
-    "sha256": "284ed43a9b882b9a9a2e4afac5eb7d72c58bf5089e1c13410875ebb7c2975bbf"
+    "sha256": "4227c4fd5f77a5139e29b13b7c8e35de585393e0facfe257a34c71cb066f3977"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -37,10 +37,17 @@
         "routeCrossings": 0,
         "score": 100
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 0,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "showcase"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

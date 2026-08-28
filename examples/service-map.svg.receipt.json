@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T23:37:33.998208+00:00",
+  "generatedAt": "2026-08-28T00:01:34.793689+00:00",
   "input": {
     "bytes": 1745,
     "path": "examples/service-map.json",
@@ -8,9 +8,9 @@
   },
   "mode": "architecture",
   "output": {
-    "bytes": 8061,
+    "bytes": 8347,
     "path": "examples/service-map.svg",
-    "sha256": "b85d0540557d134b73833a300364af16c4b84a7f7d649bb6f6e60a11f5d332e9"
+    "sha256": "41620417886179e01c89e531983282d087dac99ce612ebbedb8f87fd5043d7b9"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -54,10 +54,17 @@
         "routeCrossings": 0,
         "score": 84
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 0,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

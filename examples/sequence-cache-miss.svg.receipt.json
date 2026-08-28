@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T23:37:33.838433+00:00",
+  "generatedAt": "2026-08-28T00:01:34.630579+00:00",
   "input": {
     "bytes": 1391,
     "path": "examples/sequence-cache-miss.json",
@@ -8,9 +8,9 @@
   },
   "mode": "sequence",
   "output": {
-    "bytes": 8580,
+    "bytes": 8865,
     "path": "examples/sequence-cache-miss.svg",
-    "sha256": "751f04b526cf7bd684ce0fee6d2dcd07faa09526f47f7d12502d520aaf6622db"
+    "sha256": "51dff874551182b89bb6cd34221c6d3fe186e6957748caafed6105af4a1bd202"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -43,10 +43,17 @@
         "routeCrossings": 0,
         "score": 92
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 0,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

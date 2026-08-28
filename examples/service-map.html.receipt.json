@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-27T23:37:34.042774+00:00",
+  "generatedAt": "2026-08-28T00:01:34.841621+00:00",
   "input": {
     "bytes": 1745,
     "path": "examples/service-map.json",
@@ -8,9 +8,9 @@
   },
   "mode": "architecture",
   "output": {
-    "bytes": 10643,
+    "bytes": 10989,
     "path": "examples/service-map.html",
-    "sha256": "819709ed2dfac0ef72f7f93d086f6e497be9e5bb54319880e6b872c9ba658c10"
+    "sha256": "bae32da419ed2fefa6df0023a2c2ab8297261411e164a24c8f7e11ea3da736f4"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -54,10 +54,17 @@
         "routeCrossings": 0,
         "score": 84
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 0,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

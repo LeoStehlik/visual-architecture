@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T23:37:32.697223+00:00",
+  "generatedAt": "2026-08-28T00:01:33.486008+00:00",
   "input": {
     "bytes": 1538,
     "path": "examples/lifecycle-agent-task.json",
@@ -8,9 +8,9 @@
   },
   "mode": "lifecycle",
   "output": {
-    "bytes": 10007,
+    "bytes": 10355,
     "path": "examples/lifecycle-agent-task.svg",
-    "sha256": "17e30cc35867294dfdf69da243871688775ea919ca53e52f8fc7c86a2c71208b"
+    "sha256": "34761e4f62506bce4e188555fe8e445c22fc56427ffecf4f905f0a2624ee329b"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -53,10 +53,17 @@
         "routeCrossings": 0,
         "score": 84
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 0,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

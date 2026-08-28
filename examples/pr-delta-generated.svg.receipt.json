@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T23:37:33.189683+00:00",
+  "generatedAt": "2026-08-28T00:01:33.991532+00:00",
   "input": {
     "bytes": 2103,
     "path": "examples/pr-delta-generated.json",
@@ -8,9 +8,9 @@
   },
   "mode": "pr-delta",
   "output": {
-    "bytes": 9014,
+    "bytes": 9358,
     "path": "examples/pr-delta-generated.svg",
-    "sha256": "b3094135e7d73518b9720f3097b5a7f1263ae8aaf9819bcf79abc24bed38b09c"
+    "sha256": "1b55a3ae03f058629047a81b4346e3fccfda75c946539bfc59a207d7160ae6ae"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -53,10 +53,17 @@
         "routeCrossings": 0,
         "score": 84
       },
+      "sourceBacked": false,
+      "sourceConfidence": {
+        "high": 0,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "classic"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }

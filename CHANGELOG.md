@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.6.0
+
+- Add language-aware repo extraction for Python, package metadata, workflows, schemas, examples, docs, and generated site files.
+- Add confidence-scored extraction metadata and source confidence metrics to validation receipts.
+- Improve PR delta extraction by grouping changed files into architecture concerns rather than raw filename buckets.
+- Tighten source-backed validation so generated evidence artifacts require evidence on every node and edge.
+- Upgrade the gallery evidence panel into an evidence drilldown that shows source type, confidence, and extraction rule.
+- Refresh generated repo and PR examples from the v1.6 extractor.
+
 ## v1.5.1
 
 - Polish the generated Pages gallery artifact rail so the public showcase no longer exposes a native horizontal scrollbar.

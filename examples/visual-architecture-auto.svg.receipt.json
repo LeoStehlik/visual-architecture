@@ -1,16 +1,16 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-27T23:37:34.785543+00:00",
+  "generatedAt": "2026-08-28T00:01:35.688187+00:00",
   "input": {
-    "bytes": 4407,
+    "bytes": 9862,
     "path": "examples/visual-architecture-auto.json",
-    "sha256": "392c6208e51d42ac5869c42d86a881f259aa2a9a93eebc301a0bdf32534dc71b"
+    "sha256": "a4efaf7b0e56416e5ffdc86841734cc04f4db64a0f384b937353c16848ab29d9"
   },
   "mode": "architecture",
   "output": {
-    "bytes": 14415,
+    "bytes": 17155,
     "path": "examples/visual-architecture-auto.svg",
-    "sha256": "aa57a92a456e08c7ac6fcfc8ffbd1078205681770c9707163da8d4384cc149f1"
+    "sha256": "c8508f9450c86fc557219f3be8c16f3f6f85083fb9d7f8035fd98ee57552e13a"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -21,25 +21,32 @@
         "memory-write",
         "primary-data"
       ],
-      "edges": 6,
-      "evidenceItems": 8,
+      "edges": 8,
+      "evidenceItems": 17,
       "mode": "architecture",
       "nodeKinds": [
         "agent",
         "memory",
         "service"
       ],
-      "nodes": 8,
+      "nodes": 9,
       "quality": {
         "checks": [],
         "rating": "excellent",
         "routeCrossings": 0,
         "score": 100
       },
+      "sourceBacked": true,
+      "sourceConfidence": {
+        "high": 17,
+        "low": 0,
+        "medium": 0,
+        "unspecified": 0
+      },
       "theme": "showcase"
     },
     "ok": true,
     "warnings": []
   },
-  "version": "1.5.1"
+  "version": "1.6.0"
 }
