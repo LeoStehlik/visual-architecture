@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.7.0
+
+- Ignore junk/build directories during repo extraction by default.
+- Prevent generated extractor edges from targeting missing nodes.
+- Detect workspace package/app surfaces from monorepo package metadata.
+- Add TS/TSX import scanning and per-package import summaries.
+- Detect client app, server app, editor extension, backend modules, realtime gateways, database layer, API client, and frontend feature surfaces.
+- Refresh generated public examples with the v1.7 extractor.
+- Validate the extractor against a private TypeScript monorepo without publishing private artifacts.
+
 ## v1.6.0
 
 - Add language-aware repo extraction for Python, package metadata, workflows, schemas, examples, docs, and generated site files.

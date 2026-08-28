@@ -29,17 +29,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/agent-runtime.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/agent-runtime.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/agent-runtime.svg",
         "status": "M"
       },
       {
@@ -49,17 +39,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/dataflow-analytics.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/dataflow-analytics.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/dataflow-analytics.svg",
         "status": "M"
       },
       {
@@ -69,17 +49,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/lifecycle-agent-task.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/lifecycle-agent-task.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/lifecycle-agent-task.svg",
         "status": "M"
       },
       {
@@ -89,17 +59,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/pr-delta-before.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/pr-delta-before.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/pr-delta-before.svg",
         "status": "M"
       },
       {
@@ -139,17 +99,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/pr-delta-generated.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/pr-delta-generated.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/pr-delta-generated.svg",
         "status": "M"
       },
       {
@@ -159,17 +109,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/pr-delta-head.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/pr-delta-head.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/pr-delta-head.svg",
         "status": "M"
       },
       {
@@ -179,17 +119,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/pr-delta-review.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/pr-delta-review.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/pr-delta-review.svg",
         "status": "M"
       },
       {
@@ -199,17 +129,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/repo-evidence-map.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/repo-evidence-map.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/repo-evidence-map.svg",
         "status": "M"
       },
       {
@@ -219,17 +139,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/sequence-cache-miss.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/sequence-cache-miss.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/sequence-cache-miss.svg",
         "status": "M"
       },
       {
@@ -239,17 +149,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/service-map.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/service-map.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/service-map.svg",
         "status": "M"
       },
       {
@@ -259,17 +159,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/showcase-artifact-engine.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/showcase-artifact-engine.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/showcase-artifact-engine.svg",
         "status": "M"
       },
       {
@@ -279,17 +169,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/showcase-pr-delta.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/showcase-pr-delta.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/showcase-pr-delta.svg",
         "status": "M"
       },
       {
@@ -299,17 +179,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/showcase-repo-evidence.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/showcase-repo-evidence.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/showcase-repo-evidence.svg",
         "status": "M"
       },
       {
@@ -319,17 +189,7 @@
       },
       {
         "concern": "artifacts",
-        "path": "examples/showcase-visual-architecture-case-study.html",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
         "path": "examples/showcase-visual-architecture-case-study.html.receipt.json",
-        "status": "M"
-      },
-      {
-        "concern": "artifacts",
-        "path": "examples/showcase-visual-architecture-case-study.svg",
         "status": "M"
       },
       {
@@ -537,12 +397,12 @@
   "extraction": {
     "base": "origin/master",
     "concerns": {
-      "artifacts": 70,
+      "artifacts": 42,
       "positioning": 4,
       "runtime": 1
     },
     "head": "HEAD",
-    "version": "1.6.0"
+    "version": "1.7.0"
   },
   "mode": "pr-delta",
   "nodes": [
@@ -616,7 +476,7 @@
       "kind": "service",
       "label": "Artifact Changes",
       "role": "artifacts",
-      "subtitle": "70 files, first: M gallery.html",
+      "subtitle": "42 files, first: M gallery.html",
       "x": 480,
       "y": 400
     },
@@ -653,7 +513,7 @@
       "id": "review",
       "kind": "llm",
       "label": "Architecture Review",
-      "subtitle": "75 files / 3 concerns",
+      "subtitle": "47 files / 3 concerns",
       "x": 840,
       "y": 400
     },
@@ -689,7 +549,7 @@
       "title": "Review"
     }
   ],
-  "summary": "Generated from git diff origin/master..HEAD: 75 files grouped into architecture concerns instead of raw filename buckets.",
+  "summary": "Generated from git diff origin/master..HEAD: 47 files grouped into architecture concerns instead of raw filename buckets.",
   "theme": "showcase",
   "title": "Generated PR Delta Review"
 }

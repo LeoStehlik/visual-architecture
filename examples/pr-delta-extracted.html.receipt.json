@@ -1,16 +1,16 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-28T00:01:33.850064+00:00",
+  "generatedAt": "2026-08-28T00:25:54.567476+00:00",
   "input": {
-    "bytes": 16795,
+    "bytes": 13347,
     "path": "examples/pr-delta-extracted.json",
-    "sha256": "d24c1be4405edd3a76b19d944a41e695f6d1071c8caeb4ae1d4eddf172a0b156"
+    "sha256": "40339e8e49b67cd526502498c856d00dd4a272f71d63a77814e11e7f48d38fcb"
   },
   "mode": "pr-delta",
   "output": {
     "bytes": 16842,
     "path": "examples/pr-delta-extracted.html",
-    "sha256": "ca3608d258200955f6ff8fec7c0f62579b8171ef34fed41ad13dbd430173403c"
+    "sha256": "6026c14b0ce045ca9edf141387997c8e18e9b43ee258565aa97312aa4c67448c"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -49,5 +49,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.6.0"
+  "version": "1.7.0"
 }

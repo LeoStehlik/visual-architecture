@@ -31,3 +31,8 @@ A generated artifact is still a draft. The receipt quality rating, warnings, and
 ## v1.6 Extraction Quality
 
 The v1.6 extractor is language-aware rather than only filename-aware. It classifies Python runtime files, package metadata, GitHub Actions workflows, JSON schemas, checked examples, generated gallery files, and product docs. Generated source-backed artifacts carry extraction rules, source type, confidence, and file/line evidence on every node and edge. PR delta extraction groups changed files into architecture concerns so the review artifact says what surface changed, not just which files changed.
+
+
+## v1.7 TypeScript Monorepo Extraction
+
+The v1.7 extractor skips common generated and dependency directories by default, then detects workspaces from package metadata. It creates package/app nodes for client, server, and editor-extension style workspaces, scans TS/TSX imports for per-package dependency summaries, and detects backend modules, realtime gateways, database/migration layers, frontend entries, API clients, config boundaries, and feature folders. Extracted edges are filtered so generated specs cannot point at missing nodes.

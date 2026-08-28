@@ -1,16 +1,16 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-28T00:01:35.737505+00:00",
+  "generatedAt": "2026-08-28T00:25:56.468087+00:00",
   "input": {
-    "bytes": 9862,
+    "bytes": 10049,
     "path": "examples/visual-architecture-auto.json",
-    "sha256": "a4efaf7b0e56416e5ffdc86841734cc04f4db64a0f384b937353c16848ab29d9"
+    "sha256": "fb45bcba4cb9f2e1c188f392dab68770b389d8213e0f4b08035ea4539140a94a"
   },
   "mode": "architecture",
   "output": {
-    "bytes": 20293,
+    "bytes": 20322,
     "path": "examples/visual-architecture-auto.html",
-    "sha256": "123d90f195ec33ce6d4ca884696dc3f17fe1cd3fde2bc41ea4c631f4f967758f"
+    "sha256": "2fa0f1a85d00da0e9544059690fa46aed0e60bffc2feaed0ac66118f1a5775e0"
   },
   "tool": "visual-architecture",
   "validation": {
@@ -48,5 +48,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.6.0"
+  "version": "1.7.0"
 }

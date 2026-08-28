@@ -1,18 +1,18 @@
 ---
 name: visual-architecture
-description: "Create deterministic, local-first architecture artifacts from typed JSON or language-aware repo extraction: validate specs, render SVG/HTML diagrams, and emit source-backed receipts agents can cite."
+description: "Create deterministic, local-first architecture artifacts from typed JSON or TypeScript-aware repo extraction: validate specs, render SVG/HTML diagrams, and emit source-backed receipts agents can cite."
 metadata:
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 # Visual Architecture
 
-Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG. v1.6 adds language-aware repo extraction, confidence-scored evidence, deterministic auto-layout, PR delta concern extraction, artifact bundles, quality fail gates, and evidence drilldown in the gallery.
+Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG. v1.7 adds TypeScript monorepo extraction, workspace package/app detection, confidence-scored evidence, deterministic auto-layout, PR delta concern extraction, artifact bundles, quality fail gates, and evidence drilldown in the gallery.
 
 Use this when the user needs a trustworthy system map, agent workflow, sequence, data-flow, lifecycle/state diagram, repo-evidence diagram, or PR delta review sketch that should stay local, deterministic, and reviewable.
 
 ## Workflow
 
-1. Either extract a language-aware starter spec from a repo or create a JSON file with `mode`, `title`, `nodes`, and `edges`.
+1. Either extract a TypeScript-aware starter spec from a repo or create a JSON file with `mode`, `title`, `nodes`, and `edges`.
    - Supported modes: `architecture`, `workflow`, `sequence`, `dataflow`, `lifecycle`, `pr-delta`.
    - Supported themes: `classic` for documentation, `showcase` for README/release proof images.
 2. Snap intended node positions to the renderer grid mentally before writing them:

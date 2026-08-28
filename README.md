@@ -4,7 +4,7 @@
 
 **Deterministic, local-first architecture artifacts for agents.**
 
-visual-architecture turns local repo evidence or typed JSON specs into SVG, self-contained HTML, share cards, receipts, and a generated Pages showcase. The v1.6 contract is stronger: agents can extract a language-aware, confidence-scored spec from a repository, infer architecture concerns, lay it out deterministically, validate evidence quality, and publish a reviewable artifact bundle.
+visual-architecture turns local repo evidence or typed JSON specs into SVG, self-contained HTML, share cards, receipts, and a generated Pages showcase. The v1.7 contract is stronger: agents can extract TypeScript monorepo structure, infer app/package/backend/frontend surfaces, attach confidence-scored evidence, lay it out deterministically, validate evidence quality, and publish a reviewable artifact bundle.
 
 The wedge against Archify is local-first proof: architecture artifacts that look intentional, cite their sources, explain PR deltas, and remain reproducible from a repo scan or checked JSON.
 
@@ -69,10 +69,10 @@ Compare base/head specs for a PR delta artifact:
 python3 scripts/render_architecture.py compare examples/pr-delta-before.json examples/pr-delta-head.json examples/pr-delta-generated.html --spec examples/pr-delta-generated.json --json
 ```
 
-Extract language-aware repo evidence, apply layout, generate a bundle, or build the gallery:
+Extract TypeScript-aware repo evidence, apply layout, generate a bundle, or build the gallery:
 
 ```bash
-python3 scripts/render_architecture.py extract-repo . --output examples/visual-architecture-auto.json --title "Generated Language-Aware Repo Map"
+python3 scripts/render_architecture.py extract-repo . --output examples/visual-architecture-auto.json --title "Generated TypeScript-Aware Repo Map"
 python3 scripts/render_architecture.py layout examples/visual-architecture-auto.json /tmp/laid-out.json --mode architecture
 python3 scripts/render_architecture.py bundle examples/visual-architecture-auto.json /tmp/visual-architecture-bundle --min-quality good
 python3 scripts/render_architecture.py gallery index.html
@@ -215,7 +215,7 @@ Next high-value work:
 
 - deeper automatic layout per mode, especially sequence/data-flow/lifecycle
 - stronger label clearance and route-quality diagnostics
-- richer language-aware extraction for imports/routes/configuration boundaries
+- deeper route, config, call graph, and cross-package dependency extraction
 - PNG export when a portable raster dependency is available
 
 ## Repository

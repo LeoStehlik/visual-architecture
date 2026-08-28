@@ -20,7 +20,7 @@
     {
       "evidence": {
         "confidence": "high",
-        "line": 569,
+        "line": 791,
         "rule": "skill-to-python-runtime",
         "source": "scripts/render_architecture.py",
         "sourceType": "python"
@@ -181,6 +181,10 @@
     "filesScanned": 119,
     "rules": [
       "python.ast.cli-handlers",
+      "typescript.imports",
+      "workspace.packages",
+      "typescript.backend.modules",
+      "typescript.frontend.entry",
       "json-schema.directory",
       "github-actions.workflow",
       "examples.checked-specs",
@@ -196,7 +200,7 @@
       "site": 1,
       "workflow": 2
     },
-    "version": "1.6.0"
+    "version": "1.7.0"
   },
   "mode": "architecture",
   "nodes": [
@@ -245,7 +249,7 @@
     {
       "evidence": {
         "confidence": "high",
-        "line": 569,
+        "line": 791,
         "rule": "python.ast.cli-handlers",
         "source": "scripts/render_architecture.py",
         "sourceType": "python"
@@ -281,8 +285,8 @@
       "label": "Schema Contracts",
       "role": "contract",
       "subtitle": "7 JSON schemas",
-      "x": 480,
-      "y": 160
+      "x": 120,
+      "y": 640
     },
     {
       "evidence": {
@@ -393,11 +397,11 @@
   "sourceBacked": true,
   "story": [
     {
-      "text": "Parse repo files by language and surface: Python, package metadata, workflows, schemas, examples, docs, and generated site files.",
+      "text": "Parse repo files by language and surface: Python, TS/TSX, workspaces, package metadata, workflows, schemas, examples, docs, and generated site files.",
       "title": "Extract"
     },
     {
-      "text": "Connect contracts, runtime, examples, CI, gallery, docs, and release surface with confidence-scored rules.",
+      "text": "Connect packages, app surfaces, backend/frontend/editor modules, contracts, CI, gallery, docs, and release surface with confidence-scored rules.",
       "title": "Infer"
     },
     {
@@ -411,5 +415,5 @@
   ],
   "summary": "Generated from language-aware repository extraction with confidence-scored source evidence on inferred architecture claims.",
   "theme": "showcase",
-  "title": "Generated Language-Aware Repo Map"
+  "title": "Generated TypeScript-Aware Repo Map"
 }

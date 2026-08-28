@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-28T00:01:34.630579+00:00",
+  "generatedAt": "2026-08-28T00:25:55.375180+00:00",
   "input": {
     "bytes": 1391,
     "path": "examples/sequence-cache-miss.json",
@@ -55,5 +55,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.6.0"
+  "version": "1.7.0"
 }

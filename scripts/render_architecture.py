@@ -42,7 +42,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.6.0"
+VERSION = "1.7.0"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 
@@ -471,6 +471,187 @@ def best_file(paths, fallback):
     return paths[0] if paths else fallback
 
 
+DEFAULT_IGNORE_DIRS = {".git", "node_modules", ".next", "dist", "build", "coverage", ".francis-runs", ".turbo", ".cache", "tmp", "temp"}
+
+
+def is_ignored_path(path):
+    return any(part in DEFAULT_IGNORE_DIRS for part in Path(path).parts)
+
+
+def safe_node_id(text):
+    cleaned = []
+    for char in str(text).lower():
+        if char.isalnum():
+            cleaned.append(char)
+        elif cleaned and cleaned[-1] != "_":
+            cleaned.append("_")
+    value = "".join(cleaned).strip("_")
+    return value or "node"
+
+
+def workspace_package_dirs(root):
+    package = parse_json_file(root, "package.json")
+    patterns = []
+    workspaces = package.get("workspaces") if isinstance(package, dict) else None
+    if isinstance(workspaces, list):
+        patterns = workspaces
+    elif isinstance(workspaces, dict) and isinstance(workspaces.get("packages"), list):
+        patterns = workspaces["packages"]
+    if not patterns:
+        patterns = ["apps/*", "packages/*"]
+    dirs = []
+    for pattern in patterns:
+        for match in root.glob(pattern):
+            if match.is_dir() and not is_ignored_path(match.relative_to(root)):
+                dirs.append(str(match.relative_to(root)))
+    return sorted(set(dirs))
+
+
+def package_label(path):
+    parts = Path(path).parts
+    if not parts:
+        return "Package"
+    name = parts[-1]
+    return name.replace("-", " ").replace("_", " ").title()
+
+
+def package_kind(path):
+    lower = path.lower()
+    if "client" in lower or "web" in lower or "frontend" in lower:
+        return "client-app"
+    if "server" in lower or "api" in lower or "backend" in lower:
+        return "server-app"
+    if "editor" in lower or "extension" in lower or "ext" in lower:
+        return "editor-extension"
+    return "package"
+
+
+def ts_files_under(files, package_dir):
+    prefix = package_dir.rstrip("/") + "/"
+    return [path for path in sorted(files) if path.startswith(prefix) and path.endswith((".ts", ".tsx", ".js", ".jsx"))]
+
+
+def first_matching(paths, needles):
+    for needle in needles:
+        for path in paths:
+            if needle in path:
+                return path
+    return paths[0] if paths else None
+
+
+def ts_imports(root, rel_path):
+    text = read_text(root, rel_path)
+    imports = []
+    for index, line in enumerate(text.splitlines(), start=1):
+        stripped = line.strip()
+        target = None
+        if " from " in stripped and (stripped.startswith("import") or stripped.startswith("export")):
+            quote = '"' if '"' in stripped.split(" from ", 1)[1] else "'"
+            tail = stripped.split(" from ", 1)[1]
+            if quote in tail:
+                target = tail.split(quote, 2)[1]
+        elif "require(" in stripped:
+            tail = stripped.split("require(", 1)[1]
+            quote = '"' if '"' in tail else "'"
+            if quote in tail:
+                target = tail.split(quote, 2)[1]
+        if target:
+            imports.append({"target": target, "line": index})
+    return imports
+
+
+def import_graph_summary(root, files, package_dir):
+    package_files = ts_files_under(files, package_dir)
+    edges = []
+    local_imports = 0
+    external_imports = 0
+    for rel in package_files[:160]:
+        for item in ts_imports(root, rel):
+            if item["target"].startswith(".") or item["target"].startswith("@/"):
+                local_imports += 1
+            else:
+                external_imports += 1
+            if len(edges) < 12:
+                edges.append({"source": rel, **item})
+    return {"files": len(package_files), "localImports": local_imports, "externalImports": external_imports, "samples": edges}
+
+
+def package_scripts_for_dir(root, package_dir):
+    rel = str(Path(package_dir) / "package.json")
+    scripts = package_scripts(root, rel)
+    return rel, scripts
+
+
+def filter_valid_edges(nodes, edges):
+    ids = {node.get("id") for node in nodes}
+    return [edge for edge in edges if edge.get("from") in ids and edge.get("to") in ids]
+
+
+def add_ts_monorepo_nodes(root, files, facts, nodes, edges):
+    package_dirs = workspace_package_dirs(root)
+    package_node_ids = []
+    root_package = "package.json" if "package.json" in files else first_existing(root, ["README.md"])
+    for package_dir in package_dirs:
+        ts_files = ts_files_under(files, package_dir)
+        if not ts_files and str(Path(package_dir) / "package.json") not in files:
+            continue
+        kind = package_kind(package_dir)
+        node_id = safe_node_id(f"pkg_{package_dir}")
+        package_node_ids.append(node_id)
+        package_json, scripts = package_scripts_for_dir(root, package_dir)
+        evidence_path = package_json if package_json in files else best_file(ts_files, root_package)
+        script_names = ", ".join(script["name"] for script in scripts[:3]) if scripts else f"{len(ts_files)} source files"
+        label_prefix = {"client-app": "Client App", "server-app": "Server App", "editor-extension": "Editor Extension"}.get(kind, "Workspace Package")
+        nodes.append(extracted_node(node_id, label_prefix, package_label(package_dir), "service", "runtime", root, evidence_path, confidence="high", rule=f"workspace.package.{kind}", source_type="package", role=kind))
+        workspace_route = {"source_side": "right", "target_side": "left"}
+        if kind == "server-app":
+            workspace_route = {"source_side": "right", "target_side": "left", "via": [{"x": 600, "y": 160}, {"x": 600, "y": 880}]}
+        elif kind == "editor-extension":
+            workspace_route = {"source_side": "left", "target_side": "left", "via": [{"x": 240, "y": 160}, {"x": 240, "y": 1360}, {"x": 720, "y": 1360}]}
+        edges.append(extracted_edge("package", node_id, "control", "workspace", root, root_package, confidence="high", rule="workspace.package-link", source_type="package", **workspace_route))
+        graph = import_graph_summary(root, files, package_dir)
+        nodes[-1]["extraction"]["imports"] = {"files": graph["files"], "local": graph["localImports"], "external": graph["externalImports"]}
+
+        if kind == "server-app":
+            module_file = first_matching(ts_files, ["app.module", ".module.ts", "main.ts"])
+            controller_file = first_matching(ts_files, ["controller.ts", "handler.ts"])
+            gateway_file = first_matching(ts_files, ["gateway.ts", "ws", "collaboration"])
+            db_file = first_matching(ts_files, ["database", "migrate", "migration", "prisma"])
+            if module_file:
+                nodes.append(extracted_node("backend_modules", "Backend Modules", "modules/controllers/services", "agent", "runtime", root, module_file, confidence="high", rule="typescript.backend.modules", source_type="typescript", role="backend"))
+                edges.append(extracted_edge(node_id, "backend_modules", "primary-data", "modules", root, module_file, confidence="high", rule="server.package-to-modules", source_type="typescript"))
+            if gateway_file:
+                nodes.append(extracted_node("realtime_gateways", "Realtime Gateways", "ws/collaboration", "service", "runtime", root, gateway_file, confidence="high", rule="typescript.backend.gateway", source_type="typescript", role="realtime"))
+                edges.append(extracted_edge("backend_modules", "realtime_gateways", "primary-data", "events", root, gateway_file, confidence="high", rule="module-to-gateway", source_type="typescript"))
+            if db_file:
+                nodes.append(extracted_node("database_layer", "Database Layer", "database/migration", "memory", "contract", root, db_file, confidence="high", rule="typescript.backend.database", source_type="typescript", role="database"))
+                source = "backend_modules" if any(node["id"] == "backend_modules" for node in nodes) else node_id
+                edges.append(extracted_edge(source, "database_layer", "memory-write", "persist", root, db_file, confidence="high", rule="backend-to-database", source_type="typescript"))
+        elif kind == "client-app":
+            entry_file = first_matching(ts_files, ["main.tsx", "App.tsx", "app-route", "routes"])
+            api_file = first_matching(ts_files, ["api-client", "config", "constants"])
+            feature_file = first_matching(ts_files, ["features", "hooks", "state"])
+            if entry_file:
+                nodes.append(extracted_node("frontend_app", "Frontend App", "entry/routes/features", "service", "runtime", root, entry_file, confidence="high", rule="typescript.frontend.entry", source_type="typescript", role="frontend"))
+                edges.append(extracted_edge(node_id, "frontend_app", "primary-data", "renders", root, entry_file, confidence="high", rule="client.package-to-entry", source_type="typescript"))
+            if api_file:
+                nodes.append(extracted_node("api_client", "API Client", "config/client boundary", "service", "contract", root, api_file, confidence="high", rule="typescript.frontend.api-client", source_type="typescript", role="boundary"))
+                edges.append(extracted_edge("frontend_app", "api_client", "primary-data", "calls", root, api_file, confidence="high", rule="frontend-to-api-client", source_type="typescript"))
+            if feature_file:
+                nodes.append(extracted_node("client_features", "Client Features", "feature hooks/state", "service", "runtime", root, feature_file, confidence="medium", rule="typescript.frontend.features", source_type="typescript", role="feature"))
+                edges.append(extracted_edge("frontend_app", "client_features", "control", "uses", root, feature_file, confidence="medium", rule="frontend-to-features", source_type="typescript"))
+        elif kind == "editor-extension":
+            entry_file = first_matching(ts_files, ["index.ts", "extension", "editor", "embed"])
+            if entry_file:
+                nodes.append(extracted_node("editor_extension", "Editor Extension", "editor integrations", "service", "runtime", root, entry_file, confidence="high", rule="typescript.editor-extension", source_type="typescript", role="editor"))
+                edges.append(extracted_edge(node_id, "editor_extension", "primary-data", "extends", root, entry_file, confidence="high", rule="package-to-editor-extension", source_type="typescript"))
+
+    if package_node_ids and any(node["id"] == "package" for node in nodes):
+        package = next(node for node in nodes if node["id"] == "package")
+        package["subtitle"] = f"{len(package_node_ids)} workspaces"
+    return package_node_ids
+
+
 def layout_spec(data, mode=None, theme=None):
     data = json.loads(json.dumps(data))
     mode = mode or spec_mode(data)
@@ -527,23 +708,64 @@ def layout_spec(data, mode=None, theme=None):
             node["y"] = slots[min(slot_index, len(slots) - 1)]
             seen[key] = slot_index + 1
     else:
-        groups = {}
-        for node in nodes:
-            group = node.get("group") or node.get("zone") or node.get("kind", "runtime")
-            groups.setdefault(group, []).append(node)
-        preferred = {"source": 0, "contract": 1, "runtime": 2, "proof": 3}
-        ordered_groups = sorted(groups.items(), key=lambda item: (preferred.get(item[0], 99), item[0]))
-        for col_index, (_, group_nodes) in enumerate(ordered_groups):
-            for row_index, node in enumerate(group_nodes):
-                node["x"] = 120 + col_index * 360
-                node["y"] = 160 + row_index * 240
+        role_slots = {
+            "source": (120, 160),
+            "contract": (120, 400),
+            "package": (360, 160),
+            "database": (360, 800),
+            "boundary": (360, 400),
+            "runtime": (840, 160),
+            "client-app": (840, 160),
+            "frontend": (840, 400),
+            "feature": (840, 640),
+            "server-app": (840, 880),
+            "backend": (840, 1120),
+            "realtime": (1200, 1120),
+            "editor-extension": (840, 1360),
+            "editor": (1200, 1360),
+            "proof": (1200, 160),
+            "release": (1200, 640),
+        }
+        if any(node.get("role") in role_slots for node in nodes):
+            seen_roles = {}
+            for index, node in enumerate(nodes):
+                role = node.get("role") or node.get("group") or node.get("zone") or node.get("kind", "runtime")
+                if role in role_slots:
+                    base_x, base_y = role_slots[role]
+                    offset = seen_roles.get(role, 0)
+                    node["x"] = base_x
+                    node["y"] = base_y + offset * 240
+                    seen_roles[role] = offset + 1
+                else:
+                    group = node.get("group") or "runtime"
+                    fallback = {"source": (120, 160), "contract": (480, 160), "runtime": (780, 160), "proof": (1200, 160)}.get(group, (780, 160))
+                    node["x"] = fallback[0]
+                    node["y"] = fallback[1] + seen_roles.get(group, 0) * 220
+                    seen_roles[group] = seen_roles.get(group, 0) + 1
+        else:
+            groups = {}
+            for node in nodes:
+                group = node.get("group") or node.get("zone") or node.get("kind", "runtime")
+                groups.setdefault(group, []).append(node)
+            preferred = {"source": 0, "contract": 1, "runtime": 2, "proof": 3}
+            ordered_groups = sorted(groups.items(), key=lambda item: (preferred.get(item[0], 99), item[0]))
+            for col_index, (_, group_nodes) in enumerate(ordered_groups):
+                for row_index, node in enumerate(group_nodes):
+                    node["x"] = 120 + col_index * 360
+                    node["y"] = 160 + row_index * 240
 
     return data
 
 
 def repo_file_facts(root):
     root = Path(root)
-    files = {str(path.relative_to(root)) for path in root.rglob("*") if path.is_file() and ".git" not in path.parts}
+    files = set()
+    for path in root.rglob("*"):
+        rel = path.relative_to(root)
+        if is_ignored_path(rel):
+            continue
+        if path.is_file():
+            files.add(str(rel))
     return files
 
 
@@ -599,9 +821,11 @@ def extract_repo_spec(root_path, title=None, theme="showcase"):
         pkg = facts["package"][0]
         scripts = package_scripts(root, pkg)
         subtitle = ", ".join(script["name"] for script in scripts[:3]) or "package metadata"
-        nodes.append(extracted_node("package", "Package Metadata", subtitle, "service", "contract", root, pkg, confidence="medium", rule="package.scripts", source_type="package", role="contract"))
+        nodes.append(extracted_node("package", "Package Metadata", subtitle, "service", "contract", root, pkg, confidence="medium", rule="package.scripts", source_type="package", role="package"))
         if python_file in files:
             edges.append(extracted_edge("package", "runtime", "control", "commands", root, pkg, confidence="medium", rule="package-to-runtime", source_type="package"))
+
+    add_ts_monorepo_nodes(root, files, facts, nodes, edges)
 
     docs_file = first_existing(root, ["docs/repo-aware-generation.md", "README.md", "CHANGELOG.md"])
     if docs_file in files:
@@ -617,21 +841,23 @@ def extract_repo_spec(root_path, title=None, theme="showcase"):
         if any(node["id"] == source for node in nodes):
             edges.append(extracted_edge(source, "release", "memory-write", "ship", root, "CHANGELOG.md", needle="v1.", confidence="high", rule="docs-to-release", source_type="markdown", source_side="right", target_side="right", via=[{"x": 1440, "y": 480}, {"x": 1440, "y": 880}]))
 
+    edges = filter_valid_edges(nodes, edges)
+
     spec = {
         "mode": "architecture",
         "theme": theme,
         "sourceBacked": True,
-        "title": title or f"{root.name} Language-Aware Repo Map",
+        "title": title or f"{root.name} TypeScript Monorepo Map",
         "summary": "Generated from language-aware repository extraction with confidence-scored source evidence on inferred architecture claims.",
         "extraction": {
             "version": VERSION,
-            "rules": ["python.ast.cli-handlers", "json-schema.directory", "github-actions.workflow", "examples.checked-specs", "generated.gallery", "release.changelog"],
+            "rules": ["python.ast.cli-handlers", "typescript.imports", "workspace.packages", "typescript.backend.modules", "typescript.frontend.entry", "json-schema.directory", "github-actions.workflow", "examples.checked-specs", "generated.gallery", "release.changelog"],
             "filesScanned": len(files),
             "surfaces": {name: len(paths) for name, paths in facts.items() if paths},
         },
         "story": [
-            {"title": "Extract", "text": "Parse repo files by language and surface: Python, package metadata, workflows, schemas, examples, docs, and generated site files."},
-            {"title": "Infer", "text": "Connect contracts, runtime, examples, CI, gallery, docs, and release surface with confidence-scored rules."},
+            {"title": "Extract", "text": "Parse repo files by language and surface: Python, TS/TSX, workspaces, package metadata, workflows, schemas, examples, docs, and generated site files."},
+            {"title": "Infer", "text": "Connect packages, app surfaces, backend/frontend/editor modules, contracts, CI, gallery, docs, and release surface with confidence-scored rules."},
             {"title": "Layout", "text": "Place nodes from inferred roles so source, contracts, runtime, proof, and release read left to right."},
             {"title": "Prove", "text": "Emit source evidence, quality receipt, share card, and gallery drilldown for every extracted claim."},
         ],
