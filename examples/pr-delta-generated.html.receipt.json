@@ -32,7 +32,7 @@
     ],
     "removedNodes": []
   },
-  "generatedAt": "2026-08-28T00:25:56.587638+00:00",
+  "generatedAt": "2026-09-01T00:41:53.199036+00:00",
   "head": {
     "path": "examples/pr-delta-head.json",
     "sha256": "ddf71bcac221f8b319f710ad30fa5d3b091da3d274b9b05e91477cf646e99dd3"
@@ -101,5 +101,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.7.0"
+  "version": "1.8.0"
 }

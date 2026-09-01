@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.8.0
+
+- Add a public TypeScript-monorepo case study that converts clone/API curiosity into a human-readable artifact path.
+- Add sanitized case-study notes covering client, server, editor extension, shared packages, backend modules, realtime gateway, database layer, and proof bundle surfaces.
+- Add checked generated case-study SVG, HTML, share card, receipts, and gallery/index entries.
+- Add README case-study quick-start commands for `deliver` and `bundle`.
+- Bump renderer and skill metadata to `1.8.0`.
+
 ## v1.7.0
 
 - Ignore junk/build directories during repo extraction by default.
