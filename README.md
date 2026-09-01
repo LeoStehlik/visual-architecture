@@ -4,7 +4,7 @@
 
 **Deterministic, local-first architecture artifacts for agents.**
 
-visual-architecture turns local repo evidence or typed JSON specs into SVG, self-contained HTML, share cards, receipts, and a generated Pages showcase. The v1.7 contract is stronger: agents can extract TypeScript monorepo structure, infer app/package/backend/frontend surfaces, attach confidence-scored evidence, lay it out deterministically, validate evidence quality, and publish a reviewable artifact bundle.
+visual-architecture turns local repo evidence or typed JSON specs into SVG, self-contained HTML, share cards, receipts, and a generated Pages showcase. The v1.8 contract is stronger: agents can extract TypeScript monorepo structure, infer app/package/backend/frontend surfaces, attach confidence-scored evidence, lay it out deterministically, validate evidence quality, and publish a reviewable artifact bundle.
 
 The wedge against Archify is local-first proof: architecture artifacts that look intentional, cite their sources, explain PR deltas, and remain reproducible from a repo scan or checked JSON.
 
@@ -14,7 +14,24 @@ The wedge against Archify is local-first proof: architecture artifacts that look
 
 Open the generated artifact site: **https://leostehlik.github.io/visual-architecture/**
 
-The gallery is the browsing surface: artifact rail, large diagram stage, story path, receipt quality, share cards, and source evidence drilldown. The README stays as the product brief; the repo keeps the JSON specs, SVG/HTML artifacts, and receipts for audit.
+The gallery is the browsing surface: artifact rail, large diagram stage, story path, receipt quality, share cards, source evidence drilldown, and a public TypeScript-monorepo case study. The README stays as the product brief; the repo keeps the JSON specs, SVG/HTML artifacts, and receipts for audit.
+
+
+## Public Case Study
+
+The current conversion artifact is a sanitized TypeScript monorepo map: client app, server app, editor extension, shared packages, backend modules, realtime gateway, database layer, and proof bundle.
+
+Open it in the gallery or inspect the checked files directly:
+
+```bash
+python3 scripts/render_architecture.py deliver examples/showcase-typescript-monorepo-case-study.json /tmp/typescript-monorepo-case-study.html --json
+python3 scripts/render_architecture.py bundle examples/showcase-typescript-monorepo-case-study.json /tmp/typescript-monorepo-case-study --min-quality good
+```
+
+- Case-study notes: [`docs/public-typescript-monorepo-case-study.md`](docs/public-typescript-monorepo-case-study.md)
+- Spec: [`examples/showcase-typescript-monorepo-case-study.json`](examples/showcase-typescript-monorepo-case-study.json)
+- SVG: [`examples/showcase-typescript-monorepo-case-study.svg`](examples/showcase-typescript-monorepo-case-study.svg)
+- Receipt: [`examples/showcase-typescript-monorepo-case-study.html.receipt.json`](examples/showcase-typescript-monorepo-case-study.html.receipt.json)
 
 ## Why It Exists
 
@@ -215,7 +232,7 @@ Next high-value work:
 
 - deeper automatic layout per mode, especially sequence/data-flow/lifecycle
 - stronger label clearance and route-quality diagnostics
-- deeper route, config, call graph, and cross-package dependency extraction
+- route, config, call graph, and cross-package dependency extraction beyond the current public case-study surface
 - PNG export when a portable raster dependency is available
 
 ## Repository
@@ -243,7 +260,7 @@ visual-architecture/
 
 ## Status
 
-v1.0.0 artifact engine foundation: deterministic renderer, schemas, mode-aware validation, delivery receipts, HTML artifacts, source evidence badges, PR delta compare, share cards, gallery, and checked examples.
+v1.8.0 public case-study conversion: deterministic renderer, TypeScript-aware extraction, schemas, mode-aware validation, delivery receipts, HTML/SVG/share-card artifacts, source evidence badges, PR delta compare, gallery, and a sanitized TypeScript monorepo case study.
 
 ## License
 

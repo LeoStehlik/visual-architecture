@@ -1,6 +1,6 @@
 {
   "artifactKind": "svg",
-  "generatedAt": "2026-08-28T00:25:55.552748+00:00",
+  "generatedAt": "2026-09-01T00:41:52.020732+00:00",
   "input": {
     "bytes": 1745,
     "path": "examples/service-map.json",
@@ -66,5 +66,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.7.0"
+  "version": "1.8.0"
 }

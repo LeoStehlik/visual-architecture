@@ -1,0 +1,39 @@
+{
+  "task_id": "visual-architecture-v18-public-case-study",
+  "phase": "builder-evidence",
+  "agent": "Francis",
+  "timestamp": "2026-09-01T00:42:45Z",
+  "overall": "PASS",
+  "criteria": [
+    {
+      "id": "AC1",
+      "status": "PASS",
+      "note": "README has a Public Case Study section before the long reference sections, including commands and links."
+    },
+    {
+      "id": "AC2",
+      "status": "PASS",
+      "note": "docs/public-typescript-monorepo-case-study.md describes scenario, surfaces, extraction claims, review path, and public boundary."
+    },
+    {
+      "id": "AC3",
+      "status": "PASS",
+      "note": "Generated JSON, SVG, HTML, share-card SVG, and receipt files exist for the case study."
+    },
+    {
+      "id": "AC4",
+      "status": "PASS",
+      "note": "SKILL.md metadata and renderer VERSION are 1.8.0."
+    },
+    {
+      "id": "AC5",
+      "status": "PASS",
+      "note": "make examples regenerated gallery/index artifacts and make validate passed."
+    },
+    {
+      "id": "AC6",
+      "status": "PASS",
+      "note": "Proof artifacts exist; release verification remains pending after commit/tag/publish."
+    }
+  ]
+}

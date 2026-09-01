@@ -2,11 +2,11 @@
 name: visual-architecture
 description: "Create deterministic, local-first architecture artifacts from typed JSON or TypeScript-aware repo extraction: validate specs, render SVG/HTML diagrams, and emit source-backed receipts agents can cite."
 metadata:
-  version: "1.7.0"
+  version: "1.8.0"
 ---
 # Visual Architecture
 
-Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG. v1.7 adds TypeScript monorepo extraction, workspace package/app detection, confidence-scored evidence, deterministic auto-layout, PR delta concern extraction, artifact bundles, quality fail gates, and evidence drilldown in the gallery.
+Create architecture artifacts with the bundled Python renderer instead of hand-writing SVG. v1.8 adds a public TypeScript-monorepo case study path on top of the v1.7 extraction engine: source-backed case-study docs, generated artifacts, README quick-starts, and gallery conversion proof.
 
 Use this when the user needs a trustworthy system map, agent workflow, sequence, data-flow, lifecycle/state diagram, repo-evidence diagram, or PR delta review sketch that should stay local, deterministic, and reviewable.
 

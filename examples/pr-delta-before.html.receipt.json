@@ -1,6 +1,6 @@
 {
   "artifactKind": "html",
-  "generatedAt": "2026-08-28T00:25:54.374126+00:00",
+  "generatedAt": "2026-09-01T00:41:50.868246+00:00",
   "input": {
     "bytes": 567,
     "path": "examples/pr-delta-before.json",
@@ -46,5 +46,5 @@
     "ok": true,
     "warnings": []
   },
-  "version": "1.7.0"
+  "version": "1.8.0"
 }
