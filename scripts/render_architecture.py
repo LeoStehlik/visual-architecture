@@ -7,7 +7,7 @@ import json
 import math
 import os
 from pathlib import Path
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape as xml_escape
 
 GRID_X = 120
 GRID_Y = 80
@@ -42,7 +42,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.8.0"
+VERSION = "1.8.1"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 
@@ -54,6 +54,18 @@ MODE_ACCENTS = {
     "lifecycle": {"label": "lifecycle", "tone": "#fb7185", "zones": ["Open", "Active", "Closed"]},
     "pr-delta": {"label": "PR delta", "tone": "#f97316", "zones": ["Base", "Head", "Review"]},
 }
+
+
+def escape(value):
+    """Encode text and both quote characters for HTML/SVG quoted attributes."""
+    return xml_escape(str(value), {'"': "&quot;", "'": "&#x27;"})
+
+
+def script_json(value):
+    """JSON data that cannot terminate an HTML script element."""
+    return (json.dumps(value).replace("&", "\\u0026")
+            .replace("<", "\\u003c").replace(">", "\\u003e")
+            .replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
 
 
 def snap(value, grid):
@@ -1772,7 +1784,7 @@ def handle_gallery(args):
     rows.sort(key=lambda row: ("Case Study" not in row["title"], row["theme"] != "showcase", row["mode"], row["title"]))
     showcase = [row for row in rows if row["theme"] == "showcase"]
     featured = showcase or rows[:3]
-    gallery_payload = json.dumps([
+    gallery_payload = script_json([
         {
             "title": row["title"],
             "summary": row["summary"],
@@ -1794,10 +1806,10 @@ def handle_gallery(args):
           <td><strong>{escape(row["title"])}</strong><span>{escape(row["summary"])}</span></td>
           <td>{escape(row["mode"])}</td>
           <td>{escape(row["theme"])}</td>
-          <td><a href="{link_prefix}{row["html"]}">HTML</a></td>
-          <td><a href="{link_prefix}{row["svg"]}">SVG</a></td>
-          <td><a href="{link_prefix}{row["spec"]}">JSON</a></td>
-          <td><a href="{link_prefix}{row["receipt"]}">Receipt</a></td>
+          <td><a href="{escape(link_prefix + str(row["html"] ))}">HTML</a></td>
+          <td><a href="{escape(link_prefix + str(row["svg"] ))}">SVG</a></td>
+          <td><a href="{escape(link_prefix + str(row["spec"] ))}">JSON</a></td>
+          <td><a href="{escape(link_prefix + str(row["receipt"] ))}">Receipt</a></td>
         </tr>'''
         for row in rows
     )
@@ -2083,7 +2095,7 @@ def handle_gallery(args):
   </main>
   <script>
     const artifacts = {gallery_payload};
-    const featuredTitles = new Set({json.dumps(sorted(featured_names))});
+    const featuredTitles = new Set({script_json(sorted(featured_names))});
     const list = document.getElementById("artifact-list");
     const stageImage = document.getElementById("stage-image");
     const stageOpen = document.getElementById("stage-open");

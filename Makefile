@@ -1,6 +1,12 @@
+.ONESHELL:
+SHELL := /bin/bash
+.SHELLFLAGS := -eu -o pipefail -c
 .PHONY: validate examples
 
 validate:
+	python3 -m unittest discover -s tests
+	scratch=$$(mktemp -d /tmp/visual-architecture-validate.XXXXXX)
+	trap 'rm -rf "$$scratch"' EXIT
 	grep -q '^name: visual-architecture$$' SKILL.md
 	grep -q 'openclaw skills install visual-architecture' README.md
 	@for schema in schemas/*.schema.json; do \
@@ -10,19 +16,17 @@ validate:
 		python3 -m json.tool "$$spec" >/dev/null; \
 		python3 scripts/render_architecture.py validate "$$spec" --json >/dev/null; \
 	done
-	rm -rf /tmp/visual-architecture-validate
-	mkdir -p /tmp/visual-architecture-validate
 	@for spec in $$(find examples -maxdepth 1 -name '*.json' ! -name '*.receipt.json' | sort); do \
 		name=$$(basename "$$spec" .json); \
-		python3 scripts/render_architecture.py deliver "$$spec" "/tmp/visual-architecture-validate/$$name.svg" --receipt "/tmp/visual-architecture-validate/$$name.svg.receipt.json" >/dev/null; \
-		cmp -s "examples/$$name.svg" "/tmp/visual-architecture-validate/$$name.svg"; \
+		python3 scripts/render_architecture.py deliver "$$spec" "$$scratch/$$name.svg" --receipt "$$scratch/$$name.svg.receipt.json" >/dev/null; \
+		cmp -s "examples/$$name.svg" "$$scratch/$$name.svg"; \
 	done
-	python3 scripts/render_architecture.py compare examples/pr-delta-before.json examples/pr-delta-head.json /tmp/visual-architecture-validate/pr-delta-generated.html --spec /tmp/visual-architecture-validate/pr-delta-generated.json --json >/dev/null
-	python3 scripts/render_architecture.py gallery /tmp/visual-architecture-validate/gallery.html >/dev/null
-	python3 scripts/render_architecture.py layout examples/visual-architecture-auto.json /tmp/visual-architecture-validate/layout.json --mode architecture --theme showcase >/dev/null
-	python3 scripts/render_architecture.py extract-repo . --output /tmp/visual-architecture-validate/extracted-repo.json --title "Validation Repo Evidence Map" >/dev/null
-	python3 scripts/render_architecture.py extract-pr --base origin/master --head HEAD --output /tmp/visual-architecture-validate/extracted-pr.json >/dev/null
-	python3 scripts/render_architecture.py bundle examples/visual-architecture-auto.json /tmp/visual-architecture-validate/bundle --min-quality good >/dev/null
+	python3 scripts/render_architecture.py compare examples/pr-delta-before.json examples/pr-delta-head.json $$scratch/pr-delta-generated.html --spec $$scratch/pr-delta-generated.json --json >/dev/null
+	python3 scripts/render_architecture.py gallery $$scratch/gallery.html >/dev/null
+	python3 scripts/render_architecture.py layout examples/visual-architecture-auto.json $$scratch/layout.json --mode architecture --theme showcase >/dev/null
+	python3 scripts/render_architecture.py extract-repo . --output $$scratch/extracted-repo.json --title "Validation Repo Evidence Map" >/dev/null
+	python3 scripts/render_architecture.py extract-pr --base origin/master --head HEAD --output $$scratch/extracted-pr.json >/dev/null
+	python3 scripts/render_architecture.py bundle examples/visual-architecture-auto.json $$scratch/bundle --min-quality good >/dev/null
 	python3 -m json.tool examples/showcase-artifact-engine.html.receipt.json >/dev/null
 	@echo VALIDATE_OK
 

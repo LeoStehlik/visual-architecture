@@ -1,3 +1,8 @@
+# 1.8.1
+
+- Escape quoted SVG/HTML attributes and inline gallery JSON, including filenames and share cards.
+- Add parser-based injection regressions and isolated validation scratch directories.
+
 # Changelog
 
 ## v1.8.0

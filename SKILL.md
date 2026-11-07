@@ -2,7 +2,7 @@
 name: visual-architecture
 description: "Create deterministic, local-first architecture artifacts from typed JSON or TypeScript-aware repo extraction: validate specs, render SVG/HTML diagrams, and emit source-backed receipts agents can cite."
 metadata:
-  version: "1.8.0"
+  version: "1.8.1"
 ---
 # Visual Architecture
 
