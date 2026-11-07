@@ -1,3 +1,7 @@
+# 1.8.2
+
+- Exclude generated Python bytecode from source and release bundles.
+
 # 1.8.1
 
 - Escape quoted SVG/HTML attributes and inline gallery JSON, including filenames and share cards.
