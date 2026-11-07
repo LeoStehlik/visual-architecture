@@ -42,7 +42,7 @@ SHOWCASE_EDGE_STYLES = {
 
 ALLOWED_NODE_KINDS = set(NODE_STYLES)
 ALLOWED_EDGE_KINDS = set(EDGE_STYLES)
-VERSION = "1.8.2"
+VERSION = "1.8.3"
 ALLOWED_MODES = {"architecture", "workflow", "sequence", "dataflow", "lifecycle", "pr-delta"}
 ALLOWED_THEMES = {"classic", "showcase"}
 
@@ -879,15 +879,29 @@ def extract_repo_spec(root_path, title=None, theme="showcase"):
     return layout_spec(spec, "architecture", theme=theme)
 
 
-def changed_files(base, head):
+def changed_files(base, head, root_path="."):
     import subprocess
-    if head == "WORKTREE":
-        command = ["git", "diff", "--name-status", base]
-    else:
-        command = ["git", "diff", "--name-status", f"{base}..{head}"]
-    result = subprocess.run(command, text=True, capture_output=True, check=False)
+
+    def revision(value):
+        if not isinstance(value, str) or not value or value.startswith("-"):
+            raise ValueError("Git revision must be a non-option revision name")
+        result = subprocess.run(
+            ["git", "rev-parse", "--verify", "--end-of-options", value + "^{commit}"],
+            cwd=root_path, text=True, capture_output=True, check=False,
+        )
+        if result.returncode != 0:
+            raise ValueError("Git revision could not be resolved to a commit")
+        oid = result.stdout.strip()
+        if len(oid) not in (40, 64) or any(c not in "0123456789abcdef" for c in oid):
+            raise ValueError("Git returned an invalid commit id")
+        return oid
+
+    base_oid = revision(base)
+    revisions = [base_oid] if head == "WORKTREE" else [base_oid, revision(head)]
+    command = ["git", "diff", "--no-ext-diff", "--no-textconv", "--name-status", *revisions, "--"]
+    result = subprocess.run(command, cwd=root_path, text=True, capture_output=True, check=False)
     if result.returncode != 0:
-        return []
+        raise ValueError("Git diff failed")
     changes = []
     for line in result.stdout.splitlines():
         parts = line.split("\t")
@@ -912,7 +926,7 @@ def change_concern(path):
 
 def extract_pr_spec(base, head, root_path=".", theme="showcase"):
     root = Path(root_path).resolve()
-    changes = changed_files(base, head)
+    changes = changed_files(base, head, root)
     buckets = {"runtime": [], "contract": [], "artifacts": [], "proof": [], "positioning": [], "other": []}
     for status, file in changes:
         buckets[change_concern(file)].append((status, file))

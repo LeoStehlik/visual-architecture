@@ -1,3 +1,8 @@
+# 1.8.3
+
+- Resolve Git revisions to commit IDs before diffing; reject option-like inputs and disable external diff/textconv helpers.
+- Run PR extraction in the selected repository and fail on invalid revisions instead of silently reporting no changes.
+
 # 1.8.2
 
 - Exclude generated Python bytecode from source and release bundles.

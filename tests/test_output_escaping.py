@@ -2,6 +2,7 @@ import importlib.util
 import json
 import os
 import tempfile
+import subprocess
 import unittest
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
@@ -73,6 +74,38 @@ class EscapingTests(unittest.TestCase):
         encoded = renderer.script_json(value)
         self.assertEqual(json.loads(encoded), value)
         self.assertNotIn("<", encoded)
+
+class GitRevisionTests(unittest.TestCase):
+    def test_revision_options_cannot_create_or_truncate_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / "keep.txt"
+            target.write_text("preserve")
+            for base, head in [("--output=" + str(target), "WORKTREE"), ("HEAD", "--output=" + str(target))]:
+                with self.assertRaises(ValueError):
+                    renderer.changed_files(base, head, root)
+                self.assertEqual(target.read_text(), "preserve")
+
+    def test_valid_commit_and_worktree_diffs_use_selected_repo(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            def git(*args):
+                return subprocess.check_output(["git", "-C", str(root), *args], text=True, stderr=subprocess.DEVNULL).strip()
+            git("init")
+            file = root / "sample.txt"
+            file.write_text("before")
+            git("add", "sample.txt")
+            git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-m", "base")
+            base = git("rev-parse", "HEAD")
+            file.write_text("after")
+            self.assertEqual(renderer.changed_files(base, "WORKTREE", root), [("M", "sample.txt")])
+            git("add", "sample.txt")
+            git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-m", "head")
+            self.assertEqual(renderer.changed_files(base, "HEAD", root), [("M", "sample.txt")])
+            for base_ref, head_ref in [("--output=keep.txt", "WORKTREE"), (base, "--output=keep.txt"), ("missing-ref", "HEAD")]:
+                with self.assertRaises(ValueError):
+                    renderer.changed_files(base_ref, head_ref, root)
+            self.assertFalse((root / "keep.txt").exists())
 
 if __name__ == "__main__":
     unittest.main()

@@ -25,7 +25,9 @@ validate:
 	python3 scripts/render_architecture.py gallery $$scratch/gallery.html >/dev/null
 	python3 scripts/render_architecture.py layout examples/visual-architecture-auto.json $$scratch/layout.json --mode architecture --theme showcase >/dev/null
 	python3 scripts/render_architecture.py extract-repo . --output $$scratch/extracted-repo.json --title "Validation Repo Evidence Map" >/dev/null
-	python3 scripts/render_architecture.py extract-pr --base origin/master --head HEAD --output $$scratch/extracted-pr.json >/dev/null
+	if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
+		python3 scripts/render_architecture.py extract-pr --base HEAD --head HEAD --output $$scratch/extracted-pr.json >/dev/null; \
+	else echo "Git extraction integration check skipped outside a checkout"; fi
 	python3 scripts/render_architecture.py bundle examples/visual-architecture-auto.json $$scratch/bundle --min-quality good >/dev/null
 	python3 -m json.tool examples/showcase-artifact-engine.html.receipt.json >/dev/null
 	@echo VALIDATE_OK
